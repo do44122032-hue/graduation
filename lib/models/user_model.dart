@@ -1,0 +1,81 @@
+import '../enums/user_role.dart';
+
+class UserModel {
+  final String id;
+  final String name;
+  final String email;
+  final UserRole role;
+  final String? profilePicture;
+  final String? phoneNumber;
+
+  final String? age;
+  final String? bloodType;
+  final String? height;
+  final String? weight;
+  final String? dateOfBirth;
+  final String? socialStatus;
+  final List<String>? chronicConditions;
+  final List<String>? medications;
+
+  UserModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.role,
+    this.profilePicture,
+    this.phoneNumber,
+    this.age,
+    this.bloodType,
+    this.height,
+    this.weight,
+    this.dateOfBirth,
+    this.socialStatus,
+    this.chronicConditions,
+    this.medications,
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      role: UserRole.values.firstWhere(
+        (e) => e.toString() == json['role'],
+        orElse: () => UserRole.patient,
+      ),
+      profilePicture: json['profilePicture'],
+      phoneNumber: json['phoneNumber'],
+      age: json['age'],
+      bloodType: json['bloodType'],
+      height: json['height'],
+      weight: json['weight'],
+      dateOfBirth: json['dateOfBirth'],
+      socialStatus: json['socialStatus'],
+      chronicConditions: json['chronicConditions'] != null
+          ? List<String>.from(json['chronicConditions'])
+          : null,
+      medications: json['medications'] != null
+          ? List<String>.from(json['medications'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'role': role.toString(),
+      'profilePicture': profilePicture,
+      'phoneNumber': phoneNumber,
+      'age': age,
+      'bloodType': bloodType,
+      'height': height,
+      'weight': weight,
+      'dateOfBirth': dateOfBirth,
+      'socialStatus': socialStatus,
+      'chronicConditions': chronicConditions,
+      'medications': medications,
+    };
+  }
+}

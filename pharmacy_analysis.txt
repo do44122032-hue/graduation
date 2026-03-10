@@ -1,0 +1,14 @@
+Analyzing pharmacy.dart...                                      
+
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\pharmacy.dart:6:9 - use_super_parameters
+warning - The value of the field 'colorDanger' isn't used - lib\screens\patinte.dart\pharmacy.dart:22:22 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:133:49 - deprecated_member_use
+   info - Unnecessary 'const' keyword - lib\screens\patinte.dart\pharmacy.dart:160:28 - unnecessary_const
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:212:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:259:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:266:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:350:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:381:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:603:48 - deprecated_member_use
+
+10 issues found. (ran in 0.9s)
