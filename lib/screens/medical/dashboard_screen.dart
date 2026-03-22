@@ -5,6 +5,7 @@ import '../../constants/app_colors.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/dashboard_service.dart';
 import '../../widgets/modern_horizontal_nav_bar.dart';
 import '../patinte.dart/booking.dart';
 import '../patinte.dart/medicalrecord.dart';
@@ -26,26 +27,11 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   String _activeTabId = 'home';
-  final List<Map<String, dynamic>> _upcomingAppointments = [
-    {
-      'id': '1',
-      'doctorName': 'Dr. Michael Chen',
-      'specialty': 'Cardiologist',
-      'date': 'Jan 12, 2026',
-      'time': '10:30 AM',
-      'type': 'Video Consultation',
-      'status': 'confirmed',
-    },
-    {
-      'id': '2',
-      'doctorName': 'Dr. Sarah Wilson',
-      'specialty': 'Dermatologist',
-      'date': 'Jan 15, 2026',
-      'time': '02:00 PM',
-      'type': 'In-Person Visit',
-      'status': 'confirmed',
-    },
-  ];
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _upcomingAppointments = [];
+  List<Map<String, dynamic>> _healthAlerts = [];
+  List<Map<String, dynamic>> _activeMedications = [];
+  List<Map<String, dynamic>> _recentVitals = [];
 
   @override
   void initState() {
@@ -56,6 +42,36 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     );
 
     _animationController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadDashboardData();
+    });
+  }
+
+  Future<void> _loadDashboardData() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null || user.id == null) {
+      if(mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final data = await DashboardService.fetchPatientDashboard(user.id!);
+      if (data['success'] == true && mounted) {
+        setState(() {
+          _upcomingAppointments = List<Map<String, dynamic>>.from(data['upcomingAppointments'] ?? []);
+          _healthAlerts = List<Map<String, dynamic>>.from(data['healthAlerts'] ?? []);
+          _activeMedications = List<Map<String, dynamic>>.from(data['activeMedications'] ?? []);
+          _recentVitals = List<Map<String, dynamic>>.from(data['recentVitals'] ?? []);
+          _isLoading = false;
+        });
+      } else {
+        if(mounted) setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      print('Failed to load dashboard data: $e');
+      if(mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -144,6 +160,11 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
   Widget _buildHomeContent(String languageCode) {
     final authService = Provider.of<AuthService>(context);
     final user = authService.currentUser;
+    
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.mainButton));
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,15 +178,47 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 const SizedBox(height: 16),
                 _buildQuickActionsList(languageCode),
                 const SizedBox(height: 24),
-                _buildAnnouncementBanner(
-                  AppStrings.get('healthUpdate', languageCode),
-                  AppStrings.get(
-                    'labPendingReview',
-                    languageCode,
-                  ).replaceAll('{count}', '2'),
-                  Icons.health_and_safety,
-                ),
-                const SizedBox(height: 24),
+                
+                // Display health alerts if any
+                if (_healthAlerts.isNotEmpty) ...[
+                  ..._healthAlerts.map((alert) => _buildAnnouncementBanner(
+                        alert['title'] ?? 'Health Alert',
+                        alert['message'] ?? '',
+                        Icons.warning_amber_rounded,
+                        isDanger: alert['type'] == 'danger',
+                        onTap: () {
+                          // Could navigate to medical records or specific alert details
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MedicalRecordsPage(),
+                            ),
+                          ).then((_) => _loadDashboardData());
+                        },
+                      )),
+                  const SizedBox(height: 24),
+                ] else ... [
+                  _buildAnnouncementBanner(
+                    AppStrings.get('healthUpdate', languageCode),
+                    AppStrings.get(
+                      'labPendingReview',
+                      languageCode,
+                    ).replaceAll('{count}', '0'),
+                    Icons.health_and_safety,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LabResultsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                
+                _buildWeeklySummary(languageCode),
+                
                 _buildUpcomingAppointments(languageCode),
                 const SizedBox(height: 24),
                 _buildPatientInfoList(languageCode, user),
@@ -173,6 +226,77 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeeklySummary(String languageCode) {
+    if (_recentVitals.isEmpty) return const SizedBox.shrink();
+
+    int totalSys = 0;
+    int totalDia = 0;
+    int count = _recentVitals.length;
+
+    for (var v in _recentVitals) {
+      totalSys += (v['bloodPressureSys'] as num?)?.toInt() ?? 0;
+      totalDia += (v['bloodPressureDia'] as num?)?.toInt() ?? 0;
+    }
+
+    int avgSys = count > 0 ? (totalSys ~/ count) : 0;
+    int avgDia = count > 0 ? (totalDia ~/ count) : 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFCBD77E).withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFCBD77E).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.analytics, color: Color(0xFF282828), size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.get('weeklySummary', languageCode),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF282828),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Avg BP: $avgSys/$avgDia mmHg\nEntries: $count recorded this week",
+                  style: TextStyle(
+                    color: const Color(0xFF282828).withOpacity(0.7),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.monitor_heart, color: Color(0xFFCBD77E)),
         ],
       ),
     );
@@ -530,7 +654,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 AppStrings.get(
                   'activeCount',
                   languageCode,
-                ).replaceAll('{count}', '4'),
+                ).replaceAll('{count}', _activeMedications.length.toString()),
                 style: const TextStyle(
                   color: Color(0xFF282828),
                   fontSize: 12,
@@ -569,7 +693,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                     MaterialPageRoute(
                       builder: (context) => const MedicalRecordsPage(),
                     ),
-                  );
+                  ).then((_) => _loadDashboardData());
                 },
               ),
               _buildClinicCard(
@@ -669,49 +793,60 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
   Widget _buildAnnouncementBanner(
     String title,
     String subtitle,
-    IconData icon,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFCBD77E),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+    IconData icon, {
+    VoidCallback? onTap,
+    bool isDanger = false,
+  }) {
+    final bgColor = isDanger ? const Color(0xFFFFCDD2) : const Color(0xFFCBD77E);
+    final iconBgColor = isDanger ? Colors.white.withOpacity(0.9) : Colors.white;
+    final iconColor = isDanger ? Colors.red : const Color(0xFFCBD77E);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 24),
             ),
-            child: Icon(icon, color: const Color(0xFFCBD77E), size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Color(0xFF282828),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Color(0xFF282828),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF4A4A4A),
-                    fontSize: 12,
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: Color(0xFF4A4A4A),
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.chevron_right, color: Color(0xFF282828), size: 24),
-        ],
+            if (onTap != null)
+              const Icon(Icons.chevron_right, color: Color(0xFF282828), size: 24),
+          ],
+        ),
       ),
     );
   }

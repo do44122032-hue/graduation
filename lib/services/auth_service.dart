@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../models/user_model.dart';
 import '../enums/user_role.dart';
 
@@ -14,6 +16,8 @@ class AuthService extends ChangeNotifier {
   UserModel? _currentUser;
   bool _isLoading = false;
 
+  static const String _baseUrl = 'https://graduation-backend-production-7023.up.railway.app';
+
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _currentUser != null;
@@ -24,69 +28,47 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<AuthResult> loginAsStudent(String studentId, String password) async {
-    _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (password.length < 6) {
-      _setLoading(false);
-      return AuthResult(
-        success: false,
-        message: 'Password must be at least 6 characters',
-      );
-    }
-
-    _currentUser = UserModel(
-      id: 'student_1',
-      name: 'Student User',
-      email: studentId.contains('@')
-          ? studentId
-          : '$studentId@cihanuniversity.edu.iq',
-      role: UserRole.student,
-    );
-
-    _setLoading(false);
-    return AuthResult(success: true, user: _currentUser);
+    return _login(studentId, password, UserRole.student);
   }
 
   Future<AuthResult> loginAsDoctor(String sheetId, String password) async {
-    _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (password.length < 6) {
-      _setLoading(false);
-      return AuthResult(success: false, message: 'Invalid credentials');
-    }
-
-    _currentUser = UserModel(
-      id: 'doctor_1',
-      name: 'Dr. Smith',
-      email: 'doctor@hospital.com',
-      role: UserRole.doctor,
-    );
-    _setLoading(false);
-    return AuthResult(success: true, user: _currentUser);
+    return _login(sheetId, password, UserRole.doctor);
   }
 
   Future<AuthResult> loginAsPatient(String email, String password) async {
+    return _login(email, password, UserRole.patient);
+  }
+
+  Future<AuthResult> _login(String email, String password, UserRole role) async {
     _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (password.length < 6) {
-      _setLoading(false);
-      return AuthResult(
-        success: false,
-        message: 'Account not found or password incorrect',
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+          'role': role.name,
+        }),
       );
-    }
 
-    _currentUser = UserModel(
-      id: 'patient_1',
-      name: 'Patient User',
-      email: email,
-      role: UserRole.patient,
-    );
-    _setLoading(false);
-    return AuthResult(success: true, user: _currentUser);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _currentUser = UserModel.fromJson(data['user']);
+        _setLoading(false);
+        return AuthResult(success: true, user: _currentUser);
+      } else {
+        final data = jsonDecode(response.body);
+        _setLoading(false);
+        return AuthResult(
+          success: false, 
+          message: data['detail'] ?? 'Login failed',
+        );
+      }
+    } catch (e) {
+      _setLoading(false);
+      return AuthResult(success: false, message: 'Connection error: $e');
+    }
   }
 
   Future<AuthResult> signUp({
@@ -97,32 +79,36 @@ class AuthService extends ChangeNotifier {
     required UserRole role,
   }) async {
     _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/signup'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'phone': phone,
+          'role': role.name,
+        }),
+      );
 
-    if (!email.contains('@')) {
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _currentUser = UserModel.fromJson(data['user']);
+        _setLoading(false);
+        return AuthResult(success: true, user: _currentUser);
+      } else {
+        final data = jsonDecode(response.body);
+        _setLoading(false);
+        return AuthResult(
+          success: false,
+          message: data['detail'] ?? 'Signup failed',
+        );
+      }
+    } catch (e) {
       _setLoading(false);
-      return AuthResult(success: false, message: 'Invalid email address');
+      return AuthResult(success: false, message: 'Connection error: $e');
     }
-
-    _currentUser = UserModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      email: email,
-      role: role,
-      phoneNumber: phone,
-      // Initialize patient fields as null for now
-      age: null,
-      bloodType: null,
-      height: null,
-      weight: null,
-      dateOfBirth: null,
-      socialStatus: null,
-      chronicConditions: [],
-      medications: [],
-    );
-
-    _setLoading(false);
-    return AuthResult(success: true, user: _currentUser);
   }
 
   Future<AuthResult> updatePatientProfile({
@@ -135,83 +121,75 @@ class AuthService extends ChangeNotifier {
     List<String>? chronicConditions,
     List<String>? medications,
   }) async {
+    if (_currentUser == null) return AuthResult(success: false, message: 'Not logged in');
+    
     _setLoading(true);
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network
-
-    if (_currentUser == null) {
-      _setLoading(false);
-      return AuthResult(success: false, message: 'No user logged in');
-    }
-
-    // Create new user object with updated fields
-    _currentUser = UserModel(
-      id: _currentUser!.id,
-      name: _currentUser!.name,
-      email: _currentUser!.email,
-      role: _currentUser!.role,
-      phoneNumber: _currentUser!.phoneNumber,
-      profilePicture: _currentUser!.profilePicture,
-      age: age ?? _currentUser!.age,
-      bloodType: bloodType ?? _currentUser!.bloodType,
-      height: height ?? _currentUser!.height,
-      weight: weight ?? _currentUser!.weight,
-      dateOfBirth: dateOfBirth ?? _currentUser!.dateOfBirth,
-      socialStatus: socialStatus ?? _currentUser!.socialStatus,
-      chronicConditions: chronicConditions ?? _currentUser!.chronicConditions,
-      medications: medications ?? _currentUser!.medications,
-    );
-
-    _setLoading(false);
-    notifyListeners(); // Important to notify UI of changes
-    return AuthResult(success: true, user: _currentUser);
-  }
-
-  Future<AuthResult> resetPassword(String identifier) async {
-    _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (identifier.length < 3) {
-      _setLoading(false);
-      return AuthResult(success: false, message: 'Invalid identifier');
-    }
-
-    _setLoading(false);
-    return AuthResult(
-      success: true,
-      message: 'Reset instructions sent successfully',
-    );
-  }
-
-  Future<AuthResult> verifyRecoveryCode(String identifier, String code) async {
-    _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (code == '123456') {
-      // Mock verification code
-      _setLoading(false);
-      return AuthResult(success: true, message: 'Code verified successfully');
-    }
-
-    _setLoading(false);
-    return AuthResult(success: false, message: 'Invalid verification code');
-  }
-
-  Future<AuthResult> updatePassword(
-    String identifier,
-    String newPassword,
-  ) async {
-    _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (newPassword.length < 6) {
-      _setLoading(false);
-      return AuthResult(
-        success: false,
-        message: 'Password must be at least 6 characters',
+    try {
+      final response = await http.put(
+        Uri.parse('$_baseUrl/users/patient-profile'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'uid': _currentUser!.id,
+          'age': age,
+          'bloodType': bloodType,
+          'height': height,
+          'weight': weight,
+          'dateOfBirth': dateOfBirth,
+          'socialStatus': socialStatus,
+          'chronicConditions': chronicConditions,
+          'medications': medications,
+        }),
       );
-    }
 
-    _setLoading(false);
+      if (response.statusCode == 200) {
+        // Refresh local user data
+        final profileRes = await http.get(Uri.parse('$_baseUrl/users/profile/${_currentUser!.id}'));
+        if (profileRes.statusCode == 200) {
+          _currentUser = UserModel.fromJson(jsonDecode(profileRes.body));
+        }
+        _setLoading(false);
+        notifyListeners();
+        return AuthResult(success: true);
+      } else {
+        final data = jsonDecode(response.body);
+        _setLoading(false);
+        return AuthResult(success: false, message: data['detail'] ?? 'Update failed');
+      }
+    } catch (e) {
+      _setLoading(false);
+      return AuthResult(success: false, message: 'Connection error: $e');
+    }
+  }
+
+  Future<AuthResult> resetPassword(String email) async {
+    _setLoading(true);
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+      _setLoading(false);
+      if (response.statusCode == 200) {
+        return AuthResult(success: true, message: 'Reset link sent to your email');
+      } else {
+        return AuthResult(success: false, message: 'Failed to send reset link');
+      }
+    } catch (e) {
+      _setLoading(false);
+      return AuthResult(success: false, message: 'Connection error: $e');
+    }
+  }
+
+  // Helper methods matched to existing UI calls
+  Future<AuthResult> verifyRecoveryCode(String identifier, String code) async {
+    // Mocked for now as backend doesn't handle verify code separately from Firebase
+    if (code == '123456') return AuthResult(success: true);
+    return AuthResult(success: false, message: 'Invalid code');
+  }
+
+  Future<AuthResult> updatePassword(String identifier, String newPassword) async {
+    // Should be handled via Firebase Auth link, but added for UI compatibility
     return AuthResult(success: true, message: 'Password updated successfully');
   }
 

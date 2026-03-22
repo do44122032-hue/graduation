@@ -36,11 +36,11 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
       role: UserRole.values.firstWhere(
-        (e) => e.toString() == json['role'],
+        (e) => e.name == json['role'],
         orElse: () => UserRole.patient,
       ),
       profilePicture: json['profilePicture'],
@@ -53,10 +53,10 @@ class UserModel {
       socialStatus: json['socialStatus'],
       chronicConditions: json['chronicConditions'] != null
           ? List<String>.from(json['chronicConditions'])
-          : null,
+          : [],
       medications: json['medications'] != null
           ? List<String>.from(json['medications'])
-          : null,
+          : [],
     );
   }
 
@@ -65,7 +65,7 @@ class UserModel {
       'id': id,
       'name': name,
       'email': email,
-      'role': role.toString(),
+      'role': role.name,
       'profilePicture': profilePicture,
       'phoneNumber': phoneNumber,
       'age': age,

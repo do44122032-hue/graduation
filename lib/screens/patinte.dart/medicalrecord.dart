@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
+import '../../services/dashboard_service.dart';
+import '../../services/auth_service.dart';
 import 'patient_data_entry.dart';
 
 // Data Models
@@ -157,11 +159,83 @@ class MedicalRecordsPage extends StatefulWidget {
 }
 
 class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
-  String _activeTab = 'overview';
+  String _activeTab = 'vitals';
   String _activeNav = 'records';
   String _searchQuery = '';
   bool _showFilters = false;
   List<int> _expandedItems = [];
+  bool _isLoading = true;
+  
+  List<VitalSignRecord> _apiVitals = [];
+  List<CurrentMedication> _apiMedications = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData();
+    });
+  }
+
+  Future<void> _fetchData() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null || user.id == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final data = await DashboardService.fetchPatientDashboard(user.id!);
+      if (data['success'] == true && mounted) {
+        setState(() {
+          // Map Vitals
+          if (data['recentVitals'] != null) {
+            _apiVitals = (data['recentVitals'] as List).map((v) => VitalSignRecord(
+              date: v['date']?.toString() ?? '',
+              bloodPressureSys: v['bloodPressureSys'] ?? 0,
+              bloodPressureDia: v['bloodPressureDia'] ?? 0,
+              heartRate: v['heartRate'] ?? 0,
+              temperature: (v['temperature'] ?? 0).toDouble(),
+              respiratoryRate: v['respiratoryRate'] ?? 0,
+              oxygenSaturation: v['oxygenSaturation'] ?? 0,
+              weight: v['weight'] ?? 0,
+              bmi: (v['bmi'] ?? 0).toDouble(),
+              bloodGlucose: v['bloodGlucose'] ?? 0,
+            )).toList();
+          }
+          
+          // Map Medications
+          if (data['activeMedications'] != null) {
+            _apiMedications = (data['activeMedications'] as List).map((m) => CurrentMedication(
+              id: m['id'] ?? 0,
+              genericName: m['genericName']?.toString() ?? '',
+              brandName: m['brandName']?.toString() ?? '',
+              strength: m['strength']?.toString() ?? '',
+              form: m['form']?.toString() ?? '',
+              route: m['route']?.toString() ?? '',
+              frequency: m['frequency']?.toString() ?? '',
+              prescribingPhysician: m['prescribingPhysician']?.toString() ?? '',
+              startDate: m['startDate']?.toString() ?? '',
+              reasonForMedication: m['reasonForMedication']?.toString() ?? '',
+              specialInstructions: m['specialInstructions']?.toString() ?? '',
+              pharmacy: '', // Not in API yet
+              lastFillDate: '',
+              nextRefillDate: '',
+              quantityRemaining: 0,
+              priorAuthStatus: '',
+            )).toList();
+          }
+          _isLoading = false;
+        });
+      } else {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      print('Error fetching medical records data: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   // Color Constants
   static const Color colorWhite = Color(0xFFFFFFFF);
@@ -665,14 +739,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
 
   Widget _buildTabs(String languageCode) {
     final tabs = [
-      {'id': 'overview', 'label': AppStrings.get('tabOverview', languageCode)},
-      {'id': 'chronic', 'label': AppStrings.get('tabConditions', languageCode)},
-      {
-        'id': 'current-meds',
-        'label': AppStrings.get('tabMedications', languageCode),
-      },
       {'id': 'vitals', 'label': AppStrings.get('tabVitals', languageCode)},
-      {'id': 'visits', 'label': AppStrings.get('tabVisits', languageCode)},
+      {'id': 'current-meds', 'label': AppStrings.get('tabMedications', languageCode)},
     ];
 
     return Container(
@@ -725,17 +793,20 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   Widget _buildContent(String languageCode) {
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40.0),
+          child: CircularProgressIndicator(color: colorAccentOlive),
+        ),
+      );
+    }
+    
     switch (_activeTab) {
-      case 'overview':
-        return _buildOverviewTab(languageCode);
-      case 'chronic':
-        return _buildConditionsTab(languageCode);
       case 'current-meds':
         return _buildMedicationsTab(languageCode);
       case 'vitals':
         return _buildVitalsTab(languageCode);
-      case 'visits':
-        return _buildVisitsTab(languageCode);
       default:
         return const SizedBox();
     }
@@ -747,6 +818,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           (c) => c.currentStatus == 'active' || c.currentStatus == 'controlled',
         )
         .length;
+
+    // Use API data or fallback to mock data if empty
+    final vitalsList = _apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory;
+    final medsList = _apiMedications.isNotEmpty ? _apiMedications : currentMedications;
+    final latestVital = vitalsList.isNotEmpty ? vitalsList.first : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -777,44 +853,45 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           ],
         ),
         const SizedBox(height: 12),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.5,
-          children: [
-            _buildVitalCard(
-              Icons.favorite,
-              AppStrings.get('labelHeartRate', languageCode),
-              vitalSignsHistory.first.heartRate.toString(),
-              AppStrings.get('unitBpm', languageCode),
-              onTap: () => _showQuickAddVitalsSheet(context, languageCode),
-            ),
-            _buildVitalCard(
-              Icons.timeline,
-              AppStrings.get('labelBloodPressure', languageCode),
-              '${vitalSignsHistory.first.bloodPressureSys}/${vitalSignsHistory.first.bloodPressureDia}',
-              AppStrings.get('unitMmHg', languageCode),
-              onTap: () => _showQuickAddVitalsSheet(context, languageCode),
-            ),
-            _buildVitalCard(
-              Icons.monitor_weight,
-              AppStrings.get('labelWeight', languageCode),
-              vitalSignsHistory.first.weight.toString(),
-              AppStrings.get('unitLbs', languageCode),
-              onTap: () => _showQuickAddVitalsSheet(context, languageCode),
-            ),
-            _buildVitalCard(
-              Icons.water_drop,
-              AppStrings.get('labelBloodGlucose', languageCode),
-              vitalSignsHistory.first.bloodGlucose.toString(),
-              AppStrings.get('unitMgDl', languageCode),
-              onTap: () => _showQuickAddVitalsSheet(context, languageCode),
-            ),
-          ],
-        ),
+        if (latestVital != null)
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.5,
+            children: [
+              _buildVitalCard(
+                Icons.favorite,
+                AppStrings.get('labelHeartRate', languageCode),
+                latestVital.heartRate.toString(),
+                AppStrings.get('unitBpm', languageCode),
+                onTap: () => _showQuickAddVitalsSheet(context, languageCode),
+              ),
+              _buildVitalCard(
+                Icons.timeline,
+                AppStrings.get('labelBloodPressure', languageCode),
+                '${latestVital.bloodPressureSys}/${latestVital.bloodPressureDia}',
+                AppStrings.get('unitMmHg', languageCode),
+                onTap: () => _showQuickAddVitalsSheet(context, languageCode),
+              ),
+              _buildVitalCard(
+                Icons.monitor_weight,
+                AppStrings.get('labelWeight', languageCode),
+                latestVital.weight.toString(),
+                AppStrings.get('unitLbs', languageCode),
+                onTap: () => _showQuickAddVitalsSheet(context, languageCode),
+              ),
+              _buildVitalCard(
+                Icons.water_drop,
+                AppStrings.get('labelBloodGlucose', languageCode),
+                latestVital.bloodGlucose.toString(),
+                AppStrings.get('unitMgDl', languageCode),
+                onTap: () => _showQuickAddVitalsSheet(context, languageCode),
+              ),
+            ],
+          ),
         const SizedBox(height: 24),
 
         // Quick Stats
@@ -836,7 +913,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             Expanded(
               child: _buildStatCard(
                 icon: Icons.medication,
-                value: currentMedications.length.toString(),
+                value: medsList.length.toString(),
                 label: AppStrings.get('sectCurrentMedications', languageCode),
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -1208,8 +1285,22 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   Widget _buildMedicationsTab(String languageCode) {
+    final medsList = _apiMedications;
+
+    if (medsList.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40.0),
+          child: Text(
+            AppStrings.get('noData', languageCode) ?? 'No medications found.',
+            style: const TextStyle(color: colorSecondaryText),
+          ),
+        ),
+      );
+    }
+
     return Column(
-      children: currentMedications.map((med) {
+      children: medsList.map((med) {
         final isExpanded = _expandedItems.contains(med.id);
         final daysUntilRefill = DateTime.parse(
           '2025-01-19',
@@ -1482,10 +1573,10 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   void _showQuickAddVitalsSheet(BuildContext context, String languageCode) {
-    final sysController = TextEditingController(text: '120');
-    final diaController = TextEditingController(text: '80');
-    final hrController = TextEditingController(text: '72');
-    final weightController = TextEditingController(text: '140');
+    final sysController = TextEditingController();
+    final diaController = TextEditingController();
+    final hrController = TextEditingController();
+    final weightController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
@@ -1559,43 +1650,57 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
-                  final now = DateTime.now();
-                  setState(() {
-                    vitalSignsHistory.insert(
-                      0,
-                      VitalSignRecord(
-                        date: () {
-                          try {
-                            return DateFormat(
-                              'MMM d',
-                              languageCode,
-                            ).format(now);
-                          } catch (e) {
-                            return DateFormat('MMM d', 'en').format(now);
-                          }
-                        }(),
-                        bloodPressureSys:
-                            int.tryParse(sysController.text) ?? 120,
-                        bloodPressureDia:
-                            int.tryParse(diaController.text) ?? 80,
-                        heartRate: int.tryParse(hrController.text) ?? 72,
-                        temperature: 98.6,
-                        respiratoryRate: 16,
-                        oxygenSaturation: 98,
-                        weight: int.tryParse(weightController.text) ?? 140,
-                        bmi: 22.6,
-                        bloodGlucose: 95,
-                      ),
+                onPressed: () async {
+                  Navigator.pop(context); // Close the sheet immediately so Snackbars are visible
+
+                  final authService = Provider.of<AuthService>(context, listen: false);
+                  final user = authService.currentUser;
+                  if (user == null || user.id == null || user.id!.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('User not found. Cannot save vitals.')),
                     );
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(AppStrings.get('msgSuccess', languageCode)),
-                      backgroundColor: colorAccentOlive,
-                    ),
+                    return;
+                  }
+
+                  final sys = int.tryParse(sysController.text) ?? 120;
+                  final dia = int.tryParse(diaController.text) ?? 80;
+                  final hr = int.tryParse(hrController.text) ?? 72;
+                  final weight = int.tryParse(weightController.text) ?? 140;
+
+                  // Call the backend service
+                  final success = await DashboardService.logVitals(
+                    uid: user.id!,
+                    sys: sys,
+                    dia: dia,
+                    hr: hr,
+                    temp: 98.6,
+                    rr: 16,
+                    o2: 98,
+                    weight: weight,
+                    bmi: 22.6,
+                    glucose: 95,
                   );
+
+                  if (success) {
+                    await _fetchData(); // Refresh API data
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(AppStrings.get('msgSuccess', languageCode)),
+                          backgroundColor: colorAccentOlive,
+                        ),
+                      );
+                    }
+                  } else {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to save vitals via API.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorCharcoal,
@@ -1696,6 +1801,22 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     );
   }
 
+  String _formatDateToWeekday(String dateStr) {
+    try {
+      final int currentYear = DateTime.now().year;
+      final DateTime parsed = DateFormat('MMM dd yyyy').parse('$dateStr $currentYear');
+      return DateFormat('E').format(parsed);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  List<VitalSignRecord> get _chartVitals {
+    final source = _apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory;
+    return source.take(7).toList().reversed.toList();
+  }
+
+
   Widget _buildBloodPressureChart() {
     return LineChart(
       LineChartData(
@@ -1720,13 +1841,12 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
+                final chronologicalVitals = (_apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory)
+                    .reversed.toList();
                 if (value.toInt() >= 0 &&
-                    value.toInt() < vitalSignsHistory.length) {
+                    value.toInt() < chronologicalVitals.length) {
                   return Text(
-                    vitalSignsHistory[vitalSignsHistory.length -
-                            1 -
-                            value.toInt()]
-                        .date,
+                    _formatDateToWeekday(chronologicalVitals[value.toInt()].date),
                     style: const TextStyle(
                       fontSize: 10,
                       color: colorSecondaryText,
@@ -1749,7 +1869,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         maxY: 140,
         lineBarsData: [
           LineChartBarData(
-            spots: vitalSignsHistory
+            spots: _chartVitals
                 .asMap()
                 .entries
                 .map((e) {
@@ -1758,8 +1878,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                     e.value.bloodPressureSys.toDouble(),
                   );
                 })
-                .toList()
-                .reversed
                 .toList(),
             isCurved: true,
             color: colorAccentOlive,
@@ -1767,7 +1885,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             dotData: const FlDotData(show: false),
           ),
           LineChartBarData(
-            spots: vitalSignsHistory
+            spots: _chartVitals
                 .asMap()
                 .entries
                 .map((e) {
@@ -1776,8 +1894,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                     e.value.bloodPressureDia.toDouble(),
                   );
                 })
-                .toList()
-                .reversed
                 .toList(),
             isCurved: true,
             color: colorAccentBeige,
@@ -1813,13 +1929,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
+                final chronologicalVitals = _chartVitals;
                 if (value.toInt() >= 0 &&
-                    value.toInt() < vitalSignsHistory.length) {
+                    value.toInt() < chronologicalVitals.length) {
                   return Text(
-                    vitalSignsHistory[vitalSignsHistory.length -
-                            1 -
-                            value.toInt()]
-                        .date,
+                    _formatDateToWeekday(chronologicalVitals[value.toInt()].date),
                     style: const TextStyle(
                       fontSize: 10,
                       color: colorSecondaryText,
@@ -1842,14 +1956,12 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         maxY: 90,
         lineBarsData: [
           LineChartBarData(
-            spots: vitalSignsHistory
+            spots: _chartVitals
                 .asMap()
                 .entries
                 .map((e) {
                   return FlSpot(e.key.toDouble(), e.value.heartRate.toDouble());
                 })
-                .toList()
-                .reversed
                 .toList(),
             isCurved: true,
             color: colorAccentOlive,
@@ -1885,13 +1997,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
+                final chronologicalVitals = _chartVitals;
                 if (value.toInt() >= 0 &&
-                    value.toInt() < vitalSignsHistory.length) {
+                    value.toInt() < chronologicalVitals.length) {
                   return Text(
-                    vitalSignsHistory[vitalSignsHistory.length -
-                            1 -
-                            value.toInt()]
-                        .date,
+                    _formatDateToWeekday(chronologicalVitals[value.toInt()].date),
                     style: const TextStyle(
                       fontSize: 10,
                       color: colorSecondaryText,
@@ -1912,7 +2022,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         borderData: FlBorderData(show: false),
         minY: 135,
         maxY: 145,
-        barGroups: vitalSignsHistory
+        barGroups: _chartVitals
             .asMap()
             .entries
             .map((e) {
@@ -1930,8 +2040,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 ],
               );
             })
-            .toList()
-            .reversed
             .toList(),
       ),
     );
@@ -1961,13 +2069,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
+                final chronologicalVitals = _chartVitals;
                 if (value.toInt() >= 0 &&
-                    value.toInt() < vitalSignsHistory.length) {
+                    value.toInt() < chronologicalVitals.length) {
                   return Text(
-                    vitalSignsHistory[vitalSignsHistory.length -
-                            1 -
-                            value.toInt()]
-                        .date,
+                    _formatDateToWeekday(chronologicalVitals[value.toInt()].date),
                     style: const TextStyle(
                       fontSize: 10,
                       color: colorSecondaryText,
@@ -1990,7 +2096,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         maxY: 105,
         lineBarsData: [
           LineChartBarData(
-            spots: vitalSignsHistory
+            spots: _chartVitals
                 .asMap()
                 .entries
                 .map((e) {
@@ -1999,8 +2105,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                     e.value.bloodGlucose.toDouble(),
                   );
                 })
-                .toList()
-                .reversed
                 .toList(),
             isCurved: true,
             color: colorAccentOlive,
