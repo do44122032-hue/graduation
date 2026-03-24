@@ -169,6 +169,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   List<VitalSignRecord> _apiVitals = [];
   List<CurrentMedication> _apiMedications = [];
 
+
   @override
   void initState() {
     super.initState();
@@ -226,6 +227,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               priorAuthStatus: '',
             )).toList();
           }
+          
+
           _isLoading = false;
         });
       } else {
@@ -1470,11 +1473,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                           AppStrings.get('treatingPhysician', languageCode),
                           med.prescribingPhysician,
                         ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('pharmacyShort', languageCode),
-                          med.pharmacy,
-                        ),
+
                         const SizedBox(height: 12),
                         Row(
                           children: [
@@ -2360,4 +2359,5 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
       ],
     );
   }
+
 }

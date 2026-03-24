@@ -1,32 +1,23 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
-
-enum MessageType { text, labResult, medication, appointment }
-
-class Message {
-  final String text;
-  final bool isSentByMe;
-  final DateTime timestamp;
-  final MessageType type;
-  final Map<String, dynamic>? data;
-
-  Message({
-    required this.text,
-    required this.isSentByMe,
-    required this.timestamp,
-    this.type = MessageType.text,
-    this.data,
-  });
-}
+import '../../services/auth_service.dart';
+import '../../services/chat_service.dart';
+import '../../models/chat_message.dart';
 
 class ChatScreen extends StatefulWidget {
+  final String doctorId;
   final String doctorName;
   final String imageUrl;
 
-  const ChatScreen({Key? key, required this.doctorName, required this.imageUrl})
-    : super(key: key);
+  const ChatScreen({
+    Key? key,
+    required this.doctorId,
+    required this.doctorName,
+    required this.imageUrl,
+  }) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -34,45 +25,98 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  late List<Message> _messages;
-  bool _initialized = false;
+  final ScrollController _scrollController = ScrollController();
+  List<ChatMessage> _messages = [];
+  bool _isLoading = true;
+  Timer? _pollingTimer;
 
-  void _initMessages(String languageCode) {
-    if (_initialized) return;
-    _messages = [
-      Message(
-        text: AppStrings.get('msgDoctorInitial', languageCode),
-        isSentByMe: false,
-        timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
-      ),
-      Message(
-        text: AppStrings.get('msgPatientInitial', languageCode),
-        isSentByMe: true,
-        timestamp: DateTime.now().subtract(const Duration(minutes: 4)),
-      ),
-    ];
-    _initialized = true;
+  @override
+  void initState() {
+    super.initState();
+    _loadChatHistory();
+    _startPolling();
   }
 
-  void _sendMessage({
-    String text = '',
-    MessageType type = MessageType.text,
-    Map<String, dynamic>? data,
-  }) {
-    if (text.trim().isEmpty && type == MessageType.text) return;
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
-    setState(() {
-      _messages.add(
-        Message(
-          text: text,
-          isSentByMe: true,
-          timestamp: DateTime.now(),
-          type: type,
-          data: data,
-        ),
-      );
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _loadChatHistory(isPolling: true);
     });
+  }
+
+  Future<void> _loadChatHistory({bool isPolling = false}) async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null) return;
+
+    try {
+      final history = await ChatService.fetchChatHistory(user.id, widget.doctorId);
+      if (mounted) {
+        setState(() {
+          _messages = history;
+          if (!isPolling) _isLoading = false;
+        });
+        if (!isPolling) {
+          _scrollToBottom();
+        }
+      }
+    } catch (e) {
+      print('Error loading chat history: $e');
+      if (mounted && !isPolling) setState(() => _isLoading = false);
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  Future<void> _sendMessage({
+    String text = '',
+    String type = 'text',
+    Map<String, dynamic>? data,
+  }) async {
+    if (text.trim().isEmpty && type == 'text') return;
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null) return;
+
+    final content = text.trim();
     _messageController.clear();
+
+    final success = await ChatService.sendMessage(
+      senderId: user.id,
+      receiverId: widget.doctorId,
+      content: content,
+      type: type,
+      data: data,
+    );
+
+    if (success) {
+      _loadChatHistory(isPolling: true);
+      _scrollToBottom();
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send message')),
+        );
+      }
+    }
   }
 
   void _showAttachmentOptions(String languageCode) {
@@ -104,7 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Navigator.pop(context);
                     _sendMessage(
                       text: "Lab Results: Blood Count",
-                      type: MessageType.labResult,
+                      type: 'lab_result',
                       data: {
                         'testName': 'Complete Blood Count (CBC)',
                         'date': '28 Dec 2025',
@@ -121,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Navigator.pop(context);
                     _sendMessage(
                       text: "Prescription: Amoxicillin",
-                      type: MessageType.medication,
+                      type: 'medication',
                       data: {
                         'name': 'Amoxicillin',
                         'dosage': '500mg',
@@ -138,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Navigator.pop(context);
                     _sendMessage(
                       text: "Appointment Scheduled",
-                      type: MessageType.appointment,
+                      type: 'appointment',
                       data: {
                         'date': '2 Jan 2026',
                         'time': '10:00 AM',
@@ -184,7 +228,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final languageService = Provider.of<LanguageService>(context);
     final languageCode = languageService.currentLanguage;
-    _initMessages(languageCode);
+    final authService = Provider.of<AuthService>(context);
+    final currentUser = authService.currentUser;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
@@ -194,6 +239,8 @@ class _ChatScreenState extends State<ChatScreen> {
             CircleAvatar(
               backgroundImage: NetworkImage(widget.imageUrl),
               radius: 20,
+              backgroundColor: const Color(0xFFCBD77E).withOpacity(0.2),
+              child: widget.imageUrl.isEmpty ? const Icon(Icons.person, color: Color(0xFFCBD77E)) : null,
             ),
             const SizedBox(width: 12),
             Column(
@@ -225,14 +272,32 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _buildMessageBubble(message, languageCode);
-              },
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFFCBD77E)))
+                : _messages.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[300]),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Start conversation with ${widget.doctorName}',
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final message = _messages[index];
+                          final isMe = message.isSentByMe(currentUser?.id ?? '');
+                          return _buildMessageBubble(message, isMe, languageCode);
+                        },
+                      ),
           ),
           _buildMessageInput(languageCode),
         ],
@@ -240,31 +305,31 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildMessageBubble(Message message, String languageCode) {
+  Widget _buildMessageBubble(ChatMessage message, bool isMe, String languageCode) {
     Widget content;
     switch (message.type) {
-      case MessageType.labResult:
-        content = _buildLabResultContent(message.data!, languageCode);
+      case 'lab_result':
+        content = _buildLabResultContent(message.data, languageCode);
         break;
-      case MessageType.medication:
-        content = _buildMedicationContent(message.data!, languageCode);
+      case 'medication':
+        content = _buildMedicationContent(message.data, languageCode);
         break;
-      case MessageType.appointment:
-        content = _buildAppointmentContent(message.data!, languageCode);
+      case 'appointment':
+        content = _buildAppointmentContent(message.data, languageCode);
         break;
-      case MessageType.text:
+      case 'text':
       default:
         content = Text(
-          message.text,
+          message.content,
           style: TextStyle(
-            color: message.isSentByMe ? Colors.white : const Color(0xFF282828),
+            color: isMe ? Colors.white : const Color(0xFF282828),
             fontSize: 15,
           ),
         );
     }
 
     return Align(
-      alignment: message.isSentByMe
+      alignment: isMe
           ? AlignmentDirectional.centerEnd
           : AlignmentDirectional.centerStart,
       child: Container(
@@ -274,10 +339,10 @@ class _ChatScreenState extends State<ChatScreen> {
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: message.isSentByMe ? const Color(0xFFCBD77E) : Colors.white,
+          color: isMe ? const Color(0xFFCBD77E) : Colors.white,
           borderRadius: BorderRadius.circular(16).copyWith(
-            bottomRight: message.isSentByMe ? Radius.zero : null,
-            bottomLeft: !message.isSentByMe ? Radius.zero : null,
+            bottomRight: isMe ? Radius.zero : null,
+            bottomLeft: !isMe ? Radius.zero : null,
           ),
           boxShadow: [
             BoxShadow(
@@ -295,7 +360,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Text(
               "${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0')}",
               style: TextStyle(
-                color: message.isSentByMe
+                color: isMe
                     ? Colors.white.withOpacity(0.8)
                     : const Color(0xFF9E9E9E),
                 fontSize: 10,
@@ -338,15 +403,15 @@ class _ChatScreenState extends State<ChatScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data['testName'],
+                data['testName'] ?? 'Lab Test',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
-                "${AppStrings.get('labelDate', languageCode)} ${data['date']}",
+                "${AppStrings.get('labelDate', languageCode)} ${data['date'] ?? ''}",
                 style: const TextStyle(fontSize: 12),
               ),
               Text(
-                "${AppStrings.get('labelStatus', languageCode)} ${data['status']}",
+                "${AppStrings.get('labelStatus', languageCode)} ${data['status'] ?? ''}",
                 style: TextStyle(
                   fontSize: 12,
                   color:
@@ -396,12 +461,12 @@ class _ChatScreenState extends State<ChatScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data['name'],
+                data['name'] ?? 'Medication',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text(data['dosage']),
+              Text(data['dosage'] ?? ''),
               Text(
-                data['frequency'],
+                data['frequency'] ?? '',
                 style: const TextStyle(
                   fontSize: 12,
                   fontStyle: FontStyle.italic,
@@ -419,6 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
     String languageCode,
   ) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
@@ -445,48 +511,11 @@ class _ChatScreenState extends State<ChatScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data['type'],
+                data['type'] ?? 'Appointment',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
-                "${data['date']} ${AppStrings.get('labelAt', languageCode)} ${data['time']}",
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            AppStrings.get(
-                              'msgAppointmentCancelled',
-                              languageCode,
-                            ),
-                          ),
-                          backgroundColor: Colors.red,
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.only(
-                            bottom: 100,
-                            left: 24,
-                            right: 24,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 30),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(AppStrings.get('actionCancel', languageCode)),
-                  ),
-                ],
+                "${data['date'] ?? ''} ${AppStrings.get('labelAt', languageCode)} ${data['time'] ?? ''}",
               ),
             ],
           ),
@@ -497,12 +526,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageInput(String languageCode) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        100,
-      ), // Added bottom padding to clear nav bar
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

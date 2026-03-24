@@ -11,10 +11,13 @@ import '../patinte.dart/booking.dart';
 import '../patinte.dart/medicalrecord.dart';
 import '../patinte.dart/patinteprfile.dart';
 import '../patinte.dart/labresulit.dart';
-import '../patinte.dart/pharmacy.dart';
+// import '../patinte.dart/pharmacy.dart';
 import '../patinte.dart/messages.dart';
 import '../patinte.dart/settings.dart';
 import '../ai/chatbot_screen.dart';
+import '../patinte.dart/doctor_selection.dart';
+import 'doctor_schedule_management.dart';
+import '../../models/user_model.dart';
 
 class ModernDashboardScreen extends StatefulWidget {
   const ModernDashboardScreen({Key? key}) : super(key: key);
@@ -176,7 +179,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
-                _buildQuickActionsList(languageCode),
+                _buildQuickActionsList(languageCode, user),
                 const SizedBox(height: 24),
                 
                 // Display health alerts if any
@@ -483,7 +486,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _cancelAppointment(apt['id'], languageCode);
+              _cancelAppointment(apt['id'].toString(), languageCode);
             },
             child: const Text('Confirm', style: TextStyle(color: Colors.red)),
           ),
@@ -492,20 +495,46 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     );
   }
 
-  void _cancelAppointment(String id, String languageCode) {
-    setState(() {
-      _upcomingAppointments.removeWhere((a) => a['id'] == id);
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppStrings.get('msgAppointmentCancelled', languageCode)),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 100, left: 24, right: 24),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  void _cancelAppointment(String id, String languageCode) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFFCBD77E)),
       ),
     );
+
+    bool success = await DashboardService.cancelAppointment(id);
+
+    if (mounted) Navigator.pop(context); // Hide loading
+
+    if (success) {
+      if (mounted) {
+        setState(() {
+          _upcomingAppointments.removeWhere((a) => a['id'].toString() == id);
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.get('msgAppointmentCancelled', languageCode)),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(bottom: 100, left: 24, right: 24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to cancel appointment. Please try again.'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildHeader(String languageCode, dynamic user) {
@@ -629,7 +658,8 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     );
   }
 
-  Widget _buildQuickActionsList(String languageCode) {
+  Widget _buildQuickActionsList(String languageCode, UserModel? user) {
+    bool isDoctor = user != null && user.role.name == 'doctor';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -644,24 +674,25 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 color: Color(0xFF282828),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFCBD77E),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                AppStrings.get(
-                  'activeCount',
-                  languageCode,
-                ).replaceAll('{count}', _activeMedications.length.toString()),
-                style: const TextStyle(
-                  color: Color(0xFF282828),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+            if (!isDoctor)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD77E),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  AppStrings.get(
+                    'activeCount',
+                    languageCode,
+                  ).replaceAll('{count}', _activeMedications.length.toString()),
+                  style: const TextStyle(
+                    color: Color(0xFF282828),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -670,58 +701,76 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _buildClinicCard(
-                AppStrings.get('bookAppt', languageCode),
-                Icons.calendar_today,
-                true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BookAppointmentPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildClinicCard(
-                AppStrings.get('medicalRecordsShort', languageCode),
-                Icons.description,
-                false,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MedicalRecordsPage(),
-                    ),
-                  ).then((_) => _loadDashboardData());
-                },
-              ),
-              _buildClinicCard(
-                AppStrings.get('labResultsShort', languageCode),
-                Icons.monitor_heart,
-                false,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LabResultsPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildClinicCard(
-                AppStrings.get('pharmacyShort', languageCode),
-                Icons.medication_liquid,
-                false,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PharmacyPage(),
-                    ),
-                  );
-                },
-              ),
+              if (isDoctor)
+                _buildClinicCard(
+                  'Manage Schedule',
+                  Icons.calendar_month,
+                  true,
+                  onTap: () {
+                    // Navigate to Doctor Schedule Management View
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DoctorScheduleManagementScreen(),
+                      ),
+                    );
+                  },
+                )
+              else ...[
+                _buildClinicCard(
+                  AppStrings.get('bookAppt', languageCode),
+                  Icons.calendar_today,
+                  true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BookAppointmentPage(),
+                      ),
+                    );
+                  },
+                ),
+                _buildClinicCard(
+                  AppStrings.get('medicalRecordsShort', languageCode),
+                  Icons.description,
+                  false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MedicalRecordsPage(),
+                      ),
+                    ).then((_) => _loadDashboardData());
+                  },
+                ),
+                _buildClinicCard(
+                  AppStrings.get('labResultsShort', languageCode),
+                  Icons.monitor_heart,
+                  false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LabResultsPage(),
+                      ),
+                    );
+                  },
+                ),
+                _buildClinicCard(
+                  AppStrings.get('callMyDoctors', languageCode).isEmpty ? 'Call My Doctors' : AppStrings.get('callMyDoctors', languageCode),
+                  Icons.medical_services,
+                  false,
+                  onTap: () {
+                    // Navigate to the new doctor selection screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DoctorSelectionScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         ),

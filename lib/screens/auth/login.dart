@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
 import '../../enums/user_role.dart';
-import 'role_selection.dart';
+
 import 'sign_up.dart';
 import 'forgot_password.dart';
 import '../../services/auth_service.dart';
@@ -621,44 +621,43 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
 
                     const SizedBox(height: 30),
 
-                    // Sign up link
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${AppStrings.get('dontHaveAccount', lang)} ',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: const Color(0xFF285430).withOpacity(0.8),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        SignUpScreen(userRole: widget.userRole),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                AppStrings.get('signUp', lang),
-                                style: const TextStyle(
-                                  color: const Color(0xFF285430),
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${AppStrings.get('dontHaveAccount', lang)} ',
+                                style: TextStyle(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
+                                  color: const Color(0xFF285430).withOpacity(0.8),
                                 ),
                               ),
-                            ),
-                          ],
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          SignUpScreen(userRole: widget.userRole),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  AppStrings.get('signUp', lang),
+                                  style: const TextStyle(
+                                    color: const Color(0xFF285430),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -813,7 +812,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
         destination = const StudentDashboardScreen();
       } else if (widget.userRole == UserRole.doctor) {
         if (_useEmailLogin) {
-          result = await authService.loginAsPatient(
+          result = await authService.loginAsDoctor(
             _emailController.text,
             _passwordController.text,
           );

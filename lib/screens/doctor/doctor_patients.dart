@@ -5,6 +5,9 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
 import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
+import '../../services/dashboard_service.dart';
+import '../../models/user_model.dart';
+import 'doctor_patient_details.dart';
 
 class DoctorPatientsPage extends StatefulWidget {
   const DoctorPatientsPage({super.key});
@@ -14,47 +17,38 @@ class DoctorPatientsPage extends StatefulWidget {
 }
 
 class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
+  List<UserModel> _patients = [];
+  bool _isLoading = true;
+  final DashboardService _dashboardService = DashboardService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPatients();
+  }
+
+  Future<void> _loadPatients() async {
+    setState(() => _isLoading = true);
+    try {
+      final patients = await _dashboardService.fetchPatients();
+      setState(() {
+        _patients = patients;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading patients: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
-    final List<Map<String, dynamic>> patients = [
-      {
-        'name': AppStrings.get('patAhmed', languageCode),
-        'age': '45',
-        'condition': AppStrings.get('condHypertension', languageCode),
-        'lastVisit': '2 ${AppStrings.get('timeAgo_daysAgo', languageCode)}',
-        'image': null,
-      },
-      {
-        'name': AppStrings.get('patSara', languageCode),
-        'age': '32',
-        'condition': AppStrings.get('condPostSurgery', languageCode),
-        'lastVisit': AppStrings.get('timeAgo_yesterday', languageCode),
-        'image': null,
-      },
-      {
-        'name': AppStrings.get('patMohamed', languageCode),
-        'age': '28',
-        'condition': AppStrings.get('condInfluenza', languageCode),
-        'lastVisit': '1 ${AppStrings.get('timeAgo_weekAgo', languageCode)}',
-        'image': null,
-      },
-      {
-        'name': AppStrings.get('patLaila', languageCode),
-        'age': '55',
-        'condition': AppStrings.get('condDiabetes2', languageCode),
-        'lastVisit': '3 ${AppStrings.get('timeAgo_daysAgo', languageCode)}',
-        'image': null,
-      },
-      {
-        'name': AppStrings.get('patYoussef', languageCode),
-        'age': '41',
-        'condition': AppStrings.get('condCardiology', languageCode),
-        'lastVisit': AppStrings.get('timeAgo_today', languageCode),
-        'image': null,
-      },
-    ];
 
     void _showAddPatientDialog() {
       final nameController = TextEditingController();
@@ -176,91 +170,116 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
           AppSpacing.md,
           100,
         ),
-        itemCount: patients.length,
+        itemCount: _isLoading ? 5 : _patients.length,
         itemBuilder: (context, index) {
-          final patient = patients[index];
-          return Container(
-            margin: const EdgeInsets.only(bottom: AppSpacing.md),
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.cardShadow,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: AppColors.doctorPrimary.withValues(
-                    alpha: 0.1,
+          if (_isLoading) {
+            return _buildShimmerLoading();
+          }
+          final patient = _patients[index];
+          final condition = (patient.chronicConditions != null &&
+                  patient.chronicConditions!.isNotEmpty)
+              ? patient.chronicConditions!.join(', ')
+              : AppStrings.get('condHealthy', languageCode);
+
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DoctorPatientDetailsPage(
+                    patientName: patient.name,
+                    patientAge: patient.age ?? 'N/A',
+                    condition: condition,
+                    patientId: patient.id,
                   ),
-                  child: Text(
-                    (patient['name'] as String)[0],
-                    style: AppTextStyles.h2(languageCode: languageCode)
-                        .copyWith(
-                          fontWeight: FontWeight.bold,
+                ),
+              );
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.cardShadow,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: AppColors.doctorPrimary.withOpacity(0.1),
+                        backgroundImage: patient.profilePicture != null
+                            ? NetworkImage(patient.profilePicture!)
+                            : null,
+                        child: patient.profilePicture == null
+                            ? Text(
+                                patient.name.isNotEmpty ? patient.name[0] : '?',
+                                style: AppTextStyles.h2(
+                                  languageCode: languageCode,
+                                ).copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.doctorPrimary,
+                                ),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              patient.name,
+                              style: AppTextStyles.body(languageCode: languageCode)
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primaryText,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${patient.age ?? "--"} ${AppStrings.get('labelYears', languageCode)} • $condition',
+                              style: AppTextStyles.caption(
+                                languageCode: languageCode,
+                              ).copyWith(color: AppColors.secondaryText),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${AppStrings.get('labelLastVisit', languageCode)}: ${AppStrings.get('timeAgo_today', languageCode)}', // Mocking last visit for now
+                              style: AppTextStyles.caption(
+                                languageCode: languageCode,
+                              ).copyWith(
+                                color: AppColors.secondaryText,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.message_outlined,
                           color: AppColors.doctorPrimary,
                         ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        patient['name'] as String,
-                        style: AppTextStyles.body(languageCode: languageCode)
-                            .copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primaryText,
-                            ),
+                        onPressed: () {},
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${patient['age']} ${AppStrings.get('labelYears', languageCode)} • ${patient['condition']}',
-                        style: AppTextStyles.caption(
-                          languageCode: languageCode,
-                        ).copyWith(color: AppColors.secondaryText),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${AppStrings.get('labelLastVisit', languageCode)}: ${patient['lastVisit']}',
-                        style: AppTextStyles.caption(languageCode: languageCode)
-                            .copyWith(
-                              color: AppColors.secondaryText,
-                              fontStyle: FontStyle.italic,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.message_outlined,
-                        color: AppColors.doctorPrimary,
-                      ),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: const Icon(
+                      const Icon(
                         Icons.arrow_forward_ios,
                         size: 16,
                         color: AppColors.secondaryText,
                       ),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -272,6 +291,36 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
           backgroundColor: AppColors.doctorPrimary,
           child: const Icon(Icons.add, color: Colors.white),
         ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: AppColors.secondaryBackground,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(height: 15, width: 150, color: AppColors.secondaryBackground),
+                const SizedBox(height: 8),
+                Container(height: 12, width: 200, color: AppColors.secondaryBackground),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

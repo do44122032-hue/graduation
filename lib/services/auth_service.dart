@@ -77,6 +77,8 @@ class AuthService extends ChangeNotifier {
     required String password,
     required String phone,
     required UserRole role,
+    String? department,
+    String? bio,
   }) async {
     _setLoading(true);
     try {
@@ -89,12 +91,20 @@ class AuthService extends ChangeNotifier {
           'password': password,
           'phone': phone,
           'role': role.name,
+          if (department != null) 'department': department,
+          if (bio != null) 'bio': bio,
         }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _currentUser = UserModel.fromJson(data['user']);
+        
+        if (role == UserRole.doctor) {
+          // Doctors need to login to become "active" on the backend
+          return await _login(email, password, role);
+        }
+
         _setLoading(false);
         return AuthResult(success: true, user: _currentUser);
       } else {
@@ -193,7 +203,18 @@ class AuthService extends ChangeNotifier {
     return AuthResult(success: true, message: 'Password updated successfully');
   }
 
-  void logout() {
+  void logout() async {
+    if (_currentUser != null) {
+      try {
+        await http.post(
+          Uri.parse('$_baseUrl/auth/logout'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uid': _currentUser!.id}),
+        );
+      } catch (e) {
+        // Ignore logout network errors
+      }
+    }
     _currentUser = null;
     notifyListeners();
   }

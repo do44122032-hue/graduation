@@ -7,6 +7,9 @@ class UserModel {
   final UserRole role;
   final String? profilePicture;
   final String? phoneNumber;
+  final String? department;
+  final String? bio;
+  final bool isActive;
 
   final String? age;
   final String? bloodType;
@@ -24,6 +27,9 @@ class UserModel {
     required this.role,
     this.profilePicture,
     this.phoneNumber,
+    this.department,
+    this.bio,
+    this.isActive = false,
     this.age,
     this.bloodType,
     this.height,
@@ -45,6 +51,9 @@ class UserModel {
       ),
       profilePicture: json['profilePicture'],
       phoneNumber: json['phoneNumber'],
+      department: json['department'],
+      bio: json['bio'],
+      isActive: json['isActive'] ?? false,
       age: json['age'],
       bloodType: json['bloodType'],
       height: json['height'],
@@ -68,6 +77,9 @@ class UserModel {
       'role': role.name,
       'profilePicture': profilePicture,
       'phoneNumber': phoneNumber,
+      'department': department,
+      'bio': bio,
+      'isActive': isActive,
       'age': age,
       'bloodType': bloodType,
       'height': height,

@@ -8,6 +8,8 @@ import '../../constants/app_text_styles.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/dashboard_service.dart';
+import '../../models/user_model.dart';
 import '../../widgets/modern_horizontal_nav_bar.dart';
 import 'doctor_patients.dart';
 import 'doctor_schedule.dart';
@@ -23,6 +25,29 @@ class DoctorDashboardScreen extends StatefulWidget {
 
 class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   String _activeTabId = 'home';
+  List<UserModel> _patients = [];
+  bool _isLoadingPatients = true;
+  final DashboardService _dashboardService = DashboardService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPatients();
+  }
+
+  Future<void> _loadPatients() async {
+    setState(() => _isLoadingPatients = true);
+    try {
+      final patients = await _dashboardService.fetchPatients();
+      setState(() {
+        _patients = patients;
+        _isLoadingPatients = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingPatients = false);
+      print('Error loading patients in dashboard: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +240,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    "5 ${AppStrings.get('navPatients', languageCode)}",
+                    "${_patients.length} ${AppStrings.get('navPatients', languageCode)}",
                     style: AppTextStyles.caption(
                       languageCode: languageCode,
                     ).copyWith(color: Colors.white),
@@ -227,39 +252,37 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           const SizedBox(height: AppSpacing.md),
           SizedBox(
             height: 140,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              children: [
-                _buildPatientCard(
-                  AppStrings.get('patAhmed', languageCode),
-                  true,
-                  languageCode,
-                  () => setState(() => _activeTabId = 'patients'),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                _buildPatientCard(
-                  AppStrings.get('patSara', languageCode),
-                  false,
-                  languageCode,
-                  () => setState(() => _activeTabId = 'patients'),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                _buildPatientCard(
-                  AppStrings.get('patMohamed', languageCode),
-                  false,
-                  languageCode,
-                  () => setState(() => _activeTabId = 'patients'),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                _buildPatientCard(
-                  AppStrings.get('patLaila', languageCode),
-                  false,
-                  languageCode,
-                  () => setState(() => _activeTabId = 'patients'),
-                ),
-              ],
-            ),
+            child: _isLoadingPatients
+                ? const Center(child: CircularProgressIndicator())
+                : _patients.isEmpty
+                    ? Center(
+                        child: Text(
+                          AppStrings.get('noPatients', languageCode),
+                          style: TextStyle(color: AppColors.secondaryText),
+                        ),
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        itemCount: _patients.length,
+                        itemBuilder: (context, index) {
+                          final patient = _patients[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              right: AppSpacing.md,
+                            ),
+                            child: _buildPatientCard(
+                              patient.name,
+                              false,
+                              languageCode,
+                              patient.profilePicture,
+                              () => setState(() => _activeTabId = 'patients'),
+                            ),
+                          );
+                        },
+                      ),
           ),
 
           const SizedBox(height: 24),
@@ -338,7 +361,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               children: [
                 _buildStatListItem(
                   AppStrings.get('statTotalPatients', languageCode),
-                  "590",
+                  _patients.length.toString(),
                   Icons.assignment_outlined,
                   AppColors.doctorPrimary,
                 ),
@@ -372,6 +395,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     String name,
     bool isActive,
     String languageCode,
+    String? profilePicture,
     VoidCallback onTap,
   ) {
     return GestureDetector(
@@ -384,7 +408,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -396,13 +420,17 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             CircleAvatar(
               radius: 24,
               backgroundColor: isActive
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : AppColors.doctorPrimary.withValues(alpha: 0.1),
-              child: Icon(
-                Icons.person_rounded,
-                size: 32,
-                color: isActive ? Colors.white : AppColors.doctorPrimary,
-              ),
+                  ? Colors.white.withOpacity(0.2)
+                  : AppColors.doctorPrimary.withOpacity(0.1),
+              backgroundImage:
+                  profilePicture != null ? NetworkImage(profilePicture) : null,
+              child: profilePicture == null
+                  ? Icon(
+                      Icons.person_rounded,
+                      size: 32,
+                      color: isActive ? Colors.white : AppColors.doctorPrimary,
+                    )
+                  : null,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(

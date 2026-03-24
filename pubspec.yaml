@@ -47,6 +47,7 @@ dependencies:
   # Localization
   intl: any
   fl_chart: ^1.1.1
+  image_picker: ^1.1.2
 
 
 dev_dependencies:

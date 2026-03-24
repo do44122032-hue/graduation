@@ -1,0 +1,38 @@
+Analyzing 3 items...                                            
+
+   info - Parameter 'key' could be a super parameter - lib\screens\medical\dashboard_screen.dart:22:9 - use_super_parameters
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\medical\dashboard_screen.dart:55:33 - unnecessary_null_comparison
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\medical\dashboard_screen.dart:61:72 - unnecessary_non_null_assertion
+   info - Don't invoke 'print' in production code - lib\screens\medical\dashboard_screen.dart:74:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:257:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:260:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:271:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:293:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:338:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:352:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:372:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:385:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:600:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:645:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:797:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:805:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:810:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:849:49 - deprecated_member_use
+warning - The declaration '_buildPlaceholderContent' isn't referenced - lib\screens\medical\dashboard_screen.dart:994:10 - unused_element
+   info - Parameter 'key' could be a super parameter - lib\screens\medical\doctor_schedule_management.dart:8:9 - use_super_parameters
+warning - The value of the field '_formKey' isn't used - lib\screens\medical\doctor_schedule_management.dart:18:9 - unused_field
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\medical\doctor_schedule_management.dart:124:21 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:279:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:285:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:293:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:312:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:312:93 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\doctor_selection.dart:10:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:75:68 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\doctor_selection.dart:112:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:167:64 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:186:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:242:97 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:246:57 - deprecated_member_use
+
+34 issues found. (ran in 1.0s)

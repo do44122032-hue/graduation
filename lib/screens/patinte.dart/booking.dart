@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/dashboard_service.dart';
 
 class Doctor {
   final int id;
@@ -45,6 +47,45 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
   String? selectedDate;
   String? selectedTime;
   bool bookingConfirmed = false;
+  bool isBooking = false;
+  bool _isLoadingDoctors = true;
+  List<Doctor> _doctors = [];
+  final DashboardService _dashboardService = DashboardService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDoctors();
+  }
+
+  Future<void> _loadDoctors() async {
+    setState(() => _isLoadingDoctors = true);
+    try {
+      final userModels = await _dashboardService.fetchDoctors();
+      setState(() {
+        _doctors = userModels.map((u) {
+          // Map UserModel to Doctor class
+          return Doctor(
+            id: int.tryParse(u.id ?? '') ?? 0,
+            name: u.name,
+            specialty: 'General Practitioner', // Default specialty
+            credentials: 'MD',
+            rating: 4.8,
+            reviews: 124,
+            experience: '10 years',
+            location: 'Medical Plaza',
+            nextAvailable: 'Tomorrow, 9:00 AM',
+            specialtyId: 'all',
+            imageUrl: u.profilePicture ?? 'assets/images/doctors/dr_michael_chen.png',
+          );
+        }).toList();
+        _isLoadingDoctors = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingDoctors = false);
+      print('Error loading doctors: $e');
+    }
+  }
 
   List<Map<String, dynamic>> getSpecialties(String languageCode) => [
     {
@@ -88,86 +129,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
     {'date': '2024-12-25', 'label': 'Wed, Dec 25'},
   ];
 
-  final List<Doctor> doctors = [
-    Doctor(
-      id: 1,
-      name: 'Dr. Michael Chen',
-      specialty: 'Cardiology',
-      credentials: 'MD, FACC',
-      rating: 4.9,
-      reviews: 342,
-      experience: '15 years',
-      location: 'Medical Plaza - Building A',
-      nextAvailable: 'Today, 2:30 PM',
-      specialtyId: 'cardiology',
-      imageUrl: 'assets/images/doctors/dr_michael_chen.png',
-    ),
-    Doctor(
-      id: 2,
-      name: 'Dr. Sarah Williams',
-      specialty: 'Neurology',
-      credentials: 'MD, PhD',
-      rating: 4.8,
-      reviews: 287,
-      experience: '12 years',
-      location: 'Medical Plaza - Building B',
-      nextAvailable: 'Tomorrow, 9:00 AM',
-      specialtyId: 'neurology',
-      imageUrl: 'assets/images/doctors/dr_sarah_williams.png',
-    ),
-    Doctor(
-      id: 3,
-      name: 'Dr. James Martinez',
-      specialty: 'Orthopedics',
-      credentials: 'MD, FAAOS',
-      rating: 4.9,
-      reviews: 421,
-      experience: '18 years',
-      location: 'Medical Plaza - Building A',
-      nextAvailable: 'Today, 4:00 PM',
-      specialtyId: 'orthopedics',
-      imageUrl: 'assets/images/doctors/dr_james_martinez.png',
-    ),
-    Doctor(
-      id: 4,
-      name: 'Dr. Emily Rodriguez',
-      specialty: 'Pediatrics',
-      credentials: 'MD, FAAP',
-      rating: 5.0,
-      reviews: 512,
-      experience: '10 years',
-      location: 'Medical Plaza - Building C',
-      nextAvailable: 'Dec 24, 10:00 AM',
-      specialtyId: 'pediatrics',
-      imageUrl: 'assets/images/doctors/dr_emily_rodriguez.png',
-    ),
-    Doctor(
-      id: 5,
-      name: 'Dr. David Kim',
-      specialty: 'Ophthalmology',
-      credentials: 'MD, FACS',
-      rating: 4.7,
-      reviews: 198,
-      experience: '8 years',
-      location: 'Medical Plaza - Building B',
-      nextAvailable: 'Dec 24, 11:30 AM',
-      specialtyId: 'ophthalmology',
-      imageUrl: 'assets/images/doctors/dr_david_kim.png',
-    ),
-    Doctor(
-      id: 6,
-      name: 'Dr. Lisa Thompson',
-      specialty: 'Cardiology',
-      credentials: 'MD, FACC',
-      rating: 4.8,
-      reviews: 356,
-      experience: '14 years',
-      location: 'Medical Plaza - Building A',
-      nextAvailable: 'Tomorrow, 1:00 PM',
-      specialtyId: 'cardiology',
-      imageUrl: 'assets/images/doctors/dr_sarah_williams.png',
-    ),
-  ];
 
   final List<String> availableTimeSlots = [
     '09:00 AM',
@@ -185,7 +146,8 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
   ];
 
   List<Doctor> get filteredDoctors {
-    return doctors.where((doctor) {
+    if (_isLoadingDoctors) return [];
+    return _doctors.where((doctor) {
       final matchesSearch =
           doctor.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
           doctor.specialty.toLowerCase().contains(searchQuery.toLowerCase());
@@ -193,7 +155,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
           selectedSpecialty == 'All' ||
           selectedSpecialty == AppStrings.get('specAll', 'en') ||
           doctor.specialtyId == selectedSpecialty.toLowerCase() ||
-          doctors.any(
+          _doctors.any(
             (d) =>
                 d.id == doctor.id &&
                 d.specialtyId == selectedSpecialty.toLowerCase(),
@@ -207,6 +169,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       selectedDate = null;
       selectedTime = null;
       bookingConfirmed = false;
+      isBooking = false;
     });
 
     showModalBottomSheet(
@@ -315,18 +278,31 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        doctor.imageUrl,
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.medical_services,
-                              size: 24,
-                              color: Color(0xFF282828),
+                      child: doctor.imageUrl.startsWith('http')
+                          ? Image.network(
+                              doctor.imageUrl,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                Icons.medical_services,
+                                size: 24,
+                                color: Color(0xFF282828),
+                              ),
+                            )
+                          : Image.asset(
+                              doctor.imageUrl,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                Icons.medical_services,
+                                size: 24,
+                                color: Color(0xFF282828),
+                              ),
                             ),
-                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -502,14 +478,54 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                 const SizedBox(height: 24),
                 // Confirm Button
                 GestureDetector(
-                  onTap: (selectedDate != null && selectedTime != null)
-                      ? () {
+                  onTap: (selectedDate != null && selectedTime != null && !isBooking)
+                      ? () async {
                           setModalState(() {
-                            bookingConfirmed = true;
+                            isBooking = true;
                           });
                           setState(() {
-                            bookingConfirmed = true;
+                            isBooking = true;
                           });
+                          
+                          final authService = Provider.of<AuthService>(context, listen: false);
+                          final user = authService.currentUser;
+                          
+                          if (user == null || user.id == null) {
+                            setModalState(() => isBooking = false);
+                            setState(() => isBooking = false);
+                            return;
+                          }
+
+                          bool success = await DashboardService.bookAppointment(
+                            uid: user.id!,
+                            doctorName: doctor.name,
+                            specialty: doctor.specialty,
+                            date: selectedDate!,
+                            time: selectedTime!,
+                            type: 'In-Person Visit',
+                          );
+
+                          if (success) {
+                            setModalState(() {
+                              bookingConfirmed = true;
+                              isBooking = false;
+                            });
+                            setState(() {
+                              bookingConfirmed = true;
+                              isBooking = false;
+                            });
+                          } else {
+                            setModalState(() => isBooking = false);
+                            setState(() => isBooking = false);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to book appointment'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
                         }
                       : null,
                   child: Container(
@@ -535,25 +551,36 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                             ]
                           : null,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          size: 20,
-                          color: Color(0xFF282828),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          AppStrings.get('confirmAppt', languageCode),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF282828),
+                    child: isBooking
+                      ? const Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF282828),
+                              strokeWidth: 2,
+                            ),
                           ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              size: 20,
+                              color: Color(0xFF282828),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              AppStrings.get('confirmAppt', languageCode),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF282828),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
                   ),
                 ),
               ],
@@ -984,7 +1011,9 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
           ),
           // Doctors List
           Expanded(
-            child: ListView.builder(
+            child: _isLoadingDoctors
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               itemCount: filteredDoctors.length,
               itemBuilder: (context, index) {
@@ -1035,18 +1064,33 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: Image.asset(
-                                  doctor.imageUrl,
-                                  width: 64,
-                                  height: 64,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(
-                                        Icons.medical_services,
-                                        size: 32,
-                                        color: Color(0xFF282828),
+                                child: doctor.imageUrl.startsWith('http')
+                                    ? Image.network(
+                                        doctor.imageUrl,
+                                        width: 64,
+                                        height: 64,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error,
+                                                stackTrace) =>
+                                            const Icon(
+                                              Icons.medical_services,
+                                              size: 32,
+                                              color: Color(0xFF282828),
+                                            ),
+                                      )
+                                    : Image.asset(
+                                        doctor.imageUrl,
+                                        width: 64,
+                                        height: 64,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error,
+                                                stackTrace) =>
+                                            const Icon(
+                                              Icons.medical_services,
+                                              size: 32,
+                                              color: Color(0xFF282828),
+                                            ),
                                       ),
-                                ),
                               ),
                             ),
                             const SizedBox(width: 12),

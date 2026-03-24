@@ -2,46 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/chat_service.dart';
+import '../../models/chat_message.dart';
 import 'chat_screen.dart';
 
-class MessagesPage extends StatelessWidget {
+class MessagesPage extends StatefulWidget {
   const MessagesPage({Key? key}) : super(key: key);
+
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
+
+class _MessagesPageState extends State<MessagesPage> {
+  bool _isLoading = true;
+  List<ChatConversation> _conversations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConversations();
+  }
+
+  Future<void> _loadConversations() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null) return;
+
+    try {
+      final convs = await ChatService.fetchConversations(user.id);
+      if (mounted) {
+        setState(() {
+          _conversations = convs;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading conversations: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final languageService = Provider.of<LanguageService>(context);
     final languageCode = languageService.currentLanguage;
-
-    // Mock Data
-    final conversations = [
-      {
-        'name': AppStrings.get('doctorName', languageCode),
-        'specialty': AppStrings.get('doctorTitle', languageCode),
-        'lastMessage': AppStrings.get('msgInitialLast', languageCode),
-        'time': '10:30 AM',
-        'unread': 2,
-        'image':
-            'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=150',
-      },
-      {
-        'name': 'Dr. Emily Rodriguez',
-        'specialty': AppStrings.get('specDermatology', languageCode),
-        'lastMessage': AppStrings.get('msgPhotoRequest', languageCode),
-        'time': AppStrings.get('timeAgo_yesterday', languageCode),
-        'unread': 0,
-        'image':
-            'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=150',
-      },
-      {
-        'name': 'Dr. Sarah Johnson',
-        'specialty': AppStrings.get('specGeneral', languageCode),
-        'lastMessage': AppStrings.get('msgApptConfirmed', languageCode),
-        'time': 'Mon',
-        'unread': 0,
-        'image':
-            'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=150',
-      },
-    ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
@@ -66,22 +71,61 @@ class MessagesPage extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: conversations.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final chat = conversations[index];
-          return _buildConversationCard(context, chat as Map<String, dynamic>);
-        },
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFCBD77E)))
+          : _conversations.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[300]),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppStrings.get('noMessages', languageCode).isEmpty 
+                            ? 'No messages yet' 
+                            : AppStrings.get('noMessages', languageCode),
+                        style: TextStyle(color: Colors.grey[500]),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: _loadConversations,
+                  color: const Color(0xFFCBD77E),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _conversations.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final conv = _conversations[index];
+                      return _buildConversationCard(context, conv, languageCode);
+                    },
+                  ),
+                ),
     );
   }
 
   Widget _buildConversationCard(
     BuildContext context,
-    Map<String, dynamic> chat,
+    ChatConversation conv,
+    String languageCode,
   ) {
+    final partner = conv.partner;
+    final lastMsg = conv.lastMessage;
+    
+    String timeStr = '';
+    if (lastMsg != null) {
+      final now = DateTime.now();
+      final diff = now.difference(lastMsg.timestamp);
+      if (diff.inDays == 0) {
+        timeStr = "${lastMsg.timestamp.hour}:${lastMsg.timestamp.minute.toString().padLeft(2, '0')}";
+      } else if (diff.inDays == 1) {
+        timeStr = AppStrings.get('timeAgo_yesterday', languageCode);
+      } else {
+        timeStr = "${lastMsg.timestamp.day}/${lastMsg.timestamp.month}";
+      }
+    }
+
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
@@ -90,10 +134,13 @@ class MessagesPage extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  ChatScreen(doctorName: chat['name'], imageUrl: chat['image']),
+              builder: (context) => ChatScreen(
+                doctorId: partner['id'].toString(),
+                doctorName: partner['name'] ?? 'Doctor',
+                imageUrl: partner['profilePicture'] ?? '',
+              ),
             ),
-          );
+          ).then((_) => _loadConversations());
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -103,10 +150,16 @@ class MessagesPage extends StatelessWidget {
               Stack(
                 children: [
                   CircleAvatar(
-                    backgroundImage: NetworkImage(chat['image']),
+                    backgroundImage: partner['profilePicture'] != null 
+                        ? NetworkImage(partner['profilePicture']) 
+                        : null,
                     radius: 28,
+                    backgroundColor: const Color(0xFFCBD77E).withOpacity(0.2),
+                    child: partner['profilePicture'] == null 
+                        ? const Icon(Icons.person, color: Color(0xFFCBD77E)) 
+                        : null,
                   ),
-                  if ((chat['unread'] as int) > 0)
+                  if (conv.unreadCount > 0)
                     Positioned(
                       right: 0,
                       bottom: 0,
@@ -131,7 +184,7 @@ class MessagesPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          chat['name'],
+                          partner['name'] ?? 'Doctor',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -139,13 +192,13 @@ class MessagesPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          chat['time'],
+                          timeStr,
                           style: TextStyle(
                             fontSize: 12,
-                            color: (chat['unread'] as int) > 0
+                            color: conv.unreadCount > 0
                                 ? const Color(0xFFCBD77E)
                                 : const Color(0xFF9E9E9E),
-                            fontWeight: (chat['unread'] as int) > 0
+                            fontWeight: conv.unreadCount > 0
                                 ? FontWeight.bold
                                 : FontWeight.normal,
                           ),
@@ -154,7 +207,7 @@ class MessagesPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      chat['specialty'],
+                      partner['department'] ?? '',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFFCBD77E),
@@ -166,21 +219,21 @@ class MessagesPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            chat['lastMessage'],
+                            lastMsg?.content ?? '',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 14,
-                              color: (chat['unread'] as int) > 0
+                              color: conv.unreadCount > 0
                                   ? const Color(0xFF282828)
                                   : const Color(0xFF757575),
-                              fontWeight: (chat['unread'] as int) > 0
+                              fontWeight: conv.unreadCount > 0
                                   ? FontWeight.w600
                                   : FontWeight.normal,
                             ),
                           ),
                         ),
-                        if ((chat['unread'] as int) > 0)
+                        if (conv.unreadCount > 0)
                           Container(
                             margin: const EdgeInsetsDirectional.only(start: 8),
                             padding: const EdgeInsets.all(6),
@@ -189,7 +242,7 @@ class MessagesPage extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: Text(
-                              (chat['unread'] as int).toString(),
+                              conv.unreadCount.toString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,

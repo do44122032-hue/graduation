@@ -5,7 +5,8 @@ import '../../constants/app_strings.dart';
 import '../../enums/user_role.dart';
 // import 'role_selection.dart'; // Removed or commented out
 import '../../services/auth_service.dart';
-import '../medical/dashboard_screen.dart';
+
+import '../doctor/doctor_dashboard.dart';
 import '../student/student_dashboard.dart';
 import '../patinte.dart/patient_data_entry.dart';
 
@@ -27,6 +28,8 @@ class _SignUpScreenState extends State<SignUpScreen>
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _departmentController = TextEditingController(); // For Doctor
+  final _bioController = TextEditingController(); // For Doctor
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -70,6 +73,8 @@ class _SignUpScreenState extends State<SignUpScreen>
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _departmentController.dispose();
+    _bioController.dispose();
     super.dispose();
   }
 
@@ -254,6 +259,25 @@ class _SignUpScreenState extends State<SignUpScreen>
                                 validator: (v) =>
                                     v!.isEmpty ? 'Required' : null,
                               ),
+
+                              if (widget.userRole == UserRole.doctor) ...[
+                                _buildLabel(AppStrings.get('departmentLabel', lang).isEmpty ? 'Department' : AppStrings.get('departmentLabel', lang)),
+                                _buildTextField(
+                                  controller: _departmentController,
+                                  hintText: AppStrings.get('departmentHint', lang).isEmpty ? 'E.g. Cardiology' : AppStrings.get('departmentHint', lang),
+                                  icon: Icons.local_hospital_outlined,
+                                  roleColor: roleColor,
+                                  validator: (v) =>
+                                      v!.isEmpty ? 'Required' : null,
+                                ),
+                                _buildLabel(AppStrings.get('bioLabel', lang).isEmpty ? 'Bio (Optional)' : AppStrings.get('bioLabel', lang)),
+                                _buildTextField(
+                                  controller: _bioController,
+                                  hintText: AppStrings.get('bioHint', lang).isEmpty ? 'Short description about you...' : AppStrings.get('bioHint', lang),
+                                  icon: Icons.info_outline,
+                                  roleColor: roleColor,
+                                ),
+                              ],
 
                               _buildLabel(
                                 AppStrings.get('passwordLabel', lang),
@@ -482,6 +506,8 @@ class _SignUpScreenState extends State<SignUpScreen>
         password: _passwordController.text,
         phone: _phoneController.text,
         role: widget.userRole,
+        department: widget.userRole == UserRole.doctor ? _departmentController.text : null,
+        bio: widget.userRole == UserRole.doctor ? _bioController.text : null,
       );
 
       if (result.success && mounted) {
@@ -501,11 +527,11 @@ class _SignUpScreenState extends State<SignUpScreen>
             ),
           );
         } else {
-          // Navigate to doctor/medical dashboard
+          // Navigate to doctor dashboard
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const ModernDashboardScreen(),
+              builder: (context) => const DoctorDashboardScreen(),
             ),
           );
         }

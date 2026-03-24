@@ -122,6 +122,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
         children: [
           _buildAppointmentList(_appointments, 'upcoming', languageCode),
           _buildAppointmentList(_appointments, 'completed', languageCode),
+          _buildAppointmentList(_appointments, 'cancelled', languageCode),
         ],
       ),
     );
