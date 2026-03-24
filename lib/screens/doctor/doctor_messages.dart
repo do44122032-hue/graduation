@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
+import '../../constants/app_colors.dart';
 import '../../services/language_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/chat_service.dart';
 import '../../models/chat_message.dart';
-import 'chat_screen.dart';
+import '../patinte.dart/chat_screen.dart';
 
-class MessagesPage extends StatefulWidget {
-  const MessagesPage({Key? key}) : super(key: key);
+class DoctorMessagesPage extends StatefulWidget {
+  const DoctorMessagesPage({Key? key}) : super(key: key);
 
   @override
-  State<MessagesPage> createState() => _MessagesPageState();
+  State<DoctorMessagesPage> createState() => _DoctorMessagesPageState();
 }
 
-class _MessagesPageState extends State<MessagesPage> {
+class _DoctorMessagesPageState extends State<DoctorMessagesPage> {
   bool _isLoading = true;
   List<ChatConversation> _conversations = [];
 
@@ -38,7 +39,7 @@ class _MessagesPageState extends State<MessagesPage> {
         });
       }
     } catch (e) {
-      print('Error loading conversations: $e');
+      debugPrint('Error loading conversations for doctor: $e');
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -49,30 +50,21 @@ class _MessagesPageState extends State<MessagesPage> {
     final languageCode = languageService.currentLanguage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: AppColors.secondaryBackground,
       appBar: AppBar(
         title: Text(
           AppStrings.get('navMessages', languageCode),
           style: const TextStyle(
-            color: Color(0xFF282828),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.doctorPrimary,
         elevation: 0,
         centerTitle: false,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
-            ),
-          ),
-        ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFCBD77E)))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.doctorPrimary))
           : _conversations.isEmpty
               ? Center(
                   child: Column(
@@ -91,7 +83,7 @@ class _MessagesPageState extends State<MessagesPage> {
                 )
               : RefreshIndicator(
                   onRefresh: _loadConversations,
-                  color: const Color(0xFFCBD77E),
+                  color: AppColors.doctorPrimary,
                   child: ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: _conversations.length,
@@ -129,6 +121,7 @@ class _MessagesPageState extends State<MessagesPage> {
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
+      elevation: 1,
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -136,7 +129,7 @@ class _MessagesPageState extends State<MessagesPage> {
             MaterialPageRoute(
               builder: (context) => ChatScreen(
                 receiverId: partner['id'].toString(),
-                receiverName: partner['name'] ?? 'User',
+                receiverName: partner['name'] ?? 'Patient',
                 imageUrl: partner['profilePicture'] ?? '',
               ),
             ),
@@ -154,9 +147,9 @@ class _MessagesPageState extends State<MessagesPage> {
                         ? NetworkImage(partner['profilePicture']) 
                         : null,
                     radius: 28,
-                    backgroundColor: const Color(0xFFCBD77E).withOpacity(0.2),
+                    backgroundColor: AppColors.doctorPrimary.withOpacity(0.1),
                     child: partner['profilePicture'] == null 
-                        ? const Icon(Icons.person, color: Color(0xFFCBD77E)) 
+                        ? const Icon(Icons.person, color: AppColors.doctorPrimary) 
                         : null,
                   ),
                   if (conv.unreadCount > 0)
@@ -167,7 +160,7 @@ class _MessagesPageState extends State<MessagesPage> {
                         width: 14,
                         height: 14,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFCBD77E),
+                          color: AppColors.doctorPrimary,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -184,11 +177,11 @@ class _MessagesPageState extends State<MessagesPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          partner['name'] ?? 'Doctor',
+                          partner['name'] ?? 'Patient',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF282828),
+                            color: AppColors.primaryText,
                           ),
                         ),
                         Text(
@@ -196,23 +189,14 @@ class _MessagesPageState extends State<MessagesPage> {
                           style: TextStyle(
                             fontSize: 12,
                             color: conv.unreadCount > 0
-                                ? const Color(0xFFCBD77E)
-                                : const Color(0xFF9E9E9E),
+                                ? AppColors.doctorPrimary
+                                : AppColors.secondaryText,
                             fontWeight: conv.unreadCount > 0
                                 ? FontWeight.bold
                                 : FontWeight.normal,
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      partner['department'] ?? '',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFCBD77E),
-                        fontWeight: FontWeight.w500,
-                      ),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -225,8 +209,8 @@ class _MessagesPageState extends State<MessagesPage> {
                             style: TextStyle(
                               fontSize: 14,
                               color: conv.unreadCount > 0
-                                  ? const Color(0xFF282828)
-                                  : const Color(0xFF757575),
+                                  ? AppColors.primaryText
+                                  : AppColors.secondaryText,
                               fontWeight: conv.unreadCount > 0
                                   ? FontWeight.w600
                                   : FontWeight.normal,
@@ -238,7 +222,7 @@ class _MessagesPageState extends State<MessagesPage> {
                             margin: const EdgeInsetsDirectional.only(start: 8),
                             padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
-                              color: Color(0xFFCBD77E),
+                              color: AppColors.doctorPrimary,
                               shape: BoxShape.circle,
                             ),
                             child: Text(

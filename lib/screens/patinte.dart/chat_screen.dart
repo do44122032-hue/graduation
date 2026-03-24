@@ -2,20 +2,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
+import '../../constants/app_colors.dart';
 import '../../services/language_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/chat_service.dart';
 import '../../models/chat_message.dart';
+import '../../enums/user_role.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String doctorId;
-  final String doctorName;
+  final String receiverId;
+  final String receiverName;
   final String imageUrl;
 
   const ChatScreen({
     Key? key,
-    required this.doctorId,
-    required this.doctorName,
+    required this.receiverId,
+    required this.receiverName,
     required this.imageUrl,
   }) : super(key: key);
 
@@ -57,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (user == null) return;
 
     try {
-      final history = await ChatService.fetchChatHistory(user.id, widget.doctorId);
+      final history = await ChatService.fetchChatHistory(user.id, widget.receiverId);
       if (mounted) {
         setState(() {
           _messages = history;
@@ -101,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     final success = await ChatService.sendMessage(
       senderId: user.id,
-      receiverId: widget.doctorId,
+      receiverId: widget.receiverId,
       content: content,
       type: type,
       data: data,
@@ -237,17 +239,17 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(widget.imageUrl),
+              backgroundImage: widget.imageUrl.isNotEmpty ? NetworkImage(widget.imageUrl) : null,
               radius: 20,
-              backgroundColor: const Color(0xFFCBD77E).withOpacity(0.2),
-              child: widget.imageUrl.isEmpty ? const Icon(Icons.person, color: Color(0xFFCBD77E)) : null,
+              backgroundColor: (currentUser?.role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E)).withOpacity(0.2),
+              child: widget.imageUrl.isEmpty ? Icon(Icons.person, color: currentUser?.role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E)) : null,
             ),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.doctorName,
+                  widget.receiverName,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -256,9 +258,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Text(
                   AppStrings.get('labelOnline', languageCode),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFFCBD77E),
+                    color: currentUser?.role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E),
                   ),
                 ),
               ],
@@ -273,7 +275,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFFCBD77E)))
+                ? Center(child: CircularProgressIndicator(color: currentUser?.role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E)))
                 : _messages.isEmpty
                     ? Center(
                         child: Column(
@@ -282,7 +284,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[300]),
                             const SizedBox(height: 16),
                             Text(
-                              'Start conversation with ${widget.doctorName}',
+                              'Start conversation with ${widget.receiverName}',
                               style: TextStyle(color: Colors.grey[500]),
                             ),
                           ],
@@ -295,18 +297,20 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemBuilder: (context, index) {
                           final message = _messages[index];
                           final isMe = message.isSentByMe(currentUser?.id ?? '');
-                          return _buildMessageBubble(message, isMe, languageCode);
+                          return _buildMessageBubble(message, isMe, languageCode, currentUser?.role);
                         },
                       ),
           ),
-          _buildMessageInput(languageCode),
+          _buildMessageInput(languageCode, currentUser?.role),
         ],
       ),
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message, bool isMe, String languageCode) {
+  Widget _buildMessageBubble(ChatMessage message, bool isMe, String languageCode, UserRole? role) {
     Widget content;
+    final primaryColor = role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E);
+
     switch (message.type) {
       case 'lab_result':
         content = _buildLabResultContent(message.data, languageCode);
@@ -339,7 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: isMe ? const Color(0xFFCBD77E) : Colors.white,
+          color: isMe ? primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(16).copyWith(
             bottomRight: isMe ? Radius.zero : null,
             bottomLeft: !isMe ? Radius.zero : null,
@@ -524,7 +528,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildMessageInput(String languageCode) {
+  Widget _buildMessageInput(String languageCode, UserRole? role) {
+    final primaryColor = role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E);
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
       decoration: BoxDecoration(
@@ -540,9 +545,9 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.add_circle_outline,
-              color: Color(0xFFCBD77E),
+              color: primaryColor,
             ),
             onPressed: () => _showAttachmentOptions(languageCode),
           ),
@@ -566,8 +571,8 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(width: 8),
           Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFCBD77E),
+            decoration: BoxDecoration(
+              color: primaryColor,
               shape: BoxShape.circle,
             ),
             child: IconButton(

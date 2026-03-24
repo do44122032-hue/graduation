@@ -201,8 +201,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ChatScreen(
-                              doctorId: widget.doctor.id,
-                              doctorName: widget.doctor.name,
+                              receiverId: widget.doctor.id,
+                              receiverName: widget.doctor.name,
                               imageUrl: widget.doctor.profilePicture ?? '',
                             ),
                           ),

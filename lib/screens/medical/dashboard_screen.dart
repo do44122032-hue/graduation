@@ -35,6 +35,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
   List<Map<String, dynamic>> _healthAlerts = [];
   List<Map<String, dynamic>> _activeMedications = [];
   List<Map<String, dynamic>> _recentVitals = [];
+  List<Map<String, dynamic>> _labResults = [];
 
   @override
   void initState() {
@@ -66,6 +67,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           _healthAlerts = List<Map<String, dynamic>>.from(data['healthAlerts'] ?? []);
           _activeMedications = List<Map<String, dynamic>>.from(data['activeMedications'] ?? []);
           _recentVitals = List<Map<String, dynamic>>.from(data['recentVitals'] ?? []);
+          _labResults = List<Map<String, dynamic>>.from(data['labResults'] ?? []);
           _isLoading = false;
         });
       } else {
@@ -206,13 +208,13 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                     AppStrings.get(
                       'labPendingReview',
                       languageCode,
-                    ).replaceAll('{count}', '0'),
+                    ).replaceAll('{count}', _labResults.length.toString()),
                     Icons.health_and_safety,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LabResultsPage(),
+                          builder: (context) => LabResultsPage(initialResults: _labResults),
                         ),
                       );
                     },

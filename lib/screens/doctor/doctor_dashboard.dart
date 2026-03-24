@@ -15,6 +15,7 @@ import 'doctor_patients.dart';
 import 'doctor_schedule.dart';
 import 'doctor_settings.dart';
 import 'doctor_profile.dart';
+import 'doctor_messages.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -90,6 +91,11 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     label: AppStrings.get('navSchedule', languageCode),
                   ),
                   ModernNavItem(
+                    id: 'messages',
+                    icon: Icons.message_rounded,
+                    label: AppStrings.get('navMessages', languageCode),
+                  ),
+                  ModernNavItem(
                     id: 'settings',
                     icon: Icons.settings_rounded,
                     label: AppStrings.get('navSettings', languageCode),
@@ -116,6 +122,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
         return const DoctorPatientsPage();
       case 'schedule':
         return const DoctorSchedulePage();
+      case 'messages':
+        return const DoctorMessagesPage();
       case 'settings':
         return const DoctorSettingsPage();
       default:

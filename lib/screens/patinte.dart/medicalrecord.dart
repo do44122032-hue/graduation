@@ -7,6 +7,7 @@ import '../../services/language_service.dart';
 import '../../services/dashboard_service.dart';
 import '../../services/auth_service.dart';
 import 'patient_data_entry.dart';
+import 'labresulit.dart';
 
 // Data Models
 class ChronicCondition {
@@ -744,6 +745,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     final tabs = [
       {'id': 'vitals', 'label': AppStrings.get('tabVitals', languageCode)},
       {'id': 'current-meds', 'label': AppStrings.get('tabMedications', languageCode)},
+      {'id': 'lab-results', 'label': AppStrings.get('labResultsTitle', languageCode)},
     ];
 
     return Container(
@@ -810,6 +812,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         return _buildMedicationsTab(languageCode);
       case 'vitals':
         return _buildVitalsTab(languageCode);
+      case 'lab-results':
+        return const LabResultsPage(isTab: true);
       default:
         return const SizedBox();
     }

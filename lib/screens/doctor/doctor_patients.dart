@@ -8,6 +8,7 @@ import '../../constants/app_strings.dart';
 import '../../services/dashboard_service.dart';
 import '../../models/user_model.dart';
 import 'doctor_patient_details.dart';
+import '../patinte.dart/chat_screen.dart';
 
 class DoctorPatientsPage extends StatefulWidget {
   const DoctorPatientsPage({super.key});
@@ -269,7 +270,18 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
                           Icons.message_outlined,
                           color: AppColors.doctorPrimary,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                receiverId: patient.id,
+                                receiverName: patient.name,
+                                imageUrl: patient.profilePicture ?? '',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const Icon(
                         Icons.arrow_forward_ios,

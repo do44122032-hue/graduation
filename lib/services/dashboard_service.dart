@@ -108,6 +108,25 @@ class DashboardService {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> fetchLabResults(String uid) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/lab/$uid'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return List<Map<String, dynamic>>.from(data);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching lab results: $e');
+      return [];
+    }
+  }
+
   // Method to book an appointment
   static Future<bool> bookAppointment({
     required String uid,

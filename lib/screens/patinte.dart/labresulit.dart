@@ -3,9 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
+import '../../services/dashboard_service.dart';
+import '../../services/auth_service.dart';
 
 class LabResultsPage extends StatefulWidget {
-  const LabResultsPage({super.key});
+  final bool isTab;
+  final List<Map<String, dynamic>>? initialResults;
+  const LabResultsPage({super.key, this.isTab = false, this.initialResults});
 
   @override
   State<LabResultsPage> createState() => _LabResultsPageState();
@@ -26,23 +30,34 @@ class _LabResultsPageState extends State<LabResultsPage> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    if (widget.initialResults != null) {
+      _labResults = widget.initialResults!;
+      _isLoading = false;
+    } else {
+      _fetchData();
+    }
   }
 
   Future<void> _fetchData() async {
-    // Simulating API call
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      setState(() {
-        _labResults = [
-          {'date': '2024-12-01', 'glucose': 95.0, 'image': 'https://images.unsplash.com/photo-1620933967796-53cc2b175b6c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwbGFiJTIwcmVzdWx0cyUyMGRvY3VtZW50fGVufDF8fHx8MTc2NjQ5NTcwMnww&ixlib=rb-4.1.0&q=80&w=1080'},
-          {'date': '2024-12-05', 'glucose': 105.0, 'image': 'https://images.unsplash.com/photo-1704787266051-744fbe10b5ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYWJvcmF0b3J5JTIwdGVzdCUyMHJlc3VsdHMlMjBwYXBlcnxlbnwxfHx8fDE3NjY0OTU3MDN8MA&ixlib=rb-4.1.0&q=80&w=1080'},
-          {'date': '2024-12-10', 'glucose': 98.0, 'image': 'https://images.unsplash.com/photo-1758691462814-485c3672e447?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwcmVwb3J0JTIwZG9jdW1lbnR8ZW58MXx8fHwxNzY2NDk1NzAzfDA&ixlib=rb-4.1.0&q=80&w=1080'},
-          {'date': '2024-12-15', 'glucose': 110.0, 'image': 'https://images.unsplash.com/photo-1620933967796-53cc2b175b6c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwbGFiJTIwcmVzdWx0cyUyMGRvY3VtZW50fGVufDF8fHx8MTc2NjQ5NTcwMnww&ixlib=rb-4.1.0&q=80&w=1080'},
-          {'date': '2024-12-20', 'glucose': 92.0, 'image': 'https://images.unsplash.com/photo-1704787266051-744fbe10b5ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYWJvcmF0b3J5JTIwdGVzdCUyMHJlc3VsdHMlMjBwYXBlcnxlbnwxfHx8fDE3NjY0OTU3MDN8MA&ixlib=rb-4.1.0&q=80&w=1080'},
-        ];
-        _isLoading = false;
-      });
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null || user.id == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    if (mounted) setState(() => _isLoading = true);
+    try {
+      final results = await DashboardService.fetchLabResults(user.id);
+      if (mounted) {
+        setState(() {
+          _labResults = results;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching lab results: $e');
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -51,24 +66,28 @@ class _LabResultsPageState extends State<LabResultsPage> {
     final languageService = Provider.of<LanguageService>(context);
     final languageCode = languageService.currentLanguage;
 
-    return Scaffold(
-      backgroundColor: colorSecondaryBg,
-      body: _isLoading
+    return widget.isTab 
+      ? _isLoading 
           ? const Center(child: CircularProgressIndicator(color: colorAccentOlive))
-          : Column(
-              children: [
-                _buildHeader(languageCode),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                      child: _buildLabResultsContent(languageCode),
+          : SingleChildScrollView(child: _buildLabResultsContent(languageCode))
+      : Scaffold(
+          backgroundColor: colorSecondaryBg,
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: colorAccentOlive))
+              : Column(
+                  children: [
+                    _buildHeader(languageCode),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                          child: _buildLabResultsContent(languageCode),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-    );
+        );
   }
 
   Widget _buildHeader(String languageCode) {
@@ -122,7 +141,23 @@ class _LabResultsPageState extends State<LabResultsPage> {
                 color: colorCharcoal,
               ),
             ),
-            const SizedBox(width: 40),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.refresh,
+                  size: 20,
+                  color: colorCharcoal,
+                ),
+                onPressed: _fetchData,
+                padding: EdgeInsets.zero,
+              ),
+            ),
           ],
         ),
       ),
@@ -131,7 +166,9 @@ class _LabResultsPageState extends State<LabResultsPage> {
 
   Widget _buildLabResultsContent(String languageCode) {
     if (_labResults.isEmpty) {
-      return const Center(child: Text("No lab results available."));
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final userId = authService.currentUser?.id ?? 'Unknown';
+      return Center(child: Text("No lab results available for ID: $userId"));
     }
 
     return Column(
@@ -246,7 +283,13 @@ class _LabResultsPageState extends State<LabResultsPage> {
               child: ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(result['image'] ?? '', width: 50, height: 50, fit: BoxFit.cover, 
+                  child: Image.network(
+                    result['image'] != null && result['image'].toString().startsWith('/')
+                        ? '${DashboardService.baseUrl}${result['image']}'
+                        : result['image'] ?? '',
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover, 
                     errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: colorAccentBeige),
                   ),
                 ),
@@ -276,7 +319,11 @@ class _LabResultsPageState extends State<LabResultsPage> {
                         children: [
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                            child: Image.network(result['image'] ?? ''),
+                            child: Image.network(
+                              result['image'] != null && result['image'].toString().startsWith('/')
+                                  ? '${DashboardService.baseUrl}${result['image']}'
+                                  : result['image'] ?? '',
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(16.0),
