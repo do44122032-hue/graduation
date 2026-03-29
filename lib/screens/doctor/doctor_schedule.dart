@@ -5,6 +5,9 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
 import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
+import '../../services/auth_service.dart';
+import '../../services/dashboard_service.dart';
+import '../medical/doctor_schedule_management.dart';
 
 class DoctorSchedulePage extends StatefulWidget {
   const DoctorSchedulePage({super.key});
@@ -16,77 +19,74 @@ class DoctorSchedulePage extends StatefulWidget {
 class _DoctorSchedulePageState extends State<DoctorSchedulePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  final List<Map<String, dynamic>> _appointments = [
-    {
-      'id': '1',
-      'time': '09:00',
-      'patient': 'patYoussef',
-      'typeKey': 'typeVideo',
-      'status': 'upcoming',
-      'duration': '30',
-      'period': 'timePeriod_am',
-    },
-    {
-      'id': '2',
-      'time': '10:30',
-      'patient': 'patAhmed',
-      'typeKey': 'typeInPerson',
-      'status': 'upcoming',
-      'duration': '45',
-      'period': 'timePeriod_am',
-    },
-    {
-      'id': '3',
-      'time': '11:15',
-      'patient': 'patSara',
-      'typeKey': 'typeFollowUp',
-      'status': 'upcoming',
-      'duration': '15',
-      'period': 'timePeriod_am',
-    },
-    {
-      'id': '4',
-      'time': '08:00',
-      'patient': 'patMona',
-      'typeKey': 'typeEmergency',
-      'status': 'completed',
-      'duration': '60',
-      'period': 'timePeriod_am',
-    },
-  ];
+  List<Map<String, dynamic>> _appointments = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadAppointments();
   }
 
-  void _updateAppointmentStatus(String id, String newStatus) {
-    setState(() {
-      final index = _appointments.indexWhere((a) => a['id'] == id);
-      if (index != -1) {
-        _appointments[index]['status'] = newStatus;
+  Future<void> _loadAppointments() async {
+    final user = Provider.of<AuthService>(context, listen: false).currentUser;
+    if (user == null) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final appointments = await DashboardService.fetchDoctorAppointments(user.id);
+      setState(() {
+        _appointments = appointments;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load appointments')),
+        );
       }
-    });
+    }
+  }
 
-    final languageCode = Provider.of<LanguageService>(
-      context,
-      listen: false,
-    ).currentLanguage;
-    final message = newStatus == 'completed'
-        ? AppStrings.get('msgAppointmentConfirmed', languageCode)
-        : AppStrings.get('msgAppointmentCancelled', languageCode);
+  Future<void> _updateAppointmentStatus(String id, String newStatus) async {
+    final success = newStatus == 'completed' || newStatus == 'confirmed'
+        ? await DashboardService.confirmAppointment(id)
+        : await DashboardService.cancelAppointment(id);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: newStatus == 'completed'
-            ? AppColors.doctorPrimary
-            : Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (success) {
+      setState(() {
+        final index = _appointments.indexWhere((a) => a['id'] == id);
+        if (index != -1) {
+          _appointments[index]['status'] = newStatus == 'completed' ? 'confirmed' : 'cancelled';
+        }
+      });
+
+      final languageCode = Provider.of<LanguageService>(
+        context,
+        listen: false,
+      ).currentLanguage;
+      final message = newStatus == 'completed' || newStatus == 'confirmed'
+          ? AppStrings.get('msgAppointmentConfirmed', languageCode)
+          : AppStrings.get('msgAppointmentCancelled', languageCode);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: newStatus == 'completed' || newStatus == 'confirmed'
+              ? AppColors.doctorPrimary
+              : Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update appointment status')),
+        );
+      }
+    }
   }
 
   @override
@@ -102,6 +102,21 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
             languageCode: languageCode,
           ).copyWith(color: AppColors.primaryText, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_calendar_rounded, color: AppColors.doctorPrimary),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DoctorScheduleManagementScreen(),
+                ),
+              ).then((_) => _loadAppointments());
+            },
+            tooltip: 'Manage Availability',
+          ),
+          const SizedBox(width: AppSpacing.sm),
+        ],
         backgroundColor: AppColors.cardBackground,
         elevation: 1,
         iconTheme: const IconThemeData(color: AppColors.primaryText),
@@ -117,14 +132,16 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildAppointmentList(_appointments, 'upcoming', languageCode),
-          _buildAppointmentList(_appointments, 'completed', languageCode),
-          _buildAppointmentList(_appointments, 'cancelled', languageCode),
-        ],
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.doctorPrimary))
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildAppointmentList(_appointments, 'scheduled', languageCode),
+                _buildAppointmentList(_appointments, 'confirmed', languageCode),
+                _buildAppointmentList(_appointments, 'cancelled', languageCode),
+              ],
+            ),
     );
   }
 
@@ -193,7 +210,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${apt['time']} ${AppStrings.get(apt['period'], languageCode)}',
+                      '${apt['time']}',
                       style: AppTextStyles.h3(languageCode: languageCode)
                           .copyWith(
                             fontWeight: FontWeight.bold,
@@ -212,7 +229,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                         ),
                       ),
                       child: Text(
-                        AppStrings.get(apt['typeKey'], languageCode),
+                        apt['type'] ?? 'Visit',
                         style: AppTextStyles.caption(languageCode: languageCode)
                             .copyWith(
                               fontWeight: FontWeight.bold,
@@ -240,7 +257,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppStrings.get(apt['patient'], languageCode),
+                            apt['patientName'] ?? 'Unknown Patient',
                             style:
                                 AppTextStyles.body(
                                   languageCode: languageCode,
@@ -250,7 +267,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                                 ),
                           ),
                           Text(
-                            '${AppStrings.get('labelDuration', languageCode)}: ${apt['duration']} ${AppStrings.get('unitMin', languageCode)}',
+                            '${apt['date']} at ${apt['time']}',
                             style: AppTextStyles.caption(
                               languageCode: languageCode,
                             ).copyWith(color: AppColors.secondaryText),
@@ -258,7 +275,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                         ],
                       ),
                     ),
-                    if (status == 'upcoming' && apt['typeKey'] == 'typeVideo')
+                    if (status == 'scheduled' && (apt['type'] ?? '').toString().toLowerCase().contains('video'))
                       ElevatedButton.icon(
                         onPressed: () {},
                         icon: const Icon(
@@ -282,7 +299,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                       ),
                   ],
                 ),
-                if (status == 'upcoming') ...[
+                if (status == 'scheduled') ...[
                   const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [

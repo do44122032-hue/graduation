@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user_model.dart';
 import '../enums/user_role.dart';
+import '../constants/api_config.dart';
 
 class AuthResult {
   final bool success;
@@ -16,7 +17,7 @@ class AuthService extends ChangeNotifier {
   UserModel? _currentUser;
   bool _isLoading = false;
 
-  static const String _baseUrl = 'https://graduation-backend-production-7023.up.railway.app';
+  static String get _baseUrl => ApiConfig.baseUrl;
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
@@ -50,7 +51,7 @@ class AuthService extends ChangeNotifier {
           'password': password,
           'role': role.name,
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -94,7 +95,7 @@ class AuthService extends ChangeNotifier {
           if (department != null) 'department': department,
           if (bio != null) 'bio': bio,
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

@@ -6,6 +6,7 @@ import '../../constants/app_spacing.dart';
 import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
 import 'role_selection.dart';
+import '../../constants/api_config.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -20,6 +21,27 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   late AnimationController _entranceController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
+  int _tapCount = 0;
+
+  void _toggleEnvironment() {
+    setState(() {
+      _tapCount++;
+      if (_tapCount >= 5) {
+        ApiConfig.isLocal = !ApiConfig.isLocal;
+        _tapCount = 0;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Environment switched to: ${ApiConfig.isLocal ? "LOCAL (10.0.2.2)" : "PRODUCTION (Railway)"}',
+            ),
+            backgroundColor: ApiConfig.isLocal ? Colors.orange : Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -131,13 +153,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // MyChart Logo Text
-        Text(
-          AppStrings.get('appName', languageService.currentLanguage),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.5,
+        GestureDetector(
+          onTap: _toggleEnvironment,
+          child: Text(
+            AppStrings.get('appName', languageService.currentLanguage),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
 

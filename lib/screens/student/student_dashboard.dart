@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'dart:typed_data';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/modern_horizontal_nav_bar.dart';
-import 'weekly_schedule.dart';
 import 'patient_case_study.dart';
 import 'my_courses.dart';
 import 'student_settings.dart';
 import 'student_profile.dart';
+import '../../services/dashboard_service.dart';
+import '../../models/user_model.dart';
+import '../../models/student_report_model.dart';
+import '../../models/student_task_model.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
   const StudentDashboardScreen({Key? key}) : super(key: key);
@@ -28,32 +34,26 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
   static const Color orangeLight = Color(0xFFF9F3E5);
 
   // Student State
-
   String? _selectedDoctor;
+  List<UserModel> _realDoctors = [];
+  bool _isLoadingDoctors = false;
 
-  // Hospital Doctors data
-  List<Map<String, String>> _getHospitalDoctors(String languageCode) {
-    return [
-      {
-        'name': AppStrings.get('doctorName', languageCode),
-        'specialty': AppStrings.get('specCardiology', languageCode),
-        'image':
-            'C:/Users/User/.gemini/antigravity/brain/120b4062-e932-4172-987c-a248d6ea9a46/supervisor_profile_1_1767109633858.png',
-      },
-      {
-        'name': 'Dr. Sarah Miller',
-        'specialty': AppStrings.get('specDermatology', languageCode),
-        'image':
-            'C:/Users/User/.gemini/antigravity/brain/120b4062-e932-4172-987c-a248d6ea9a46/supervisor_profile_2_1767109648441.png',
-      },
-      {
-        'name': 'Dr. Ahmed Khalid',
-        'specialty': AppStrings.get('specPediatrics', languageCode),
-        'image':
-            'C:/Users/User/.gemini/antigravity/brain/120b4062-e932-4172-987c-a248d6ea9a46/supervisor_profile_3_1767109667047.png',
-      },
-    ];
+  Future<void> _loadDoctors() async {
+    setState(() => _isLoadingDoctors = true);
+    try {
+      final doctors = await DashboardService.fetchActiveDoctors();
+      if (mounted) {
+        setState(() {
+          _realDoctors = doctors;
+          _isLoadingDoctors = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading doctors for student: $e');
+      if (mounted) setState(() => _isLoadingDoctors = false);
+    }
   }
+
 
   void _showHospitalInfo(String languageCode) {
     showModalBottomSheet(
@@ -327,6 +327,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       vsync: this,
     );
     _animationController.forward();
+    _loadDoctors();
   }
 
   @override
@@ -362,11 +363,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                       id: 'home',
                       icon: Icons.school_outlined,
                       label: AppStrings.get('navHome', languageCode),
-                    ),
-                    ModernNavItem(
-                      id: 'schedule',
-                      icon: Icons.calendar_month_outlined,
-                      label: AppStrings.get('navSchedule', languageCode),
                     ),
                     ModernNavItem(
                       id: 'cases',
@@ -406,8 +402,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
     switch (_activeTabId) {
       case 'home':
         return _buildHomeContent(languageCode);
-      case 'schedule':
-        return _buildSchedulePage(languageCode);
       case 'courses':
         return _buildCoursesPage(languageCode);
       case 'cases':
@@ -435,10 +429,34 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 const SizedBox(height: 16),
                 _buildQuickActionsList(languageCode),
                 const SizedBox(height: 24),
-                _buildTaskBanner(
-                  AppStrings.get('pendingAssignment', languageCode),
-                  AppStrings.get('assignmentDesc', languageCode),
-                  Icons.assignment_late,
+                FutureBuilder<List<StudentTaskModel>>(
+                  future: DashboardService.getStudentTasks(user?.id ?? ''),
+                  builder: (context, snapshot) {
+                    final tasks = snapshot.data ?? [];
+                    final pendingTask = tasks.firstWhere(
+                      (t) => t.status != 'completed',
+                      orElse: () => StudentTaskModel(
+                        id: 0,
+                        title: AppStrings.get('pendingAssignment', languageCode),
+                        description: AppStrings.get('assignmentDesc', languageCode),
+                        status: 'none',
+                        dueDate: '',
+                      ),
+                    );
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildTaskBannerLoading();
+                    }
+
+                    return _buildTaskBanner(
+                      pendingTask.title,
+                      pendingTask.dueDate.isNotEmpty 
+                        ? '${AppStrings.get('labelDue', languageCode).split('{date}')[0]}${pendingTask.dueDate}'
+                        : pendingTask.description,
+                      Icons.assignment_late,
+                      onTap: _showAssignmentsDialog,
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
                 _buildAcademicInfoList(languageCode, user),
@@ -722,14 +740,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
   }) {
     final cardColor = color ?? orangePrimary;
     String? displayImage = customImage;
-    final doctors = _getHospitalDoctors(languageCode);
     if (showImage && customImage == null && _selectedDoctor != null) {
-      final doctor = doctors.firstWhere(
-        (s) => s['name'] == _selectedDoctor,
-        orElse: () => {},
-      );
-      if (doctor.isNotEmpty) {
-        displayImage = doctor['image'];
+      try {
+        final doctor = _realDoctors.firstWhere((d) => d.name == _selectedDoctor);
+        displayImage = doctor.profilePicture;
+      } catch (_) {
+        displayImage = null;
       }
     }
 
@@ -743,49 +759,71 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
     );
   }
 
-  Widget _buildTaskBanner(String title, String subtitle, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: orangePrimary.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: orangePrimary.withOpacity(0.3)),
+  Widget _buildTaskBanner(String title, String subtitle, IconData icon, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: orangePrimary.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: orangePrimary.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: orangePrimary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.white, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Color(0xFF282828),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: const Color(0xFF282828).withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: orangePrimary, size: 24),
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: orangePrimary,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: Colors.white, size: 22),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Color(0xFF282828),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: const Color(0xFF282828).withOpacity(0.7),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right, color: orangePrimary, size: 24),
-        ],
+    );
+  }
+
+  Widget _buildTaskBannerLoading() {
+    return Container(
+      height: 80,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Center(
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2, color: orangePrimary),
+        ),
       ),
     );
   }
@@ -970,10 +1008,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
 
   Widget _buildCoursesPage(String languageCode) {
     return const MyCoursesScreen();
-  }
-
-  Widget _buildSchedulePage(String languageCode) {
-    return const WeeklySchedule();
   }
 
   Widget _buildCaseStudiesPage(String languageCode) {
@@ -1225,91 +1259,77 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              ..._getHospitalDoctors(languageCode).map(
-                (doctor) => Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: _selectedDoctor == doctor['name']
-                        ? orangePrimary.withOpacity(0.1)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: _selectedDoctor == doctor['name']
-                          ? orangePrimary
-                          : Colors.grey.withOpacity(0.2),
-                      width: _selectedDoctor == doctor['name'] ? 2 : 1,
-                    ),
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    leading: Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: orangePrimary, width: 2),
+              if (_isLoadingDoctors)
+                const Center(child: CircularProgressIndicator(color: orangePrimary))
+              else if (_realDoctors.isEmpty)
+                const Text('No doctors available in the database.')
+              else
+                ..._realDoctors.map(
+                  (doctor) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: _selectedDoctor == doctor.name
+                          ? orangePrimary.withOpacity(0.1)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: _selectedDoctor == doctor.name
+                            ? orangePrimary
+                            : Colors.grey.withOpacity(0.2),
+                        width: _selectedDoctor == doctor.name ? 2 : 1,
                       ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          doctor['image']!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    orangePrimary,
-                                    orangePrimary.withOpacity(0.6),
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  doctor['name']![4],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      leading: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: orangePrimary, width: 2),
+                        ),
+                        child: ClipOval(
+                          child: doctor.profilePicture != null && doctor.profilePicture!.isNotEmpty
+                              ? Image.network(
+                                  doctor.profilePicture!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => _buildInitialsPlaceholder(doctor.name),
+                                )
+                              : _buildInitialsPlaceholder(doctor.name),
                         ),
                       ),
-                    ),
-                    title: Text(
-                      doctor['name']!,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                      title: Text(
+                        doctor.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
+                      subtitle: Text(
+                        doctor.department ?? 'General Physician',
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      ),
+                      onTap: () {
+                        setState(() => _selectedDoctor = doctor.name);
+                        Navigator.pop(context);
+                      },
+                      trailing: _selectedDoctor == doctor.name
+                          ? const Icon(
+                              Icons.check_circle,
+                              color: orangePrimary,
+                              size: 28,
+                            )
+                          : Icon(
+                              Icons.circle_outlined,
+                              color: Colors.grey[300],
+                              size: 28,
+                            ),
                     ),
-                    subtitle: Text(
-                      doctor['specialty']!,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                    onTap: () {
-                      setState(() => _selectedDoctor = doctor['name']);
-                      Navigator.pop(context);
-                    },
-                    trailing: _selectedDoctor == doctor['name']
-                        ? Icon(
-                            Icons.check_circle,
-                            color: orangePrimary,
-                            size: 28,
-                          )
-                        : Icon(
-                            Icons.circle_outlined,
-                            color: Colors.grey[300],
-                            size: 28,
-                          ),
                   ),
                 ),
-              ),
             ],
           ),
         );
@@ -1317,7 +1337,30 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
     );
   }
 
-  void _showSubmitReportDialog() {
+  Widget _buildInitialsPlaceholder(String name) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            orangePrimary,
+            orangeLight,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          name.isNotEmpty ? name[0].toUpperCase() : 'D',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSubmitReportDialog({String? initialTitle}) {
     final languageCode = Provider.of<LanguageService>(
       context,
       listen: false,
@@ -1325,204 +1368,284 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
     showDialog(
       context: context,
       builder: (context) {
-        String reportTitle = '';
+        String reportTitle = initialTitle ?? '';
         String reportDescription = '';
+        int? selectedDoctorId;
+        Uint8List? selectedFileBytes;
+        String? selectedFileName;
+        bool isSubmitting = false;
+        final titleController = TextEditingController(text: reportTitle);
 
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF9B8FD9).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.upload_file,
-                      color: Color(0xFF9B8FD9),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    AppStrings.get('labelSubmitReport', languageCode),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              // History Button
-              IconButton(
-                icon: const Icon(Icons.history, color: Colors.grey),
-                tooltip: AppStrings.get('labelHistory', languageCode),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _showSubmittedReportsHistory();
-                },
-              ),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.get('labelReportTitle', languageCode),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  onChanged: (value) => reportTitle = value,
-                  decoration: InputDecoration(
-                    hintText: AppStrings.get('hintReportTitle', languageCode),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  AppStrings.get('labelReportDesc', languageCode),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  onChanged: (value) => reportDescription = value,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: AppStrings.get('hintReportDesc', languageCode),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF9B8FD9).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFF9B8FD9).withOpacity(0.3),
-                      style: BorderStyle.solid,
-                      width: 2,
-                    ),
-                  ),
-                  child: Row(
+                  Row(
                     children: [
-                      Icon(Icons.attach_file, color: const Color(0xFF9B8FD9)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppStrings.get('labelAttachFile', languageCode),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              AppStrings.get('msgFileFormat', languageCode),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF9B8FD9).withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.upload_file,
+                          color: Color(0xFF9B8FD9),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Implement file picker
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                AppStrings.get('labelComingSoon', languageCode),
-                              ),
-                              backgroundColor: const Color(0xFF9B8FD9),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        },
-                        child: Text(
-                          AppStrings.get('actionBrowse', languageCode),
+                      const SizedBox(width: 12),
+                      Text(
+                        AppStrings.get('labelSubmitReport', languageCode),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                AppStrings.get('actionCancel', languageCode),
-                style: TextStyle(color: Colors.grey[600]),
+                  IconButton(
+                    icon: const Icon(Icons.history, color: Colors.grey),
+                    tooltip: AppStrings.get('labelHistory', languageCode),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showSubmittedReportsHistory();
+                    },
+                  ),
+                ],
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Implement report submission
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppStrings.get('msgReportSubmitted', languageCode),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppStrings.get('labelReportTitle', languageCode),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: titleController,
+                      onChanged: (value) => reportTitle = value,
+                      decoration: InputDecoration(
+                        hintText: AppStrings.get('hintReportTitle', languageCode),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppStrings.get('labelReportDesc', languageCode),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      onChanged: (value) => reportDescription = value,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: AppStrings.get('hintReportDesc', languageCode),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Supervisor (Doctor)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<int>(
+                      value: selectedDoctorId,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                      hint: const Text('Select a Doctor'),
+                      items: _realDoctors.map((doc) {
+                        return DropdownMenuItem<int>(
+                          value: int.parse(doc.id),
+                          child: Text(doc.name),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        setDialogState(() {
+                          selectedDoctorId = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF9B8FD9).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFF9B8FD9).withOpacity(0.3),
+                          style: BorderStyle.solid,
+                          width: 2,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.attach_file, color: const Color(0xFF9B8FD9)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  selectedFileName != null ? 'File Attached' : AppStrings.get('labelAttachFile', languageCode),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  selectedFileName ?? AppStrings.get('msgFileFormat', languageCode),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              final picker = ImagePicker();
+                              final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                              if (pickedFile != null) {
+                                final bytes = await pickedFile.readAsBytes();
+                                setDialogState(() {
+                                  selectedFileBytes = bytes;
+                                  selectedFileName = pickedFile.name;
+                                });
+                              }
+                            },
+                            child: Text(
+                              AppStrings.get('actionBrowse', languageCode),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSubmitting ? null : () => Navigator.pop(context),
+                  child: Text(
+                    AppStrings.get('actionCancel', languageCode),
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          if (reportTitle.isEmpty || selectedDoctorId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Title and Doctor are required')),
+                            );
+                            return;
+                          }
+                          setDialogState(() => isSubmitting = true);
+                          final authService = Provider.of<AuthService>(context, listen: false);
+                          final uid = authService.currentUser?.id;
+                          if (uid != null) {
+                            bool success = await DashboardService.submitStudentReport(
+                              uid: uid,
+                              doctorId: selectedDoctorId!,
+                              title: reportTitle,
+                              description: reportDescription,
+                              fileBytes: selectedFileBytes,
+                              fileName: selectedFileName,
+                            );
+
+                            if (success) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppStrings.get('msgReportSubmitted', languageCode),
+                                  ),
+                                  backgroundColor: const Color(0xFF9B8FD9),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Failed to submit report')),
+                              );
+                            }
+                          }
+                          setDialogState(() => isSubmitting = false);
+                        },
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF9B8FD9),
-                    behavior: SnackBarBehavior.floating,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF9B8FD9),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Text(AppStrings.get('actionSubmit', languageCode)),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(AppStrings.get('actionSubmit', languageCode)),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
   }
+
 
   void _showSubmittedReportsHistory() {
     final languageCode = Provider.of<LanguageService>(
       context,
       listen: false,
     ).currentLanguage;
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final uid = authService.currentUser?.id ?? '';
+
     showDialog(
       context: context,
       builder: (context) {
@@ -1533,28 +1656,64 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           title: Text(AppStrings.get('titleSubmittedReports', languageCode)),
           content: SizedBox(
             width: double.maxFinite,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.check_circle, color: Colors.green),
-                  title: const Text('Neurology Case Study'),
-                  subtitle: const Text('Submitted: Oct 20, 2024'),
-                  onTap: () {},
-                ),
-                ListTile(
-                  leading: const Icon(Icons.check_circle, color: Colors.green),
-                  title: const Text('Cardiology Lab Report'),
-                  subtitle: const Text('Submitted: Oct 12, 2024'),
-                  onTap: () {},
-                ),
-                ListTile(
-                  leading: const Icon(Icons.check_circle, color: Colors.green),
-                  title: const Text('Pediatrics Observation'),
-                  subtitle: const Text('Submitted: Sep 28, 2024'),
-                  onTap: () {},
-                ),
-              ],
+            child: FutureBuilder<List<StudentReportModel>>(
+              future: DashboardService.getStudentReports(uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 100,
+                    child: Center(
+                      child: CircularProgressIndicator(color: Color(0xFF9B8FD9)),
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error loading reports',
+                      style: TextStyle(color: Colors.red[300]),
+                    ),
+                  );
+                }
+
+                final reports = snapshot.data ?? [];
+
+                if (reports.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text('No reports submitted yet.'),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: reports.length,
+                  itemBuilder: (context, index) {
+                    final report = reports[index];
+                    DateTime? subDate;
+                    try {
+                      subDate = DateTime.parse(report.submittedAt);
+                    } catch (_) {}
+
+                    String formattedDate = subDate != null
+                        ? DateFormat('MMM dd, yyyy').format(subDate)
+                        : report.submittedAt;
+
+                    return ListTile(
+                      leading: const Icon(Icons.check_circle, color: Colors.green),
+                      title: Text(report.title),
+                      subtitle: Text('Submitted: $formattedDate\nTo Doctor ID: ${report.doctorId}'),
+                      isThreeLine: true,
+                      onTap: () {
+                        // View report details if needed
+                      },
+                    );
+                  },
+                );
+              },
             ),
           ),
           actions: [
@@ -1573,6 +1732,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       context,
       listen: false,
     ).currentLanguage;
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final uid = authService.currentUser?.id ?? '';
+
     showDialog(
       context: context,
       builder: (context) {
@@ -1583,49 +1745,62 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           title: Text(AppStrings.get('titleAssignments', languageCode)),
           content: SizedBox(
             width: double.maxFinite,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                _buildAssignmentItem(
-                  'Endocrinology Research',
-                  AppStrings.get(
-                    'labelDue',
-                    languageCode,
-                  ).replaceAll('{date}', 'Nov 05, 2024'),
-                  Colors.orange,
-                  languageCode,
-                ),
-                _buildAssignmentItem(
-                  'Anatomy Quiz Prep',
-                  AppStrings.get(
-                    'labelDue',
-                    languageCode,
-                  ).replaceAll('{date}', 'Nov 10, 2024'),
-                  Colors.blue,
-                  languageCode,
-                ),
-                const Divider(),
-                ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
+            child: FutureBuilder<List<StudentTaskModel>>(
+              future: DashboardService.getStudentTasks(uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 100,
+                    child: Center(
+                      child: CircularProgressIndicator(color: Color(0xFFE89B9B)),
                     ),
-                    child: const Icon(Icons.add, color: Colors.black54),
-                  ),
-                  title: Text(
-                    AppStrings.get('actionUploadAssignment', languageCode),
-                  ),
-                  subtitle: Text(
-                    AppStrings.get('descUploadAssignment', languageCode),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showSubmitReportDialog(); // Reuse upload dialog for now
-                  },
-                ),
-              ],
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error loading tasks',
+                      style: TextStyle(color: Colors.red[300]),
+                    ),
+                  );
+                }
+
+                final tasks = snapshot.data ?? [];
+
+                return ListView(
+                  shrinkWrap: true,
+                  children: [
+                    if (tasks.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: Text('No tasks assigned yet.')),
+                      ),
+                    ...tasks.map((task) => _buildAssignmentItem(task, languageCode)),
+                    const Divider(),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.add, color: Colors.black54),
+                      ),
+                      title: Text(
+                        AppStrings.get('actionUploadAssignment', languageCode),
+                      ),
+                      subtitle: Text(
+                        AppStrings.get('descUploadAssignment', languageCode),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showSubmitReportDialog(initialTitle: '[Assignment] ');
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           actions: [
@@ -1640,26 +1815,87 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
   }
 
   Widget _buildAssignmentItem(
-    String title,
-    String due,
-    Color color,
+    StudentTaskModel task,
     String languageCode,
   ) {
+    // Parse color from hex
+    Color cardColor;
+    try {
+      cardColor = Color(int.parse("FF${task.colorHex}", radix: 16));
+    } catch (_) {
+      cardColor = Colors.orange;
+    }
+
+    bool isCompleted = task.status == 'completed';
+
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: cardColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(Icons.assignment, color: color),
+        child: Icon(
+          isCompleted ? Icons.check_circle : Icons.assignment,
+          color: isCompleted ? Colors.green : cardColor,
+        ),
       ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(due),
+      title: Text(
+        task.title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          decoration: isCompleted ? TextDecoration.lineThrough : null,
+        ),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            task.dueDate.isNotEmpty
+                ? '${AppStrings.get('labelDue', languageCode).split('{date}')[0]}${task.dueDate}'
+                : task.description,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (task.fileUrl != null && task.fileUrl!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: InkWell(
+                onTap: () async {
+                  final fullUrl = DashboardService.baseUrl + task.fileUrl!;
+                  if (await canLaunchUrl(Uri.parse(fullUrl))) {
+                    await launchUrl(Uri.parse(fullUrl));
+                  }
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.attach_file, size: 14, color: Colors.blue),
+                    const SizedBox(width: 4),
+                    Text(
+                      'View Document',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue[700],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
       trailing: ElevatedButton(
-        onPressed: () {},
+        onPressed: isCompleted ? null : () async {
+          final success = await DashboardService.completeStudentTask(task.id);
+          if (success) {
+            Navigator.pop(context); // Close dialog to refresh
+            _showAssignmentsDialog(); // Reopen to show new state
+          }
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: color,
+          backgroundColor: isCompleted ? Colors.grey : cardColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           minimumSize: Size.zero,
@@ -1667,7 +1903,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Text(
-          AppStrings.get('actionView', languageCode),
+          isCompleted ? 'Done' : AppStrings.get('actionView', languageCode),
           style: const TextStyle(fontSize: 12),
         ),
       ),
@@ -1814,16 +2050,28 @@ class _InteractiveToolCardState extends State<_InteractiveToolCard> {
                       width: 44,
                       height: 44,
                       child: widget.displayImage != null
-                          ? Image.asset(
-                              widget.displayImage!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(
-                                    widget.icon,
-                                    color: widget.cardColor,
-                                    size: 32,
-                                  ),
-                            )
+                          ? (widget.displayImage!.startsWith('http') ||
+                                  widget.displayImage!.startsWith('https')
+                              ? Image.network(
+                                  widget.displayImage!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(
+                                        widget.icon,
+                                        color: widget.cardColor,
+                                        size: 32,
+                                      ),
+                                )
+                              : Image.asset(
+                                  widget.displayImage!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(
+                                        widget.icon,
+                                        color: widget.cardColor,
+                                        size: 32,
+                                      ),
+                                ))
                           : Icon(
                               widget.icon,
                               color: widget.cardColor,

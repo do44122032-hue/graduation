@@ -67,6 +67,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           _healthAlerts = List<Map<String, dynamic>>.from(data['healthAlerts'] ?? []);
           _activeMedications = List<Map<String, dynamic>>.from(data['activeMedications'] ?? []);
           _recentVitals = List<Map<String, dynamic>>.from(data['recentVitals'] ?? []);
+          print('DEBUG Dashboard: Received ${_healthAlerts.length} health alerts');
           _labResults = List<Map<String, dynamic>>.from(data['labResults'] ?? []);
           _isLoading = false;
         });
@@ -201,6 +202,22 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                           ).then((_) => _loadDashboardData());
                         },
                       )),
+                  const SizedBox(height: 24),
+                ] else if (_recentVitals.isNotEmpty && (_recentVitals.first['bloodPressureSys'] > 130 || _recentVitals.first['bloodPressureDia'] > 85)) ...[
+                   _buildAnnouncementBanner(
+                        'High Blood Pressure Alert',
+                        'Your last reading was ${_recentVitals.first['bloodPressureSys']}/${_recentVitals.first['bloodPressureDia']}. Please monitor closely.',
+                        Icons.warning_amber_rounded,
+                        isDanger: true,
+                        onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MedicalRecordsPage(),
+                            ),
+                          ).then((_) => _loadDashboardData());
+                        }
+                      ),
                   const SizedBox(height: 24),
                 ] else ... [
                   _buildAnnouncementBanner(
@@ -633,7 +650,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.name ?? 'Sarah Johnson',
+                        user?.name ?? '',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -642,7 +659,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                         ),
                       ),
                       Text(
-                        user?.email ?? 'sarah.j@example.com',
+                        user?.email ?? '',
                         style: TextStyle(
                           fontSize: 15,
                           color: const Color(0xFF282828).withOpacity(0.6),
@@ -878,16 +895,16 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: Color(0xFF282828),
+                    style: TextStyle(
+                      color: isDanger ? Colors.red.shade900 : const Color(0xFF282828),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: Color(0xFF4A4A4A),
+                    style: TextStyle(
+                      color: isDanger ? Colors.red.shade800 : const Color(0xFF4A4A4A),
                       fontSize: 12,
                     ),
                   ),

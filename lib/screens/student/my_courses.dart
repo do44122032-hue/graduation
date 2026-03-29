@@ -3,7 +3,10 @@ import '../../models/course_model.dart';
 import 'course_details.dart';
 import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/dashboard_service.dart';
 import '../../constants/app_strings.dart';
+import 'course_discovery.dart';
 
 class MyCoursesScreen extends StatefulWidget {
   const MyCoursesScreen({Key? key}) : super(key: key);
@@ -21,59 +24,25 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   static const Color accentOliveColor = Color(0xFFCBD77E);
   static const Color accentBeigeColor = Color(0xFFE8C998);
 
-  final List<Course> courses = [
-    Course(
-      id: 'c1',
-      title: 'Clinical Medicine III',
-      instructor: 'Dr. Sarah Williams',
-      progress: 0.75,
-      nextClass: 'Mon, 9:00 AM', // Data - kept as is
-      imageAsset: 'assets/images/course_medical.jpg', // Placeholder
-      color: accentOliveColor,
-      icon: Icons.monitor_heart_outlined,
-      grade: 'A-',
-    ),
-    Course(
-      id: 'c2',
-      title: 'Surgical Techniques',
-      instructor: 'Dr. James Wilson',
-      progress: 0.45,
-      nextClass: 'Tue, 2:00 PM',
-      color: accentBeigeColor,
-      icon: Icons.medical_services,
-      grade: 'B+',
-    ),
-    Course(
-      id: 'c3',
-      title: 'Medical Ethics',
-      instructor: 'Dr. Emily Rodriguez',
-      progress: 0.90,
-      nextClass: 'Completed',
-      color: const Color(0xFF82C4E6),
-      icon: Icons.gavel,
-      grade: 'A',
-    ),
-    Course(
-      id: 'c4',
-      title: 'Clinical Pathology',
-      instructor: 'Dr. Michael Chen',
-      progress: 0.30,
-      nextClass: 'Thu, 10:00 AM',
-      color: const Color(0xFFFFB74D),
-      icon: Icons.science,
-      grade: 'Pending',
-    ),
-    Course(
-      id: 'c5',
-      title: 'Pharmacology',
-      instructor: 'Dr. Lisa Chang',
-      progress: 0.60,
-      nextClass: 'Fri, 9:00 AM',
-      color: const Color(0xFFB39DDB),
-      icon: Icons.medication,
-      grade: 'B',
-    ),
-  ];
+  Future<List<Course>>? _coursesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadCourses();
+    });
+  }
+
+  void _loadCourses() {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user != null) {
+      setState(() {
+        _coursesFuture = DashboardService.getStudentCourses(user.id);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,19 +177,68 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
           ),
           // Course List
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(24),
-              itemCount: courses.length + 1, // +1 for spacing
-              itemBuilder: (context, index) {
-                if (index == courses.length) {
-                  return const SizedBox(height: 80); // Bottom padding
-                }
-                final course = courses[index];
-                return _buildCourseCard(course, lang);
-              },
-            ),
+            child: _coursesFuture == null
+                ? const Center(child: CircularProgressIndicator())
+                : FutureBuilder<List<Course>>(
+                    future: _coursesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: accentOliveColor),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.book_outlined, size: 64, color: Colors.grey[400]),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No courses enrolled yet',
+                                style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final coursesList = snapshot.data!;
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(24),
+                        itemCount: coursesList.length + 1, // +1 for spacing
+                        itemBuilder: (context, index) {
+                          if (index == coursesList.length) {
+                            return const SizedBox(height: 80); // Bottom padding
+                          }
+                          final course = coursesList[index];
+                          return _buildCourseCard(course, lang);
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CourseDiscoveryScreen(),
+            ),
+          );
+          _loadCourses(); // Refresh list after returning
+        },
+        backgroundColor: accentOliveColor,
+        icon: const Icon(Icons.add_task),
+        label: Text(
+          AppStrings.get('titleJoinNewCourse', lang),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

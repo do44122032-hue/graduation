@@ -9,10 +9,10 @@ class AppStrings {
 
       // Welcome Screen
       'getStarted': 'Get Started',
-      'studentIdLabel': 'Student ID / Email',
-      'studentIdHint': 'Enter ID or university email',
+      'studentIdLabel': 'University Email',
+      'studentIdHint': 'e.g., username@cihanuniversity.edu.iq',
       'studentPasswordHint': 'Enter your password',
-      'studentEmailLoginHint': 'Sign in with email and password instead',
+      'studentEmailLoginHint': 'Use your university email to sign in',
       'continueAsGuest': 'Continue as Guest',
       'appTagline': 'Your Health, In Your Hands',
       'featureRecords': 'Records',
@@ -63,6 +63,11 @@ class AppStrings {
           'Grand City University Hospital is a premier teaching institution dedicated to providing world-class patient care and educating the next generation of healthcare professionals.',
       'closeInfo': 'Close Info',
       'studentName': 'Alex Thompson',
+      'titleJoinNewCourse': 'Join New Course',
+      'labelNoAvailableCourses': 'No new courses available to join.',
+      'actionJoinCourse': 'Join Course',
+      'messageJoinSuccess': 'Successfully joined the course!',
+      'messageJoinError': 'Failed to join course.',
 
       // Login
       'loginTitle': 'Welcome Back',
@@ -163,10 +168,10 @@ class AppStrings {
       'medicalRecordsShort': 'Med Records',
       'pharmacyShort': 'Pharmacy',
       'labResultsShort': 'Lab Results',
-      'appointmentTime': '10:30 AM',
-      'appointmentDate': 'Dec 23, 2024',
-      'doctorName': 'Dr. Michael Chen',
-      'doctorTitle': 'Board Certified Cardiologist',
+      'appointmentTime': '',
+      'appointmentDate': '',
+      'doctorName': '',
+      'doctorTitle': '',
       'studentEmailError':
           'Students must use a university email (@cihanuniversity.edu.iq)',
       'sheetIdLabel': 'Sheet ID',
@@ -538,10 +543,10 @@ class AppStrings {
 
       // Welcome Screen
       'getStarted': 'ابدأ الآن',
-      'studentIdLabel': 'الرقم الجامعي / البريد الإلكتروني',
-      'studentIdHint': 'أدخل الرقم أو البريد الجامعي',
+      'studentIdLabel': 'البريد الجامعي',
+      'studentIdHint': 'username@cihanuniversity.edu.iq',
       'studentPasswordHint': 'أدخل كلمة المرور',
-      'studentEmailLoginHint': 'تسجيل الدخول بالبريد وكلمة المرور بدلاً من ذلك',
+      'studentEmailLoginHint': 'استخدم بريدك الجامعي لتسجيل الدخول',
       'continueAsGuest': 'متابعة كزائر',
       'appTagline': 'رعايتك الصحية في متناول يدك',
       'featureRecords': 'سجلات',
@@ -588,6 +593,11 @@ class AppStrings {
           'مستشفى جراند سيتي الجامعي هو مؤسسة تعليمية رائدة مكرسة لتقديم رعاية صحية عالمية المستوى وتعليم الجيل القادم من المتخصصين في الرعاية الصحية.',
       'closeInfo': 'إغلاق',
       'studentName': 'أليكس طومسون',
+      'titleJoinNewCourse': 'انضم إلى دورة جديدة',
+      'labelNoAvailableCourses': 'لا توجد دورات جديدة متاحة للانضمام.',
+      'actionJoinCourse': 'انضم للدورة',
+      'messageJoinSuccess': 'تم الانضمام إلى الدورة بنجاح!',
+      'messageJoinError': 'فشل الانضمام إلى الدورة.',
 
       // Login
       'loginTitle': 'مرحباً بعودتك',
@@ -690,10 +700,10 @@ class AppStrings {
       'medicalRecordsShort': 'السجلات',
       'pharmacyShort': 'الصيدلية',
       'labResultsShort': 'المختبر',
-      'appointmentTime': '١٠:٣٠ صباحاً',
-      'appointmentDate': '٢٣ ديسمبر ٢٠٢٤',
-      'doctorName': 'د. مايكل تشين',
-      'doctorTitle': 'استشاري أمراض القلب',
+      'appointmentTime': '',
+      'appointmentDate': '',
+      'doctorName': '',
+      'doctorTitle': '',
       'studentEmailError':
           'يجب على الطلاب استخدام البريد الجامعي (@cihanuniversity.edu.iq)',
       'sheetIdLabel': 'رقم الورقة',
@@ -1061,10 +1071,10 @@ class AppStrings {
 
       // Welcome Screen
       'getStarted': 'دەست پێبکە',
-      'studentIdLabel': 'ناسنامەی خوێندکار / ئیمەیڵ',
-      'studentIdHint': 'ناسنامە یان ئیمەیڵی زانکۆ بنووسە',
+      'studentIdLabel': 'ئیمەیڵی زانکۆ',
+      'studentIdHint': 'username@cihanuniversity.edu.iq',
       'studentPasswordHint': 'وشەی تێپەڕ بنووسە',
-      'studentEmailLoginHint': 'بە ئیمەیڵ و وشەی تێپەڕ بچۆ ژوورەوە',
+      'studentEmailLoginHint': 'ئیمەیڵی زانکۆت بۆ چوونەژوورەوە بەکاربهێنە',
       'continueAsGuest': 'بەردەوامبە وەک میوان',
       'appTagline': 'چاودێری تەندروستیت لە دەستدا',
       'featureRecords': 'تۆمارەکان',
@@ -1110,7 +1120,12 @@ class AppStrings {
       'hospitalDesc':
           'نەخۆشخانەی زانکۆی گراند سیتی دامەزراوەیەکی فێرکاری پێشەنگە کە تەرخانکراوە بۆ پێشکەشکردنی چاودێری نەخۆشی ئاستی جیهانی و پەروەردەکردنی نەوەی داهاتووی پسپۆڕانی تەندروستی.',
       'closeInfo': 'داخستن',
-      'studentName': 'ئەلێکس تۆمسۆن',
+      'studentName': 'ئالێکس تۆمسن',
+      'titleJoinNewCourse': 'بەشداری لە کۆرسێکی نوێ بکە',
+      'labelNoAvailableCourses': 'هیچ کۆرسێکی نوێ نییە بۆ بەشداریکردن.',
+      'actionJoinCourse': 'بەشداری بکە',
+      'messageJoinSuccess': 'بە سەرکەوتوویی لە کۆرسەکە بەشداربوویت!',
+      'messageJoinError': 'نەتوانرا لە کۆرسەکە بەشداری بکرێت.',
 
       // Profile
       'titleProfile': 'پرۆفایلی من',

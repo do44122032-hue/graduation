@@ -28,7 +28,6 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   String _activeTabId = 'home';
   List<UserModel> _patients = [];
   bool _isLoadingPatients = true;
-  final DashboardService _dashboardService = DashboardService();
 
   @override
   void initState() {
@@ -39,7 +38,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   Future<void> _loadPatients() async {
     setState(() => _isLoadingPatients = true);
     try {
-      final patients = await _dashboardService.fetchPatients();
+      final patients = await DashboardService.fetchPatients();
       setState(() {
         _patients = patients;
         _isLoadingPatients = false;
@@ -345,6 +344,10 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               ],
             ),
           ),
+
+          const SizedBox(height: 16),
+
+
 
           const SizedBox(height: 24),
 

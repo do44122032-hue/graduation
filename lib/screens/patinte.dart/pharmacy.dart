@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/dashboard_service.dart';
 
 class PharmacyPage extends StatefulWidget {
   const PharmacyPage({super.key});
@@ -22,11 +24,40 @@ class _PharmacyPageState extends State<PharmacyPage>
   static const Color colorAlert = Color(0xFFFFB74D);
 
   late TabController _tabController;
+  bool _isLoading = true;
+  List<dynamic> _apiMeds = [];
+  List<dynamic> _apiOrders = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null || user.id == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final data = await DashboardService.fetchPatientDashboard(user.id!);
+      if (data['success'] == true && mounted) {
+        setState(() {
+          _apiMeds = data['activeMedications'] ?? [];
+          _apiOrders = data['pharmacyOrders'] ?? [];
+          _isLoading = false;
+        });
+      } else {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      print('Error fetching pharmacy data: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -54,13 +85,15 @@ class _PharmacyPageState extends State<PharmacyPage>
             // Alternatively, use a NestedScrollView. Given the scope, a generous height is used.
             SizedBox(
               height: 800,
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildActiveMedicationsTab(languageCode),
-                  _buildOrdersTab(languageCode),
-                ],
-              ),
+              child: _isLoading 
+                ? const Center(child: CircularProgressIndicator(color: colorAccentOlive))
+                : TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildActiveMedicationsTab(languageCode),
+                      _buildOrdersTab(languageCode),
+                    ],
+                  ),
             ),
             const SizedBox(height: 100), // Space for FAB
           ],
@@ -228,43 +261,23 @@ class _PharmacyPageState extends State<PharmacyPage>
   }
 
   Widget _buildActiveMedicationsTab(String languageCode) {
-    // Mock Data
-    final meds = [
-      {
-        'name': 'Lisinopril',
-        'dosage': '10mg Tablet',
-        'frequency': 'Once Daily',
-        'remaining': 15,
-        'total': 30,
-        'refillDate': 'Jan 15, 2024',
-        'image':
-            'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=150',
-        'canRefill': true,
-      },
-      {
-        'name': 'Vitamin D3',
-        'dosage': '2000 IU Softgel',
-        'frequency': 'Once Daily',
-        'remaining': 45,
-        'total': 90,
-        'refillDate': 'Feb 20, 2024',
-        'image':
-            'https://images.unsplash.com/photo-1628771065518-0d82f1938462?auto=format&fit=crop&q=80&w=150',
-        'canRefill': false,
-      },
-      {
-        'name': 'Amoxicillin',
-        'dosage': '500mg Capsule',
-        'frequency': '3 times daily',
-        'remaining': 2,
-        'total': 21,
-        'refillDate': 'No Refills',
-        'image':
-            'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&q=80&w=150',
-        'canRefill': false,
-        'alert': 'Finish Course',
-      },
-    ];
+    final meds = _apiMeds.isNotEmpty ? _apiMeds : []; // Empty instead of mock
+    
+    if (meds.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.medication_outlined, size: 64, color: colorAccentBeige),
+            const SizedBox(height: 16),
+            Text(
+              AppStrings.get('msgNoMedications', languageCode),
+              style: const TextStyle(color: colorSecondaryText),
+            ),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.all(24),
@@ -444,29 +457,23 @@ class _PharmacyPageState extends State<PharmacyPage>
   }
 
   Widget _buildOrdersTab(String languageCode) {
-    final orders = [
-      {
-        'id': '#ORD-2489',
-        'date': 'Dec 28, 2024',
-        'items': 'Lisinopril, Atorvastatin',
-        'status': 'Processing',
-        'price': 15.00,
-      },
-      {
-        'id': '#ORD-2412',
-        'date': 'Nov 15, 2024',
-        'items': 'Vitamin D3',
-        'status': 'Ready',
-        'price': 8.50,
-      },
-      {
-        'id': '#ORD-2390',
-        'date': 'Oct 02, 2024',
-        'items': 'Amoxicillin',
-        'status': 'Picked Up',
-        'price': 12.00,
-      },
-    ];
+    final orders = _apiOrders;
+    
+    if (orders.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.receipt_outlined, size: 64, color: colorAccentBeige),
+            const SizedBox(height: 16),
+            const Text(
+              'No order history found.',
+              style: TextStyle(color: colorSecondaryText),
+            ),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.all(24),

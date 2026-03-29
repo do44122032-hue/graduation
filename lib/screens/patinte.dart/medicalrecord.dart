@@ -6,150 +6,10 @@ import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import '../../services/dashboard_service.dart';
 import '../../services/auth_service.dart';
+import 'package:graduation_project/models/medical_models.dart';
 import 'patient_data_entry.dart';
-import 'labresulit.dart';
 
-// Data Models
-class ChronicCondition {
-  final int id;
-  final String diseaseName;
-  final String icdCode;
-  final String diagnosedDate;
-  final String
-  currentStatus; // 'active', 'controlled', 'in-remission', 'resolved'
-  final String severityLevel; // 'mild', 'moderate', 'severe'
-  final String treatingPhysician;
-  final String lastUpdated;
-  final String managementPlan;
 
-  ChronicCondition({
-    required this.id,
-    required this.diseaseName,
-    required this.icdCode,
-    required this.diagnosedDate,
-    required this.currentStatus,
-    required this.severityLevel,
-    required this.treatingPhysician,
-    required this.lastUpdated,
-    required this.managementPlan,
-  });
-}
-
-class CurrentMedication {
-  final int id;
-  final String genericName;
-  final String brandName;
-  final String strength;
-  final String form;
-  final String route;
-  final String frequency;
-  final String prescribingPhysician;
-  final String startDate;
-  final String reasonForMedication;
-  final String specialInstructions;
-  final String pharmacy;
-  final String lastFillDate;
-  final String nextRefillDate;
-  final int quantityRemaining;
-  final String priorAuthStatus;
-
-  CurrentMedication({
-    required this.id,
-    required this.genericName,
-    required this.brandName,
-    required this.strength,
-    required this.form,
-    required this.route,
-    required this.frequency,
-    required this.prescribingPhysician,
-    required this.startDate,
-    required this.reasonForMedication,
-    required this.specialInstructions,
-    required this.pharmacy,
-    required this.lastFillDate,
-    required this.nextRefillDate,
-    required this.quantityRemaining,
-    required this.priorAuthStatus,
-  });
-}
-
-class VitalSignRecord {
-  final String date;
-  final int bloodPressureSys;
-  final int bloodPressureDia;
-  final int heartRate;
-  final double temperature;
-  final int respiratoryRate;
-  final int oxygenSaturation;
-  final int weight;
-  final double bmi;
-  final int bloodGlucose;
-
-  VitalSignRecord({
-    required this.date,
-    required this.bloodPressureSys,
-    required this.bloodPressureDia,
-    required this.heartRate,
-    required this.temperature,
-    required this.respiratoryRate,
-    required this.oxygenSaturation,
-    required this.weight,
-    required this.bmi,
-    required this.bloodGlucose,
-  });
-}
-
-class VisitEncounter {
-  final int id;
-  final String dateTime;
-  final String visitType;
-  final String providerName;
-  final String specialty;
-  final String department;
-  final String chiefComplaint;
-  final String symptomsDuration;
-  final String assessment;
-  final String treatmentPlan;
-  final List<String> proceduresPerformed;
-  final String followUpInstructions;
-  final String? nextAppointmentDate;
-
-  VisitEncounter({
-    required this.id,
-    required this.dateTime,
-    required this.visitType,
-    required this.providerName,
-    required this.specialty,
-    required this.department,
-    required this.chiefComplaint,
-    required this.symptomsDuration,
-    required this.assessment,
-    required this.treatmentPlan,
-    required this.proceduresPerformed,
-    required this.followUpInstructions,
-    this.nextAppointmentDate,
-  });
-}
-
-class PatientInfo {
-  final String name;
-  final int age;
-  final String bloodType;
-  final String height;
-  final String weight;
-  final String mrn;
-  final String dob;
-
-  PatientInfo({
-    required this.name,
-    required this.age,
-    required this.bloodType,
-    required this.height,
-    required this.weight,
-    required this.mrn,
-    required this.dob,
-  });
-}
 
 // Main Widget
 class MedicalRecordsPage extends StatefulWidget {
@@ -162,21 +22,16 @@ class MedicalRecordsPage extends StatefulWidget {
 class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   String _activeTab = 'vitals';
   String _activeNav = 'records';
-  String _searchQuery = '';
-  bool _showFilters = false;
-  List<int> _expandedItems = [];
   bool _isLoading = true;
-  
+  List<int> _expandedItems = [];
   List<VitalSignRecord> _apiVitals = [];
-  List<CurrentMedication> _apiMedications = [];
-
+  List<VisitEncounter> _apiVisits = [];
+  List<ChronicCondition> _apiConditions = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
-    });
+    _fetchData();
   }
 
   Future<void> _fetchData() async {
@@ -188,8 +43,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     }
 
     try {
+      print('DEBUG: Fetching dashboard for user: ${user.id}');
       final data = await DashboardService.fetchPatientDashboard(user.id!);
+      print('DEBUG: Dashboard Success: ${data['success']}');
       if (data['success'] == true && mounted) {
+        print('DEBUG: Recent Vitals Count: ${data['recentVitals']?.length}');
         setState(() {
           // Map Vitals
           if (data['recentVitals'] != null) {
@@ -206,30 +64,41 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               bloodGlucose: v['bloodGlucose'] ?? 0,
             )).toList();
           }
-          
-          // Map Medications
-          if (data['activeMedications'] != null) {
-            _apiMedications = (data['activeMedications'] as List).map((m) => CurrentMedication(
-              id: m['id'] ?? 0,
-              genericName: m['genericName']?.toString() ?? '',
-              brandName: m['brandName']?.toString() ?? '',
-              strength: m['strength']?.toString() ?? '',
-              form: m['form']?.toString() ?? '',
-              route: m['route']?.toString() ?? '',
-              frequency: m['frequency']?.toString() ?? '',
-              prescribingPhysician: m['prescribingPhysician']?.toString() ?? '',
-              startDate: m['startDate']?.toString() ?? '',
-              reasonForMedication: m['reasonForMedication']?.toString() ?? '',
-              specialInstructions: m['specialInstructions']?.toString() ?? '',
-              pharmacy: '', // Not in API yet
-              lastFillDate: '',
-              nextRefillDate: '',
-              quantityRemaining: 0,
-              priorAuthStatus: '',
+
+          // Map Appointments to Visits
+          if (data['upcomingAppointments'] != null) {
+            _apiVisits = (data['upcomingAppointments'] as List).map((a) => VisitEncounter(
+              id: a['id'] ?? 0,
+              dateTime: '${a['date']} at ${a['time']}',
+              visitType: a['type'] ?? 'Consultation',
+              providerName: a['doctorName'] ?? 'Doctor',
+              specialty: a['specialty'] ?? '',
+              department: 'Medical Clinic',
+              chiefComplaint: 'Scheduled check-up',
+              symptomsDuration: 'N/A',
+              assessment: 'Scheduled appointment',
+              treatmentPlan: 'Pending consultation',
+              proceduresPerformed: [],
+              followUpInstructions: 'Please arrive 15 minutes early.',
+              nextAppointmentDate: null,
+            )).toList();
+          }
+
+          // Map Chronic Conditions from User Model if available
+          if (user.chronicConditions != null) {
+            _apiConditions = (user.chronicConditions as List).asMap().entries.map((entry) => ChronicCondition(
+              id: entry.key,
+              diseaseName: entry.value,
+              icdCode: 'N/A',
+              diagnosedDate: 'Ongoing',
+              currentStatus: 'active',
+              severityLevel: 'moderate',
+              treatingPhysician: 'Assigned Doctor',
+              lastUpdated: 'Recently',
+              managementPlan: 'Follow medical advice',
             )).toList();
           }
           
-
           _isLoading = false;
         });
       } else {
@@ -298,45 +167,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     ),
   ];
 
-  final List<CurrentMedication> currentMedications = [
-    CurrentMedication(
-      id: 1,
-      genericName: 'Lisinopril',
-      brandName: 'Prinivil, Zestril',
-      strength: '10mg',
-      form: 'Tablet',
-      route: 'Oral',
-      frequency: 'Once daily (morning)',
-      prescribingPhysician: 'Dr. Michael Chen, MD',
-      startDate: 'Jan 15, 2023',
-      reasonForMedication: 'Hypertension management',
-      specialInstructions:
-          'Take with or without food. Avoid high potassium foods.',
-      pharmacy: 'CVS Pharmacy - Main St',
-      lastFillDate: 'Dec 20, 2024',
-      nextRefillDate: 'Jan 19, 2025',
-      quantityRemaining: 15,
-      priorAuthStatus: 'Not required',
-    ),
-    CurrentMedication(
-      id: 2,
-      genericName: 'Cholecalciferol',
-      brandName: 'Vitamin D3',
-      strength: '2000 IU',
-      form: 'Softgel',
-      route: 'Oral',
-      frequency: 'Once daily (with breakfast)',
-      prescribingPhysician: 'Dr. Michael Chen, MD',
-      startDate: 'Dec 01, 2024',
-      reasonForMedication: 'Vitamin D deficiency',
-      specialInstructions: 'Take with food for better absorption',
-      pharmacy: 'CVS Pharmacy - Main St',
-      lastFillDate: 'Dec 01, 2024',
-      nextRefillDate: 'March 01, 2025',
-      quantityRemaining: 68,
-      priorAuthStatus: 'Not required',
-    ),
-  ];
+
 
   final List<VitalSignRecord> vitalSignsHistory = [
     VitalSignRecord(
@@ -589,9 +420,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             // Header
             _buildHeader(languageCode),
 
-            // Search Bar
-            _buildSearchBar(languageCode),
-
             // Tabs
             _buildTabs(languageCode),
 
@@ -662,6 +490,19 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: IconButton(
+              icon: const Icon(Icons.refresh, size: 22, color: colorCharcoal),
+              onPressed: _fetchData,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: IconButton(
               icon: const Icon(Icons.edit_note, size: 22, color: colorCharcoal),
               onPressed: () {
                 Navigator.push(
@@ -679,73 +520,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     );
   }
 
-  Widget _buildSearchBar(String languageCode) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      color: colorSecondaryBg,
-      child: Container(
-        decoration: BoxDecoration(
-          color: colorWhite,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: colorAccentBeige),
-        ),
-        child: Row(
-          children: [
-            const Padding(
-              padding: const EdgeInsetsDirectional.only(start: 12),
-              child: Icon(Icons.search, size: 16, color: colorSecondaryText),
-            ),
-            Expanded(
-              child: TextField(
-                onChanged: (value) => setState(() => _searchQuery = value),
-                decoration: InputDecoration(
-                  hintText: AppStrings.get('searchRecords', languageCode),
-                  hintStyle: const TextStyle(
-                    fontSize: 13,
-                    color: colorSecondaryText,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-                style: const TextStyle(fontSize: 13, color: colorCharcoal),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: _showFilters
-                    ? colorAccentOlive.withOpacity(0.2)
-                    : colorWhite,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: _showFilters ? colorAccentOlive : colorAccentBeige,
-                ),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.filter_list,
-                  size: 14,
-                  color: _showFilters ? colorAccentOlive : colorSecondaryText,
-                ),
-                onPressed: () => setState(() => _showFilters = !_showFilters),
-                padding: const EdgeInsets.all(4),
-                constraints: const BoxConstraints(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildTabs(String languageCode) {
     final tabs = [
       {'id': 'vitals', 'label': AppStrings.get('tabVitals', languageCode)},
-      {'id': 'current-meds', 'label': AppStrings.get('tabMedications', languageCode)},
-      {'id': 'lab-results', 'label': AppStrings.get('labResultsTitle', languageCode)},
     ];
 
     return Container(
@@ -808,28 +587,21 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     }
     
     switch (_activeTab) {
-      case 'current-meds':
-        return _buildMedicationsTab(languageCode);
       case 'vitals':
-        return _buildVitalsTab(languageCode);
-      case 'lab-results':
-        return const LabResultsPage(isTab: true);
       default:
-        return const SizedBox();
+        return _buildVitalsTab(languageCode);
     }
   }
 
   Widget _buildOverviewTab(String languageCode) {
-    final activeConditions = chronicConditions
-        .where(
-          (c) => c.currentStatus == 'active' || c.currentStatus == 'controlled',
-        )
-        .length;
+    final activeConditions = _apiConditions.isNotEmpty 
+        ? _apiConditions.length 
+        : chronicConditions.where((c) => c.currentStatus == 'active' || c.currentStatus == 'controlled').length;
 
     // Use API data or fallback to mock data if empty
     final vitalsList = _apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory;
-    final medsList = _apiMedications.isNotEmpty ? _apiMedications : currentMedications;
     final latestVital = vitalsList.isNotEmpty ? vitalsList.first : null;
+    final visitsList = _apiVisits.isNotEmpty ? _apiVisits : visitHistory;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -919,21 +691,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             const SizedBox(width: 8),
             Expanded(
               child: _buildStatCard(
-                icon: Icons.medication,
-                value: medsList.length.toString(),
-                label: AppStrings.get('sectCurrentMedications', languageCode),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFE6CA9A), Color(0xFFD9B882)],
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildStatCard(
                 icon: Icons.calendar_today,
-                value: visitHistory.length.toString(),
+                value: visitsList.length.toString(),
                 label: AppStrings.get('tabVisits', languageCode),
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -958,26 +717,15 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             color: colorCharcoal,
           ),
         ),
-        _buildActivityCard(
-          'Dec 20, 2024',
-          'Office Visit - Dr. Michael Chen',
-          'Hypertension follow-up • Blood pressure well-controlled',
-          colorAccentOlive,
-        ),
-        const SizedBox(height: 12),
-        _buildActivityCard(
-          'Dec 01, 2024',
-          'New Prescription - Vitamin D3',
-          'Started 2000 IU daily for vitamin D deficiency',
-          colorAccentBeige,
-        ),
-        const SizedBox(height: 12),
-        _buildActivityCard(
-          'Nov 12, 2024',
-          'Urgent Care Visit - Acute Bronchitis',
-          'Treatment completed • Full recovery',
-          const Color(0xFFFFB74D),
-        ),
+        ...(_apiVisits.isNotEmpty ? _apiVisits : visitHistory).take(3).map((visit) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildActivityCard(
+            visit.dateTime.split(' at ').first,
+            '${visit.visitType} - ${visit.providerName}',
+            '${visit.specialty} • ${visit.assessment}',
+            visit.specialty.contains('Medicine') ? colorAccentOlive : colorAccentBeige,
+          ),
+        )).toList(),
       ],
     );
   }
@@ -1164,8 +912,9 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   Widget _buildConditionsTab(String languageCode) {
+    final conditionsToShow = _apiConditions.isNotEmpty ? _apiConditions : chronicConditions;
     return Column(
-      children: chronicConditions.map((condition) {
+      children: conditionsToShow.map((condition) {
         final isExpanded = _expandedItems.contains(condition.id);
         final statusColors = _getStatusColor(condition.currentStatus);
         final severityColors = _getSeverityColor(condition.severityLevel);
@@ -1291,243 +1040,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     );
   }
 
-  Widget _buildMedicationsTab(String languageCode) {
-    final medsList = _apiMedications;
 
-    if (medsList.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40.0),
-          child: Text(
-            AppStrings.get('noData', languageCode) ?? 'No medications found.',
-            style: const TextStyle(color: colorSecondaryText),
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: medsList.map((med) {
-        final isExpanded = _expandedItems.contains(med.id);
-        final daysUntilRefill = DateTime.parse(
-          '2025-01-19',
-        ).difference(DateTime.now()).inDays;
-        final needsRefillSoon = daysUntilRefill <= 7;
-
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorWhite,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: needsRefillSoon
-                    ? const Color(0xFFFFB74D)
-                    : colorSecondaryBg,
-                width: needsRefillSoon ? 2 : 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: () => _toggleExpanded(med.id),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [colorAccentOlive, colorAccentBeige],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.medication,
-                            color: colorCharcoal,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${med.genericName} ${med.strength}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: colorCharcoal,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                med.brandName,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: colorSecondaryText,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${med.form} • ${med.route} • ${med.frequency}',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: colorSecondaryText,
-                                ),
-                              ),
-                              if (needsRefillSoon) ...[
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFFF3E0),
-                                    border: Border.all(
-                                      color: const Color(0xFFFFB74D),
-                                    ),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    AppStrings.get(
-                                      'labelRefillNeeded',
-                                      languageCode,
-                                    ).replaceAll(
-                                      '{count}',
-                                      daysUntilRefill.toString(),
-                                    ),
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFFE65100),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          isExpanded ? Icons.expand_less : Icons.expand_more,
-                          color: isExpanded
-                              ? colorAccentOlive
-                              : colorSecondaryText,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (isExpanded)
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colorSecondaryBg,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildInfoRow(
-                                AppStrings.get('labelStartDate', languageCode),
-                                med.startDate,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildInfoRow(
-                                AppStrings.get(
-                                  'labelQuantityRemaining',
-                                  languageCode,
-                                ),
-                                '${med.quantityRemaining} ${AppStrings.get('labelPills', languageCode)}',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('labelReason', languageCode),
-                          med.reasonForMedication,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('labelInstructions', languageCode),
-                          med.specialInstructions,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('treatingPhysician', languageCode),
-                          med.prescribingPhysician,
-                        ),
-
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colorAccentOlive,
-                                  foregroundColor: colorCharcoal,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                  ),
-                                ),
-                                child: Text(
-                                  AppStrings.get('requestRefill', languageCode),
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: colorAccentBeige),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: IconButton(
-                                icon: const Icon(Icons.share, size: 16),
-                                onPressed: () {},
-                                color: colorSecondaryText,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
 
   Widget _buildVitalsTab(String languageCode) {
     return Column(
@@ -1552,6 +1065,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             ),
           ),
         ),
+        if (_apiVitals.isNotEmpty) _buildMedicalHealthAlerts(languageCode),
         _buildVitalChartCard(
           AppStrings.get('labelBPTrend', languageCode),
           _buildBloodPressureChart(),
@@ -1570,6 +1084,117 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         _buildVitalChartCard(
           AppStrings.get('labelBGTrend', languageCode),
           _buildBloodGlucoseChart(),
+        ),
+        const SizedBox(height: 24),
+        _buildVitalsHistory(languageCode),
+      ],
+    );
+  }
+
+  Widget _buildVitalsHistory(String languageCode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Recent History', // Fixed string for now, can be localized later
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorCharcoal,
+              ),
+            ),
+            if (_apiVitals.isEmpty)
+              Text(
+                '(Showing Mock Data)', 
+                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (_apiVitals.isEmpty && vitalSignsHistory.isNotEmpty)
+          ...vitalSignsHistory.take(3).map((v) => _buildVitalHistoryItem(v, languageCode, isMock: true))
+        else if (_apiVitals.isNotEmpty)
+          ..._apiVitals.map((v) => _buildVitalHistoryItem(v, languageCode))
+        else
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colorWhite,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(child: Text('No vitals recorded yet.')),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildVitalHistoryItem(VitalSignRecord v, String languageCode, {bool isMock = false}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isMock ? Colors.grey.shade50 : colorWhite,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: isMock ? Colors.grey.shade200 : colorSecondaryBg),
+        boxShadow: isMock ? [] : [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                v.date,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: colorCharcoal,
+                ),
+              ),
+              if (isMock)
+                const Icon(Icons.info_outline, size: 14, color: Colors.grey),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSimpleVitalStat('BP', '${v.bloodPressureSys}/${v.bloodPressureDia}'),
+              _buildSimpleVitalStat('HR', '${v.heartRate} bpm'),
+              _buildSimpleVitalStat('Weight', '${v.weight} lbs'),
+              _buildSimpleVitalStat('Glucose', '${v.bloodGlucose}'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSimpleVitalStat(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: colorSecondaryText),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: colorCharcoal,
+          ),
         ),
       ],
     );
@@ -1654,8 +1279,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.pop(context); // Close the sheet immediately so Snackbars are visible
-
                   final authService = Provider.of<AuthService>(context, listen: false);
                   final user = authService.currentUser;
                   if (user == null || user.id == null || user.id!.isEmpty) {
@@ -1670,22 +1293,23 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                   final hr = int.tryParse(hrController.text) ?? 72;
                   final weight = int.tryParse(weightController.text) ?? 140;
 
-                  // Call the backend service
-                  final success = await DashboardService.logVitals(
+                  Navigator.pop(context); // Close sheet
+
+                  final result = await DashboardService.logVitals(
                     uid: user.id!,
                     sys: sys,
                     dia: dia,
                     hr: hr,
-                    temp: 98.6,
+                    temp: 37.0,
                     rr: 16,
                     o2: 98,
                     weight: weight,
-                    bmi: 22.6,
+                    bmi: 22.0,
                     glucose: 95,
                   );
 
-                  if (success) {
-                    await _fetchData(); // Refresh API data
+                  if (result['success']) {
+                    await _fetchData();
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -1697,9 +1321,10 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                   } else {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Failed to save vitals via API.'),
+                        SnackBar(
+                          content: Text(result['message'] ?? 'Failed to save vitals.'),
                           backgroundColor: Colors.red,
+                          duration: const Duration(seconds: 10),
                         ),
                       );
                     }
@@ -1868,8 +1493,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           ),
         ),
         borderData: FlBorderData(show: false),
-        minY: 60,
-        maxY: 140,
+        minY: 40,
+        maxY: 180,
         lineBarsData: [
           LineChartBarData(
             spots: _chartVitals
@@ -1884,8 +1509,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 .toList(),
             isCurved: true,
             color: colorAccentOlive,
-            barWidth: 2,
-            dotData: const FlDotData(show: false),
+            barWidth: 3,
+            dotData: const FlDotData(show: true),
           ),
           LineChartBarData(
             spots: _chartVitals
@@ -1900,8 +1525,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 .toList(),
             isCurved: true,
             color: colorAccentBeige,
-            barWidth: 2,
-            dotData: const FlDotData(show: false),
+            barWidth: 3,
+            dotData: const FlDotData(show: true),
           ),
         ],
       ),
@@ -1955,8 +1580,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           ),
         ),
         borderData: FlBorderData(show: false),
-        minY: 60,
-        maxY: 90,
+        minY: 40,
+        maxY: 120,
         lineBarsData: [
           LineChartBarData(
             spots: _chartVitals
@@ -1968,8 +1593,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 .toList(),
             isCurved: true,
             color: colorAccentOlive,
-            barWidth: 2,
-            dotData: const FlDotData(show: false),
+            barWidth: 3,
+            dotData: const FlDotData(show: true),
           ),
         ],
       ),
@@ -2023,8 +1648,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           ),
         ),
         borderData: FlBorderData(show: false),
-        minY: 135,
-        maxY: 145,
+        // Auto-scaling enabled by leaving minY/maxY null
         barGroups: _chartVitals
             .asMap()
             .entries
@@ -2095,8 +1719,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           ),
         ),
         borderData: FlBorderData(show: false),
-        minY: 80,
-        maxY: 105,
+        // Auto-scaling enabled
         lineBarsData: [
           LineChartBarData(
             spots: _chartVitals
@@ -2112,7 +1735,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             isCurved: true,
             color: colorAccentOlive,
             barWidth: 2,
-            dotData: const FlDotData(show: false),
+            dotData: const FlDotData(show: true),
           ),
         ],
       ),
@@ -2120,8 +1743,9 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   Widget _buildVisitsTab(String languageCode) {
+    final visitsToShow = _apiVisits.isNotEmpty ? _apiVisits : visitHistory;
     return Column(
-      children: visitHistory.map((visit) {
+      children: visitsToShow.map((visit) {
         final isExpanded = _expandedItems.contains(visit.id);
 
         return Padding(
@@ -2341,6 +1965,51 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildMedicalHealthAlerts(String languageCode) {
+    // Basic threshold logic same as backend for immediate local feedback if desired,
+    // but better to just show if BP is high.
+    if (_apiVitals.isEmpty) return const SizedBox.shrink();
+    final latest = _apiVitals.first;
+    if (latest.bloodPressureSys > 130 || latest.bloodPressureDia > 85) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.red.shade200),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.red.shade700, size: 28),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   Text(
+                    'High Blood Pressure Alert',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red.shade900,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Your last reading was ${latest.bloodPressureSys}/${latest.bloodPressureDia}. Please monitor closely.',
+                    style: TextStyle(color: Colors.red.shade800, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   Widget _buildInfoRow(String label, String value, {Color? valueColor}) {

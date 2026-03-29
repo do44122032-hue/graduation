@@ -20,7 +20,6 @@ class DoctorPatientsPage extends StatefulWidget {
 class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
   List<UserModel> _patients = [];
   bool _isLoading = true;
-  final DashboardService _dashboardService = DashboardService();
 
   @override
   void initState() {
@@ -31,7 +30,7 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
   Future<void> _loadPatients() async {
     setState(() => _isLoading = true);
     try {
-      final patients = await _dashboardService.fetchPatients();
+      final patients = await DashboardService.fetchPatients();
       setState(() {
         _patients = patients;
         _isLoading = false;

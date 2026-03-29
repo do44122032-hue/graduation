@@ -5,6 +5,8 @@ import '../../constants/app_strings.dart';
 import '../../constants/app_colors.dart';
 import '../../enums/user_role.dart';
 import 'login.dart';
+import '../doctor/doctor_dashboard.dart';
+import '../medical/dashboard_screen.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({Key? key}) : super(key: key);
@@ -44,6 +46,50 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _showBypassDialog(BuildContext context, String lang) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Emergency Bypass'),
+        content: const Text('Access dashboards without a backend connection for UI testing?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const ModernDashboardScreen())
+                  );
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6AB5D8)),
+                child: const Text('Guest Patient'),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const DoctorDashboardScreen())
+                  );
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFCBD77E)),
+                child: const Text('Guest Doctor'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -103,12 +149,17 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              AppStrings.get('selectRole', lang),
-                              style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF285430),
+                            GestureDetector(
+                              onLongPress: () {
+                                _showBypassDialog(context, lang);
+                              },
+                              child: Text(
+                                AppStrings.get('selectRole', lang),
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF285430),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 8),

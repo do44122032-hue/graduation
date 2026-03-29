@@ -544,13 +544,14 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(
-              Icons.add_circle_outline,
-              color: primaryColor,
+          if (role == UserRole.doctor)
+            IconButton(
+              icon: Icon(
+                Icons.add_circle_outline,
+                color: primaryColor,
+              ),
+              onPressed: () => _showAttachmentOptions(languageCode),
             ),
-            onPressed: () => _showAttachmentOptions(languageCode),
-          ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),

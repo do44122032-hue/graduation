@@ -5,7 +5,7 @@ import '../../services/auth_service.dart';
 import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
 import '../medical/dashboard_screen.dart';
-import 'medicalrecord.dart'; // Import models
+import 'package:graduation_project/models/medical_models.dart';
 
 class PatientDataEntryPage extends StatefulWidget {
   const PatientDataEntryPage({Key? key}) : super(key: key);
@@ -26,7 +26,6 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
 
   // Local State for Lists
   List<ChronicCondition> _conditions = [];
-  List<CurrentMedication> _medications = [];
 
   // Colors (matching dashboard)
   static const Color colorSecondaryBg = Color(0xFFF7F7F7);
@@ -98,12 +97,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
             const SizedBox(height: 16),
             _buildConditionsList(languageCode),
             const SizedBox(height: 32),
-            _buildSectionHeader(
-              AppStrings.get('sectCurrentMedications', languageCode),
-              Icons.medication,
-            ),
-            const SizedBox(height: 16),
-            _buildMedicationsList(languageCode),
+
             const SizedBox(height: 80), // Bottom padding
           ],
         ),
@@ -318,82 +312,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
     );
   }
 
-  Widget _buildMedicationsList(String languageCode) {
-    return Column(
-      children: [
-        if (_medications.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Center(
-              child: Text(
-                AppStrings.get('msgNoMedications', languageCode),
-                style: const TextStyle(color: colorSecondaryText),
-              ),
-            ),
-          ),
-        ..._medications.map((med) => _buildMedicationItem(med, languageCode)),
-        const SizedBox(height: 12),
-        _buildAddButton(
-          AppStrings.get('actionAddMedication', languageCode),
-          () => _showAddMedicationDialog(languageCode),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildMedicationItem(CurrentMedication med, String languageCode) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorWhite,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorSecondaryBg),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: colorAccentBeige.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.medication, color: Color(0xFFD9B882)),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  med.genericName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '${med.strength} • ${med.frequency}',
-                  style: const TextStyle(
-                    color: colorSecondaryText,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-            onPressed: () {
-              setState(() {
-                _medications.remove(med);
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildAddButton(String label, VoidCallback onPressed) {
     return SizedBox(
@@ -472,77 +391,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
     );
   }
 
-  void _showAddMedicationDialog(String languageCode) {
-    final nameController = TextEditingController();
-    final strengthController = TextEditingController();
-    final freqController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(AppStrings.get('actionAddMedication', languageCode)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: AppStrings.get('labelMedicationName', languageCode),
-              ),
-            ),
-            TextField(
-              controller: strengthController,
-              decoration: InputDecoration(
-                labelText: AppStrings.get('labelStrengthHint', languageCode),
-              ),
-            ),
-            TextField(
-              controller: freqController,
-              decoration: InputDecoration(
-                labelText: AppStrings.get('labelFrequency', languageCode),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(AppStrings.get('actionCancel', languageCode)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _medications.add(
-                  CurrentMedication(
-                    id: DateTime.now().millisecondsSinceEpoch,
-                    genericName: nameController.text,
-                    strength: strengthController.text,
-                    frequency: freqController.text,
-                    // Mocking others
-                    brandName: '',
-                    form: 'Tablet',
-                    route: 'Oral',
-                    prescribingPhysician: '',
-                    startDate: '',
-                    reasonForMedication: '',
-                    specialInstructions: '',
-                    pharmacy: '',
-                    lastFillDate: '',
-                    nextRefillDate: '',
-                    quantityRemaining: 0,
-                    priorAuthStatus: '',
-                  ),
-                );
-              });
-              Navigator.pop(ctx);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: colorAccentOlive),
-            child: Text(AppStrings.get('actionAdd', languageCode)),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _saveData(String languageCode) async {
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -557,7 +406,6 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
       // Convert proper objects to strings if needed for storage, or store simple strings
       // For this implementation, we will just store the disease names as strings
       chronicConditions: _conditions.map((e) => e.diseaseName).toList(),
-      medications: _medications.map((e) => e.genericName).toList(),
     );
 
     if (result.success && mounted) {

@@ -5,6 +5,7 @@ import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
 import 'doctor_profile.dart';
 import 'doctor_change_password.dart';
+import 'doctor_student_reports.dart';
 
 class DoctorSettingsPage extends StatefulWidget {
   const DoctorSettingsPage({super.key});
@@ -106,6 +107,21 @@ class _DoctorSettingsPageState extends State<DoctorSettingsPage> {
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 24),
+          _buildSectionHeader('Academic Management'),
+          _buildSettingsTile(
+            icon: Icons.school_outlined,
+            title: 'Academic Management',
+            subtitle: 'View student submissions and manage assigned tasks',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DoctorStudentReportsPage(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 24),
           _buildSectionHeader(AppStrings.get('sectSupport', languageCode)),

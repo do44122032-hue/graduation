@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/dashboard_service.dart';
+import '../../constants/app_colors.dart';
+import '../../constants/app_text_styles.dart';
+import '../../services/language_service.dart';
 
 class DoctorScheduleManagementScreen extends StatefulWidget {
   const DoctorScheduleManagementScreen({Key? key}) : super(key: key);
@@ -89,6 +92,38 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
           const SnackBar(content: Text('Failed to add schedule')),
         );
       }
+    }
+  }
+
+  Future<void> _seedDefaultSchedule() async {
+    final user = Provider.of<AuthService>(context, listen: false).currentUser;
+    if (user == null) return;
+
+    setState(() => _isLoading = true);
+    
+    final slots = [
+      {'day': 'Monday', 'start': '09:00 AM', 'end': '10:00 AM'},
+      {'day': 'Monday', 'start': '10:00 AM', 'end': '11:00 AM'},
+      {'day': 'Tuesday', 'start': '02:00 PM', 'end': '03:00 PM'},
+      {'day': 'Wednesday', 'start': '11:00 AM', 'end': '12:00 PM'},
+    ];
+
+    int successCount = 0;
+    for (var slot in slots) {
+      final success = await DashboardService.addDoctorSchedule(
+        doctorId: user.id,
+        day: slot['day']!,
+        startTime: slot['start']!,
+        endTime: slot['end']!,
+      );
+      if (success) successCount++;
+    }
+
+    await _loadSchedule();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Added $successCount default slots successfully')),
+      );
     }
   }
 
@@ -192,7 +227,7 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                     child: ElevatedButton(
                       onPressed: _addSchedule,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6AB5D8),
+                        backgroundColor: AppColors.doctorPrimary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -211,16 +246,21 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = Provider.of<LanguageService>(context).currentLanguage;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Schedule'),
-        backgroundColor: const Color(0xFF6AB5D8),
+        title: Text(
+          'Manage Schedule',
+          style: AppTextStyles.h3(languageCode: languageCode)
+              .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: AppColors.doctorPrimary,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: AppColors.secondaryBackground,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF6AB5D8)))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.doctorPrimary))
           : _schedules.isEmpty
               ? Center(
                   child: Column(
@@ -235,8 +275,17 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                         icon: const Icon(Icons.add),
                         label: const Text('Add Slot'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6AB5D8),
+                          backgroundColor: AppColors.doctorPrimary,
                           foregroundColor: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: _seedDefaultSchedule,
+                        icon: const Icon(Icons.auto_awesome),
+                        label: const Text('Auto-generate Test Slots'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.doctorPrimary,
                         ),
                       ),
                     ],
@@ -249,18 +298,39 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                     if (index == 0) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
-                        child: ElevatedButton.icon(
-                          onPressed: _showAddScheduleSheet,
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add New Slot'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF6AB5D8),
-                            elevation: 0,
-                            side: const BorderSide(color: Color(0xFF6AB5D8)),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: ElevatedButton.icon(
+                                onPressed: _showAddScheduleSheet,
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add New Slot'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: AppColors.doctorPrimary,
+                                  elevation: 0,
+                                  side: const BorderSide(color: AppColors.doctorPrimary),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _seedDefaultSchedule,
+                                icon: const Icon(Icons.auto_awesome, size: 16),
+                                label: const Text('Seed'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.doctorPrimary,
+                                  side: const BorderSide(color: AppColors.doctorPrimary),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -289,10 +359,10 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                         leading: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF6AB5D8).withOpacity(0.1),
+                            color: AppColors.doctorPrimary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.event, color: Color(0xFF6AB5D8)),
+                          child: const Icon(Icons.event, color: AppColors.doctorPrimary),
                         ),
                         title: Text(slot['day'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         subtitle: Padding(
