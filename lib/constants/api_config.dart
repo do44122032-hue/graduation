@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 class ApiConfig {
   // Toggle this to true for local testing, false for production (Railway)
-  static bool isLocal = true; 
+  static bool isLocal = false; 
 
   // IMPORTANT: For physical devices (True phone), replace 'localhost' with your 
   // machine's actual local IP address (e.g. '192.168.1.100').
@@ -24,10 +24,8 @@ class ApiConfig {
     // For mobile/desktop
     try {
       if (Platform.isAndroid) {
-        // '10.0.2.2' is a special alias to your host loopback interface (localhost on your dev machine)
-        // This ONLY works for Android Emulators. 
-        // For physical devices, you MUST use your machine's IP.
-        return 'http://10.0.2.2:8000';
+        // Use machine's actual IP for all Android devices to support physical phones
+        return 'http://$localMachineIp:8000';
       }
       if (Platform.isIOS || Platform.isMacOS || Platform.isWindows) {
         return 'http://localhost:8000';
