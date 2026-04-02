@@ -256,7 +256,39 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
               ),
             ),
-            Image.asset('assets/logo.png', width: 180, height: 180),
+            // Robust Original Logo with Fallback
+            ClipOval(
+              child: Image.asset(
+                'assets/logo.png',
+                key: UniqueKey(), // Forces browser to load the new clean version
+                width: 180,
+                height: 180,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // Professional Medical Fallback UI
+                  return Container(
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.medical_services_rounded,
+                      size: 80,
+                      color: Color(0xFF62A5F9), // Medical Blue
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
 

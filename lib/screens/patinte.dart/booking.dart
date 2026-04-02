@@ -180,11 +180,16 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
   Future<void> _loadDoctorSchedule(Doctor doctor) async {
     if (_hasFetchedSchedule || _isLoadingSchedule) return;
     
+    print('DEBUG: Requesting schedule for Doctor ${doctor.name} (ID: ${doctor.id})');
     if (setModalState != null) setModalState!(() => _isLoadingSchedule = true);
     setState(() => _isLoadingSchedule = true);
     try {
       final schedule = await DashboardService.fetchDoctorSchedule(doctor.id.toString());
       
+      print('DEBUG: SUCCESS! Received ${schedule.length} slots for doctor ${doctor.name}');
+      if (schedule.isNotEmpty) {
+        print('DEBUG: First Slot Data Structure: ${schedule[0]}');
+      }
       if (mounted) {
         if (setModalState != null) {
           setModalState!(() {
@@ -200,7 +205,7 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
         });
       }
     } catch (e) {
-      print('Error loading schedule: $e');
+      print('DEBUG: Error in _loadDoctorSchedule: $e');
       if (mounted) {
         if (setModalState != null) {
           setModalState!(() {
@@ -212,6 +217,14 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
           _isLoadingSchedule = false;
           _hasFetchedSchedule = true;
         });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load schedule: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
@@ -248,6 +261,9 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       _isLoadingSchedule = false;
     });
 
+    // Start loading BEFORE showing the sheet
+    _loadDoctorSchedule(doctor);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -255,9 +271,6 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       builder: (context) => StatefulBuilder(
         builder: (context, setter) {
           setModalState = setter;
-          if (!_hasFetchedSchedule && !_isLoadingSchedule) {
-            _loadDoctorSchedule(doctor);
-          }
           return Container(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.85,

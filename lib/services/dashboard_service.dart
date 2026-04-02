@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../models/student_report_model.dart';
 import '../models/student_task_model.dart';
@@ -11,20 +12,53 @@ import '../constants/api_config.dart';
 class DashboardService {
   static String get baseUrl => ApiConfig.baseUrl;
   
-  // Method to fetch the patient dashboard data
+  // Local cache to ensure immediate UI feedback even if server is slow
+  static Map<String, dynamic>? _lastLoggedVital;
+
+  static Future<void> saveVitalLocally(Map<String, dynamic> vital) async {
+    _lastLoggedVital = vital;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('last_vital_cache', jsonEncode(vital));
+    } catch (_) {}
+  }
+  
+  static Future<Map<String, dynamic>?> getLocalVital() async {
+    if (_lastLoggedVital != null) return _lastLoggedVital;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final str = prefs.getString('last_vital_cache');
+      if (str != null) {
+        _lastLoggedVital = jsonDecode(str);
+        return _lastLoggedVital;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  // Deprecated: used old in-memory only methods
+  static void setLastLoggedVital(Map<String, dynamic> vital) => saveVitalLocally(vital);
+  static Map<String, dynamic>? getLastLoggedVital() => _lastLoggedVital;
   static Future<Map<String, dynamic>> fetchPatientDashboard(String uid) async {
     try {
+      final url = '$baseUrl/dashboard/patient/$uid';
+      print('DEBUG DashboardService: GET $url');
       final response = await http.get(
-        Uri.parse('$baseUrl/dashboard/patient/$uid'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 30));
 
+      print('DEBUG DashboardService: Response Code: ${response.statusCode}');
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        final data = json.decode(response.body);
+        print('DEBUG DashboardService: Success! Vitals: ${data['recentVitals']?.length ?? 0}');
+        return data;
       } else {
-        throw Exception('Failed to load dashboard data: ${response.statusCode}');
+        print('DEBUG DashboardService: Error ${response.statusCode}: ${response.body}');
+        return {'success': false, 'error': 'Server error: ${response.statusCode}'};
       }
     } catch (e) {
+      print('DEBUG DashboardService: Fetch Network Error: $e');
       throw Exception('Network error while fetching dashboard: $e');
     }
   }
@@ -42,31 +76,58 @@ class DashboardService {
     required int glucose,
   }) async {
     try {
+      final url = '$baseUrl/dashboard/vitals';
+      final payload = {
+        'uid': uid,
+        'bloodPressureSys': sys,
+        'bloodPressureDia': dia,
+        'heartRate': hr,
+        'temperature': temp,
+        'respiratoryRate': rr,
+        'oxygenSaturation': o2,
+        'weight': weight,
+        'bmi': bmi,
+        'bloodGlucose': glucose,
+      };
+      
+      print('DEBUG DashboardService: POST to $url with $payload');
       final response = await http.post(
-        Uri.parse('$baseUrl/dashboard/vitals'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'uid': uid,
+        body: json.encode(payload),
+      ).timeout(const Duration(seconds: 20));
+
+      print('DEBUG DashboardService: Response Code: ${response.statusCode}');
+      print('DEBUG DashboardService: Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        print('DEBUG DashboardService: Log Vitals Success: ${data['success']}');
+        
+        // Save to local cache for instant dashboard update
+        setLastLoggedVital({
           'bloodPressureSys': sys,
           'bloodPressureDia': dia,
           'heartRate': hr,
           'temperature': temp,
-          'respiratoryRate': rr,
-          'oxygenSaturation': o2,
           'weight': weight,
-          'bmi': bmi,
-          'bloodGlucose': glucose,
-        }),
-      );
+          'date': 'Just Now'
+        });
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return {'success': data['success'] ?? false, 'message': 'Success'};
+        return {
+          'success': data['success'] ?? true, 
+          'message': data['message'] ?? 'Successfully logged'
+        };
       } else {
-        return {'success': false, 'message': 'Server Error: ${response.statusCode}\n${response.body}'};
+        print('DEBUG DashboardService: Log Vitals Error: ${response.statusCode}');
+        return {
+          'success': false, 
+          'message': 'Server Error: ${response.statusCode} - ${response.body}'
+        };
       }
     } catch (e) {
-      return {'success': false, 'message': 'Network Error: $e'};
+      print('DEBUG DashboardService: Log Vitals Error: $e');
+      return {'success': false, 'message': 'Network/Connection Error: $e'};
     }
   }
 
@@ -272,18 +333,23 @@ class DashboardService {
 
   static Future<List<Map<String, dynamic>>> fetchDoctorSchedule(String doctorId) async {
     try {
+      final url = '$baseUrl/users/doctors/$doctorId/schedule';
+      print('DEBUG DashboardService: GET $url');
       final response = await http.get(
-        Uri.parse('$baseUrl/users/doctors/$doctorId/schedule'),
+        Uri.parse(url),
       ).timeout(const Duration(seconds: 30));
 
+      print('DEBUG DashboardService: Response Code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
+        print('DEBUG DashboardService: Success! Slots: ${data.length}');
         return List<Map<String, dynamic>>.from(data);
       } else {
-        throw Exception('Failed to fetch schedule: ${response.statusCode}');
+        print('DEBUG DashboardService: Error ${response.statusCode}: ${response.body}');
+        return [];
       }
     } catch (e) {
-      print('Error fetching schedule: $e');
+      print('DEBUG DashboardService: Fetch Schedule Error: $e');
       return [];
     }
   }

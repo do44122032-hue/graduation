@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../enums/user_role.dart';
 import '../constants/api_config.dart';
@@ -16,12 +17,46 @@ class AuthResult {
 class AuthService extends ChangeNotifier {
   UserModel? _currentUser;
   bool _isLoading = false;
+  bool _isInitialized = false;
 
   static String get _baseUrl => ApiConfig.baseUrl;
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _currentUser != null;
+  bool get isInitialized => _isInitialized;
+
+  AuthService() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _loadUser();
+    _isInitialized = true;
+    notifyListeners();
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = prefs.getString('user_data');
+      if (userJson != null) {
+        _currentUser = UserModel.fromJson(jsonDecode(userJson));
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error loading user: $e');
+    }
+  }
+
+  Future<void> _saveUser(UserModel user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_data', jsonEncode(user.toJson()));
+    } catch (e) {
+      debugPrint('Error saving user: $e');
+    }
+  }
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -56,14 +91,16 @@ class AuthService extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _currentUser = UserModel.fromJson(data['user']);
+        if (_currentUser != null) {
+          await _saveUser(_currentUser!);
+        }
         _setLoading(false);
         return AuthResult(success: true, user: _currentUser);
       } else {
-        final data = jsonDecode(response.body);
         _setLoading(false);
         return AuthResult(
           success: false, 
-          message: data['detail'] ?? 'Login failed',
+          message: _getErrorMessage(response),
         );
       }
     } catch (e) {
@@ -100,6 +137,9 @@ class AuthService extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _currentUser = UserModel.fromJson(data['user']);
+        if (_currentUser != null) {
+          await _saveUser(_currentUser!);
+        }
         
         if (role == UserRole.doctor) {
           // Doctors need to login to become "active" on the backend
@@ -109,11 +149,10 @@ class AuthService extends ChangeNotifier {
         _setLoading(false);
         return AuthResult(success: true, user: _currentUser);
       } else {
-        final data = jsonDecode(response.body);
         _setLoading(false);
         return AuthResult(
           success: false,
-          message: data['detail'] ?? 'Signup failed',
+          message: _getErrorMessage(response),
         );
       }
     } catch (e) {
@@ -157,14 +196,16 @@ class AuthService extends ChangeNotifier {
         final profileRes = await http.get(Uri.parse('$_baseUrl/users/profile/${_currentUser!.id}'));
         if (profileRes.statusCode == 200) {
           _currentUser = UserModel.fromJson(jsonDecode(profileRes.body));
+          if (_currentUser != null) {
+            await _saveUser(_currentUser!);
+          }
         }
         _setLoading(false);
         notifyListeners();
         return AuthResult(success: true);
       } else {
-        final data = jsonDecode(response.body);
         _setLoading(false);
-        return AuthResult(success: false, message: data['detail'] ?? 'Update failed');
+        return AuthResult(success: false, message: _getErrorMessage(response));
       }
     } catch (e) {
       _setLoading(false);
@@ -172,19 +213,23 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<AuthResult> resetPassword(String email) async {
+  Future<AuthResult> resetPassword(String phone) async {
     _setLoading(true);
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email}),
-      );
+        body: jsonEncode({'phone': phone}),
+      ).timeout(const Duration(seconds: 15));
+      
+      debugPrint('Reset Password Stats: ${response.statusCode}');
+      debugPrint('Reset Password Body: ${response.body}');
+      
       _setLoading(false);
       if (response.statusCode == 200) {
-        return AuthResult(success: true, message: 'Reset link sent to your email');
+        return AuthResult(success: true, message: 'Reset code sent to your phone');
       } else {
-        return AuthResult(success: false, message: 'Failed to send reset link');
+        return AuthResult(success: false, message: _getErrorMessage(response));
       }
     } catch (e) {
       _setLoading(false);
@@ -193,15 +238,59 @@ class AuthService extends ChangeNotifier {
   }
 
   // Helper methods matched to existing UI calls
-  Future<AuthResult> verifyRecoveryCode(String identifier, String code) async {
-    // Mocked for now as backend doesn't handle verify code separately from Firebase
-    if (code == '123456') return AuthResult(success: true);
-    return AuthResult(success: false, message: 'Invalid code');
+  Future<AuthResult> verifyRecoveryCode(String phone, String code) async {
+    _setLoading(true);
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/verify-code'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'phone': phone, 'code': code}),
+      );
+      _setLoading(false);
+      if (response.statusCode == 200) {
+        return AuthResult(success: true);
+      } else {
+        return AuthResult(success: false, message: _getErrorMessage(response));
+      }
+    } catch (e) {
+      _setLoading(false);
+      return AuthResult(success: false, message: 'Connection error: $e');
+    }
   }
 
-  Future<AuthResult> updatePassword(String identifier, String newPassword) async {
-    // Should be handled via Firebase Auth link, but added for UI compatibility
-    return AuthResult(success: true, message: 'Password updated successfully');
+  Future<AuthResult> updatePassword(String phone, String newPassword) async {
+    _setLoading(true);
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/update-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'phone': phone, 'new_password': newPassword}),
+      );
+      _setLoading(false);
+      if (response.statusCode == 200) {
+        return AuthResult(success: true, message: 'Password updated successfully');
+      } else {
+        return AuthResult(success: false, message: _getErrorMessage(response));
+      }
+    } catch (e) {
+      _setLoading(false);
+      return AuthResult(success: false, message: 'Connection error: $e');
+    }
+  }
+
+  String _getErrorMessage(http.Response response) {
+    try {
+      final data = jsonDecode(response.body);
+      if (data['detail'] is List) {
+        return (data['detail'] as List).map((e) {
+          if (e is Map) return e['msg'] ?? e.toString();
+          return e.toString();
+        }).join(', ');
+      }
+      return data['detail']?.toString() ?? 'Error: ${response.statusCode}';
+    } catch (e) {
+      return 'Server error (Status: ${response.statusCode})';
+    }
   }
 
   void logout() async {
@@ -217,6 +306,12 @@ class AuthService extends ChangeNotifier {
       }
     }
     _currentUser = null;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('user_data');
+    } catch (e) {
+      // Ignore
+    }
     notifyListeners();
   }
 }

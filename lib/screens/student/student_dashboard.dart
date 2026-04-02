@@ -485,6 +485,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             ),
           ),
         ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15, right: 15),
+            child: _buildAnimatedLogo(),
+          ),
+        ),
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -498,66 +505,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Menu
-                    Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: orangePrimary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.school_rounded,
-                        color: Color(0xFF282828),
-                        size: 26,
-                      ),
-                    ),
-                    // Profile Image - Clickable
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const StudentProfileScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
-                          boxShadow: [
-                            BoxShadow(
-                              color: orangePrimary.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: user?.profilePicture != null
-                              ? Image.network(
-                                  user!.profilePicture!,
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [orangePrimary, orangeLight],
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(width: 44), // Placeholder for balance
+                    const SizedBox(width: 44), // Placeholder for balance
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -566,6 +515,65 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // User Avatar moved above name
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const StudentProfileScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(40),
+                            child: (user?.profilePicture != null && user!.profilePicture!.isNotEmpty)
+                                ? Image.network(
+                                    user.profilePicture!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [orangePrimary, orangeLight],
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [orangePrimary, orangeLight],
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       Text(
                         user?.name ?? 'Alex Thompson',
                         style: const TextStyle(
@@ -1979,6 +1987,92 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 child: Text(AppStrings.get('actionScanQR', languageCode)),
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAnimatedLogo() {
+    return const PulseAnimatedLogo();
+  }
+}
+
+class PulseAnimatedLogo extends StatefulWidget {
+  const PulseAnimatedLogo({super.key});
+
+  @override
+  State<PulseAnimatedLogo> createState() => _PulseAnimatedLogoState();
+}
+
+class _PulseAnimatedLogoState extends State<PulseAnimatedLogo>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Opacity(
+            opacity: _opacityAnimation.value,
+            child: SizedBox(
+              height: 150,
+              width: 150,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/logo.png',
+                  key: UniqueKey(), // Forces browser to load the new clean version
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.medical_services_rounded,
+                        size: 60,
+                        color: Color(0xFF62A5F9),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         );
       },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/services/ai_service.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   ];
   bool _isTyping = false;
 
-  void _sendMessage(String text) {
+  void _sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
     setState(() {
@@ -26,29 +27,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
     _messageController.clear();
 
-    // Simulate AI thinking and varying responses
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _isTyping = false;
-          _messages.add(BotMessage(text: _getAIResponse(text), isUser: false));
-        });
-      }
-    });
-  }
+    // Call the actual AI Service
+    final responseText = await AiService.sendMessage(text);
 
-  String _getAIResponse(String input) {
-    final lowerInput = input.toLowerCase();
-    if (lowerInput.contains('headache')) {
-      return "I understand you have a headache. Have you been drinking enough water today? Dehydration is a common cause. If it persists or is severe, please consult a doctor.";
-    } else if (lowerInput.contains('appointment')) {
-      return "You can book an appointment from the Home screen by clicking 'Book Now'. Would you like me to guide you there?";
-    } else if (lowerInput.contains('lab') || lowerInput.contains('result')) {
-      return "Your lab results are available in the 'Lab Results' section. You can check them for detailed analysis.";
-    } else if (lowerInput.contains('hello') || lowerInput.contains('hi')) {
-      return "Hello! How are you feeling right now?";
-    } else {
-      return "I'm not sure specifically, but for any persistent symptoms, it's always best to consult with a specialist. You can use the 'Messages' tab to chat with your doctor directly.";
+    if (mounted) {
+      setState(() {
+        _isTyping = false;
+        _messages.add(BotMessage(text: responseText, isUser: false));
+      });
     }
   }
 

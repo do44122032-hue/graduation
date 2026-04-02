@@ -6,6 +6,10 @@ import 'services/language_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'services/auth_service.dart';
 import 'screens/auth/welcome.dart';
+import 'enums/user_role.dart';
+import 'screens/medical/dashboard_screen.dart';
+import 'screens/student/student_dashboard.dart';
+import 'screens/doctor/doctor_dashboard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,10 +53,41 @@ class MyChartApp extends StatelessWidget {
                 child: child!,
               );
             },
-            home: const WelcomeScreen(),
+            home: _getHome(context),
           );
         },
       ),
+    );
+  }
+
+  Widget _getHome(BuildContext context) {
+    return Consumer<AuthService>(
+      builder: (context, auth, _) {
+        if (!auth.isInitialized) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Colors.green,
+              ),
+            ),
+          );
+        }
+
+        if (!auth.isAuthenticated) {
+          return const WelcomeScreen();
+        }
+
+        // Redirect based on role
+        final user = auth.currentUser!;
+        switch (user.role) {
+          case UserRole.student:
+            return const StudentDashboardScreen();
+          case UserRole.doctor:
+            return const DoctorDashboardScreen();
+          case UserRole.patient:
+            return const ModernDashboardScreen();
+        }
+      },
     );
   }
 }

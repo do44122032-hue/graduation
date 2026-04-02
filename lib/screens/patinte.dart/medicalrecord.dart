@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../../constants/api_config.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import '../../services/dashboard_service.dart';
@@ -25,7 +26,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   bool _isLoading = true;
   List<int> _expandedItems = [];
   List<VitalSignRecord> _apiVitals = [];
-  List<VisitEncounter> _apiVisits = [];
   List<ChronicCondition> _apiConditions = [];
 
   @override
@@ -42,6 +42,27 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
       return;
     }
 
+    // 1. Load from local cache for instant display
+    final localVital = await DashboardService.getLocalVital();
+    if (localVital != null && mounted) {
+      final localRecord = VitalSignRecord(
+        date: localVital['date'] ?? 'Just Now',
+        bloodPressureSys: localVital['bloodPressureSys'] ?? 0,
+        bloodPressureDia: localVital['bloodPressureDia'] ?? 0,
+        heartRate: localVital['heartRate'] ?? 0,
+        temperature: (localVital['temperature'] as num?)?.toDouble() ?? 37.0,
+        respiratoryRate: 16,
+        oxygenSaturation: 98,
+        weight: localVital['weight'] ?? 0,
+        bmi: 22.0,
+        bloodGlucose: 100,
+      );
+      setState(() {
+        if (_apiVitals.isEmpty) _apiVitals = [localRecord];
+        _isLoading = false; 
+      });
+    }
+
     try {
       print('DEBUG: Fetching dashboard for user: ${user.id}');
       final data = await DashboardService.fetchPatientDashboard(user.id!);
@@ -51,37 +72,33 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         setState(() {
           // Map Vitals
           if (data['recentVitals'] != null) {
-            _apiVitals = (data['recentVitals'] as List).map((v) => VitalSignRecord(
-              date: v['date']?.toString() ?? '',
-              bloodPressureSys: v['bloodPressureSys'] ?? 0,
-              bloodPressureDia: v['bloodPressureDia'] ?? 0,
-              heartRate: v['heartRate'] ?? 0,
-              temperature: (v['temperature'] ?? 0).toDouble(),
-              respiratoryRate: v['respiratoryRate'] ?? 0,
-              oxygenSaturation: v['oxygenSaturation'] ?? 0,
-              weight: v['weight'] ?? 0,
-              bmi: (v['bmi'] ?? 0).toDouble(),
-              bloodGlucose: v['bloodGlucose'] ?? 0,
-            )).toList();
-          }
-
-          // Map Appointments to Visits
-          if (data['upcomingAppointments'] != null) {
-            _apiVisits = (data['upcomingAppointments'] as List).map((a) => VisitEncounter(
-              id: a['id'] ?? 0,
-              dateTime: '${a['date']} at ${a['time']}',
-              visitType: a['type'] ?? 'Consultation',
-              providerName: a['doctorName'] ?? 'Doctor',
-              specialty: a['specialty'] ?? '',
-              department: 'Medical Clinic',
-              chiefComplaint: 'Scheduled check-up',
-              symptomsDuration: 'N/A',
-              assessment: 'Scheduled appointment',
-              treatmentPlan: 'Pending consultation',
-              proceduresPerformed: [],
-              followUpInstructions: 'Please arrive 15 minutes early.',
-              nextAppointmentDate: null,
-            )).toList();
+            _apiVitals = (data['recentVitals'] as List).map((v) {
+              return VitalSignRecord(
+                date: v['date']?.toString() ?? '',
+                bloodPressureSys: (v['bloodPressureSys'] as num?)?.toInt() ?? 0,
+                bloodPressureDia: (v['bloodPressureDia'] as num?)?.toInt() ?? 0,
+                heartRate: (v['heartRate'] as num?)?.toInt() ?? 0,
+                temperature: (v['temperature'] as num?)?.toDouble() ?? 0.0,
+                respiratoryRate: (v['respiratoryRate'] as num?)?.toInt() ?? 0,
+                oxygenSaturation: (v['oxygenSaturation'] as num?)?.toInt() ?? 0,
+                weight: (v['weight'] as num?)?.toInt() ?? 0,
+                bmi: (v['bmi'] as num?)?.toDouble() ?? 0.0,
+                bloodGlucose: (v['bloodGlucose'] as num?)?.toInt() ?? 0,
+              );
+            }).toList();
+            
+            // Sort by date newest first to ensure the latest is at index 0
+            _apiVitals.sort((a, b) {
+              try {
+                DateTime da = _parseDateString(a.date);
+                DateTime db = _parseDateString(b.date);
+                return db.compareTo(da);
+              } catch(e) { 
+                print('DEBUG: Sorting fail for ${a.date} vs ${b.date}: $e');
+                return 0; 
+              }
+            });
+            print('DEBUG: Processed and sorted ${_apiVitals.length} vitals');
           }
 
           // Map Chronic Conditions from User Model if available
@@ -107,6 +124,42 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     } catch (e) {
       print('Error fetching medical records data: $e');
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  /// Helper to parse various date formats safely
+  DateTime _parseDateString(String dateStr) {
+    if (dateStr.isEmpty) return DateTime.fromMillisecondsSinceEpoch(0);
+    
+    // List of formats to try
+    final formats = [
+      'MMM d yyyy',           // Mar 29 2026
+      'MMM dd yyyy',          // Mar 29 2026 (two digit)
+      'yyyy-MM-ddTHH:mm:ss',  // ISO
+      'yyyy-MM-dd HH:mm:ss',
+      'yyyy-MM-dd',
+    ];
+
+    String cleanDate = dateStr.trim();
+    // Special case for our app which sometimes misses the year in manually entered dates
+    if (!cleanDate.contains(RegExp(r'\d{4}'))) {
+      cleanDate = "$cleanDate ${DateTime.now().year}";
+    }
+
+    for (var format in formats) {
+      try {
+        return DateFormat(format).parse(cleanDate);
+      } catch (_) {
+        continue;
+      }
+    }
+
+    // Fallback: try native DateTime.parse for ISO formats it knows
+    try {
+      return DateTime.parse(dateStr);
+    } catch (e) {
+      print('CRITICAL: Failed to parse date string "$dateStr": $e');
+      return DateTime.fromMillisecondsSinceEpoch(0);
     }
   }
 
@@ -169,138 +222,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
 
 
 
-  final List<VitalSignRecord> vitalSignsHistory = [
-    VitalSignRecord(
-      date: 'Dec 23',
-      bloodPressureSys: 118,
-      bloodPressureDia: 78,
-      heartRate: 72,
-      temperature: 98.6,
-      respiratoryRate: 16,
-      oxygenSaturation: 98,
-      weight: 140,
-      bmi: 22.6,
-      bloodGlucose: 95,
-    ),
-    VitalSignRecord(
-      date: 'Dec 20',
-      bloodPressureSys: 120,
-      bloodPressureDia: 80,
-      heartRate: 75,
-      temperature: 98.4,
-      respiratoryRate: 15,
-      oxygenSaturation: 99,
-      weight: 140,
-      bmi: 22.6,
-      bloodGlucose: 92,
-    ),
-    VitalSignRecord(
-      date: 'Dec 15',
-      bloodPressureSys: 122,
-      bloodPressureDia: 82,
-      heartRate: 73,
-      temperature: 98.7,
-      respiratoryRate: 16,
-      oxygenSaturation: 98,
-      weight: 141,
-      bmi: 22.7,
-      bloodGlucose: 89,
-    ),
-    VitalSignRecord(
-      date: 'Dec 10',
-      bloodPressureSys: 125,
-      bloodPressureDia: 85,
-      heartRate: 78,
-      temperature: 98.5,
-      respiratoryRate: 17,
-      oxygenSaturation: 97,
-      weight: 142,
-      bmi: 22.9,
-      bloodGlucose: 98,
-    ),
-    VitalSignRecord(
-      date: 'Dec 5',
-      bloodPressureSys: 128,
-      bloodPressureDia: 84,
-      heartRate: 76,
-      temperature: 98.6,
-      respiratoryRate: 16,
-      oxygenSaturation: 98,
-      weight: 142,
-      bmi: 22.9,
-      bloodGlucose: 94,
-    ),
-    VitalSignRecord(
-      date: 'Nov 30',
-      bloodPressureSys: 130,
-      bloodPressureDia: 86,
-      heartRate: 80,
-      temperature: 98.8,
-      respiratoryRate: 18,
-      oxygenSaturation: 97,
-      weight: 143,
-      bmi: 23.1,
-      bloodGlucose: 96,
-    ),
-  ];
-
-  final List<VisitEncounter> visitHistory = [
-    VisitEncounter(
-      id: 1,
-      dateTime: 'Dec 20, 2024 at 10:30 AM',
-      visitType: 'Office Visit - Follow-up',
-      providerName: 'Dr. Michael Chen',
-      specialty: 'Internal Medicine',
-      department: 'Primary Care Clinic',
-      chiefComplaint: 'Hypertension follow-up',
-      symptomsDuration: 'Ongoing management since Jan 2023',
-      assessment:
-          'Essential hypertension, well-controlled on current medication',
-      treatmentPlan:
-          'Continue Lisinopril 10mg daily. Lifestyle modifications: low sodium diet, regular exercise.',
-      proceduresPerformed: ['Blood Pressure Check', 'Medication Review'],
-      followUpInstructions:
-          'Return in 6 months for BP check. Call if BP readings consistently >140/90.',
-      nextAppointmentDate: 'June 20, 2025',
-    ),
-    VisitEncounter(
-      id: 2,
-      dateTime: 'Dec 01, 2024 at 2:15 PM',
-      visitType: 'Office Visit - Results Review',
-      providerName: 'Dr. Michael Chen',
-      specialty: 'Internal Medicine',
-      department: 'Primary Care Clinic',
-      chiefComplaint: 'Review vitamin D lab results',
-      symptomsDuration: 'Recent fatigue, 3 weeks',
-      assessment: 'Vitamin D deficiency (level 18 ng/mL)',
-      treatmentPlan:
-          'Start Vitamin D3 2000 IU daily. Recheck levels in 3 months.',
-      proceduresPerformed: ['Lab Results Review', 'Nutrition Counseling'],
-      followUpInstructions:
-          'Take vitamin with food. Increase sun exposure 15 min/day.',
-      nextAppointmentDate: 'March 01, 2025',
-    ),
-    VisitEncounter(
-      id: 3,
-      dateTime: 'Nov 12, 2024 at 9:00 AM',
-      visitType: 'Office Visit - Sick Visit',
-      providerName: 'Dr. Emily Rodriguez',
-      specialty: 'Family Medicine',
-      department: 'Urgent Care',
-      chiefComplaint: 'Cough and fever',
-      symptomsDuration: '5 days',
-      assessment: 'Acute bronchitis',
-      treatmentPlan:
-          'Amoxicillin 500mg TID x 7 days. Rest, fluids, OTC cough suppressant.',
-      proceduresPerformed: [
-        'Physical Examination',
-        'Chest X-Ray',
-        'Rapid Strep Test',
-      ],
-      followUpInstructions:
-          'Return if symptoms worsen or persist after 7 days.',
-    ),
-  ];
+  // Mock Data - DELETED to ensure only real data is shown
+  final List<VitalSignRecord> vitalSignsHistory = [];
 
   void _toggleExpanded(int id) {
     setState(() {
@@ -312,37 +235,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     });
   }
 
-  void _cancelAppointment(int visitId, String languageCode) {
-    setState(() {
-      final index = visitHistory.indexWhere((v) => v.id == visitId);
-      if (index != -1) {
-        // Simulated cancellation: clear the next appointment date
-        visitHistory[index] = VisitEncounter(
-          id: visitHistory[index].id,
-          dateTime: visitHistory[index].dateTime,
-          visitType: visitHistory[index].visitType,
-          providerName: visitHistory[index].providerName,
-          specialty: visitHistory[index].specialty,
-          department: visitHistory[index].department,
-          chiefComplaint: visitHistory[index].chiefComplaint,
-          symptomsDuration: visitHistory[index].symptomsDuration,
-          assessment: visitHistory[index].assessment,
-          treatmentPlan: visitHistory[index].treatmentPlan,
-          proceduresPerformed: visitHistory[index].proceduresPerformed,
-          followUpInstructions: visitHistory[index].followUpInstructions,
-          nextAppointmentDate: null,
-        );
-      }
-    });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppStrings.get('msgAppointmentCancelled', languageCode)),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 
   Map<String, Color> _getStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -524,6 +417,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
 
   Widget _buildTabs(String languageCode) {
     final tabs = [
+      {'id': 'overview', 'label': AppStrings.get('tabOverview', languageCode)},
       {'id': 'vitals', 'label': AppStrings.get('tabVitals', languageCode)},
     ];
 
@@ -587,21 +481,18 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     }
     
     switch (_activeTab) {
+      case 'overview':
+        return _buildOverviewTab(languageCode);
       case 'vitals':
-      default:
         return _buildVitalsTab(languageCode);
+      default:
+        return _buildOverviewTab(languageCode);
     }
   }
 
   Widget _buildOverviewTab(String languageCode) {
-    final activeConditions = _apiConditions.isNotEmpty 
-        ? _apiConditions.length 
-        : chronicConditions.where((c) => c.currentStatus == 'active' || c.currentStatus == 'controlled').length;
-
-    // Use API data or fallback to mock data if empty
-    final vitalsList = _apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory;
-    final latestVital = vitalsList.isNotEmpty ? vitalsList.first : null;
-    final visitsList = _apiVisits.isNotEmpty ? _apiVisits : visitHistory;
+    final latestVital = _apiVitals.isNotEmpty ? _apiVitals.first : null;
+    final activeConditions = _apiConditions.length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -678,7 +569,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           children: [
             Expanded(
               child: _buildStatCard(
-                icon: Icons.favorite,
+                icon: Icons.personal_injury,
                 value: activeConditions.toString(),
                 label: AppStrings.get('sectChronicConditions', languageCode),
                 gradient: const LinearGradient(
@@ -689,43 +580,13 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               ),
             ),
             const SizedBox(width: 8),
-            Expanded(
-              child: _buildStatCard(
-                icon: Icons.calendar_today,
-                value: visitsList.length.toString(),
-                label: AppStrings.get('tabVisits', languageCode),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF82C4E6), Color(0xFF6AB5D8)],
-                ),
-              ),
-            ),
+            const Expanded(child: SizedBox.shrink()), // Keep balance or remove if needed
           ],
         ),
         const SizedBox(height: 24),
 
-        // Recent Activity
-        Text(
-          AppStrings.get(
-            'navHome',
-            languageCode,
-          ), // Using Home as a proxy for activity
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: colorCharcoal,
-          ),
-        ),
-        ...(_apiVisits.isNotEmpty ? _apiVisits : visitHistory).take(3).map((visit) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildActivityCard(
-            visit.dateTime.split(' at ').first,
-            '${visit.visitType} - ${visit.providerName}',
-            '${visit.specialty} • ${visit.assessment}',
-            visit.specialty.contains('Medicine') ? colorAccentOlive : colorAccentBeige,
-          ),
-        )).toList(),
+        // No recent activity for now as we removed visits
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -834,77 +695,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: colorWhite.withOpacity(0.9)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActivityCard(
-    String date,
-    String title,
-    String description,
-    Color borderColor,
-  ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorWhite,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorSecondaryBg),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 80,
-            decoration: BoxDecoration(
-              color: borderColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    date,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: colorSecondaryText,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colorCharcoal,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: colorSecondaryText,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -1309,7 +1099,28 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                   );
 
                   if (result['success']) {
-                    await _fetchData();
+                    // Update locally first for instant feedback (Optimistic UI)
+                    final newVitalRecord = VitalSignRecord(
+                      date: DateFormat('MMM d yyyy').format(DateTime.now()),
+                      bloodPressureSys: sys,
+                      bloodPressureDia: dia,
+                      heartRate: hr,
+                      temperature: 37.0,
+                      respiratoryRate: 16,
+                      oxygenSaturation: 98,
+                      weight: weight,
+                      bmi: 22.0,
+                      bloodGlucose: 100,
+                    );
+                    
+                    if (mounted) {
+                      setState(() {
+                        _apiVitals.insert(0, newVitalRecord);
+                      });
+                    }
+
+                    await _fetchData(); // Sync with server in background
+                    
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -1320,11 +1131,19 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                     }
                   } else {
                     if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(result['message'] ?? 'Failed to save vitals.'),
-                          backgroundColor: Colors.red,
-                          duration: const Duration(seconds: 10),
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Save Error (Diagnostic)'),
+                          content: SingleChildScrollView(
+                            child: Text('Message: ${result['message']}\n\nUID used: ${user.id}\nBaseURL: ${ApiConfig.baseUrl}'),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Close'),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -1431,8 +1250,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
 
   String _formatDateToWeekday(String dateStr) {
     try {
-      final int currentYear = DateTime.now().year;
-      final DateTime parsed = DateFormat('MMM dd yyyy').parse('$dateStr $currentYear');
+      DateTime parsed = _parseDateString(dateStr);
       return DateFormat('E').format(parsed);
     } catch (e) {
       return dateStr;
@@ -1440,8 +1258,12 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   List<VitalSignRecord> get _chartVitals {
-    final source = _apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory;
-    return source.take(7).toList().reversed.toList();
+    // Only use real data from API. Take the 7 most recent and show them chronologically.
+    final List<VitalSignRecord> sorted = List.from(_apiVitals);
+    // Ensure they are sorted newest first if not already
+    sorted.sort((a, b) => _parseDateString(b.date).compareTo(_parseDateString(a.date)));
+    
+    return sorted.take(7).toList().reversed.toList();
   }
 
 
@@ -1469,12 +1291,9 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                final chronologicalVitals = (_apiVitals.isNotEmpty ? _apiVitals : vitalSignsHistory)
-                    .reversed.toList();
-                if (value.toInt() >= 0 &&
-                    value.toInt() < chronologicalVitals.length) {
+                if (value.toInt() >= 0 && value.toInt() < _chartVitals.length) {
                   return Text(
-                    _formatDateToWeekday(chronologicalVitals[value.toInt()].date),
+                    _formatDateToWeekday(_chartVitals[value.toInt()].date),
                     style: const TextStyle(
                       fontSize: 10,
                       color: colorSecondaryText,
@@ -1742,212 +1561,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     );
   }
 
-  Widget _buildVisitsTab(String languageCode) {
-    final visitsToShow = _apiVisits.isNotEmpty ? _apiVisits : visitHistory;
-    return Column(
-      children: visitsToShow.map((visit) {
-        final isExpanded = _expandedItems.contains(visit.id);
-
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorWhite,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colorSecondaryBg),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: () => _toggleExpanded(visit.id),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                visit.visitType,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: colorCharcoal,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                visit.dateTime,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: colorSecondaryText,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${visit.providerName} • ${visit.specialty}',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: colorSecondaryText,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE1F5FE),
-                                  border: Border.all(
-                                    color: const Color(0xFF4FC3F7),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  visit.chiefComplaint,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF0277BD),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          isExpanded ? Icons.expand_less : Icons.expand_more,
-                          color: isExpanded
-                              ? colorAccentOlive
-                              : colorSecondaryText,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (isExpanded)
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colorSecondaryBg,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoRow(
-                          AppStrings.get('labelDepartment', languageCode),
-                          visit.department,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('labelSymptomsDuration', languageCode),
-                          visit.symptomsDuration,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('labelAssessment', languageCode),
-                          visit.assessment,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('labelTreatmentPlan', languageCode),
-                          visit.treatmentPlan,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          AppStrings.get('labelProcedures', languageCode),
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: colorSecondaryText,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: visit.proceduresPerformed.map((proc) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorAccentOlive.withOpacity(0.2),
-                                border: Border.all(color: colorAccentOlive),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                proc,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  color: colorAccentOlive,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                          AppStrings.get('labelFollowUp', languageCode),
-                          visit.followUpInstructions,
-                        ),
-                        if (visit.nextAppointmentDate != null) ...[
-                          const SizedBox(height: 12),
-                          _buildInfoRow(
-                            AppStrings.get(
-                              'labelNextAppointment',
-                              languageCode,
-                            ),
-                            visit.nextAppointmentDate!,
-                            valueColor: colorAccentOlive,
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: () =>
-                                  _cancelAppointment(visit.id, languageCode),
-                              icon: const Icon(Icons.cancel_outlined, size: 16),
-                              label: Text(
-                                AppStrings.get('actionCancel', languageCode),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red,
-                                side: const BorderSide(color: Colors.red),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
   Widget _buildBadge(String text, Color bg, Color border, Color textColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1968,9 +1581,9 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
   Widget _buildMedicalHealthAlerts(String languageCode) {
-    // Basic threshold logic same as backend for immediate local feedback if desired,
-    // but better to just show if BP is high.
     if (_apiVitals.isEmpty) return const SizedBox.shrink();
+    
+    // After sorting in _fetchData, the first record is the latest
     final latest = _apiVitals.first;
     if (latest.bloodPressureSys > 130 || latest.bloodPressureDia > 85) {
       return Container(

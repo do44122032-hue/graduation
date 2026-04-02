@@ -149,40 +149,85 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Custom Header from Image Reference
-          ClipPath(
-            clipper: HeaderClipper(),
-            child: Container(
-              height: 200,
-              width: double.infinity,
-              color: AppColors.doctorBackground,
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                48,
-                AppSpacing.lg,
-                0,
+          Stack(
+            children: [
+              ClipPath(
+                clipper: HeaderClipper(),
+                child: Container(
+                  height: 200,
+                  width: double.infinity,
+                  color: AppColors.doctorBackground,
+                ),
               ),
-              child: Row(
-                children: [
-                  // Role Icon
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      color: AppColors.doctorPrimary,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                    ),
-                    child: const Icon(
-                      Icons.medical_services_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                  // User Info Group
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15, right: 15),
+                  child: _buildAnimatedLogo(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  48,
+                  AppSpacing.lg,
+                  0,
+                ),
+                child: Row(
+                  children: [
+                    // User Info Group
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // User Avatar moved above name
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DoctorProfilePage(user: user),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(40),
+                              child: (user?.profilePicture != null && user!.profilePicture!.isNotEmpty)
+                                  ? Image.network(
+                                      user.profilePicture!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        color: AppColors.doctorPrimary.withOpacity(0.5),
+                                        child: const Icon(Icons.person, size: 40, color: Colors.white),
+                                      ),
+                                    )
+                                  : Container(
+                                      color: AppColors.doctorPrimary.withOpacity(0.5),
+                                      child: const Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         Text(
                           user?.name ?? "Jaimin Panchal",
                           style: AppTextStyles.h2(languageCode: languageCode)
@@ -200,28 +245,12 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                       ],
                     ),
                   ),
-                  // User Avatar - Clickable to open Profile
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DoctorProfilePage(user: user),
-                        ),
-                      );
-                    },
-                    child: CircleAvatar(
-                      radius: 35,
-                      backgroundColor: Colors.orange.shade200,
-                      backgroundImage: const NetworkImage(
-                        'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=100&h=100',
-                      ),
-                    ),
-                  ),
+                    // User Avatar removed from here
                 ],
               ),
             ),
-          ),
+          ],
+        ),
           const SizedBox(height: AppSpacing.lg),
 
           // Clinic List Section
@@ -499,6 +528,92 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20),
         ],
       ),
+    );
+  }
+
+  Widget _buildAnimatedLogo() {
+    return const PulseAnimatedLogo();
+  }
+}
+
+class PulseAnimatedLogo extends StatefulWidget {
+  const PulseAnimatedLogo({super.key});
+
+  @override
+  State<PulseAnimatedLogo> createState() => _PulseAnimatedLogoState();
+}
+
+class _PulseAnimatedLogoState extends State<PulseAnimatedLogo>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Opacity(
+            opacity: _opacityAnimation.value,
+            child: SizedBox(
+              height: 150,
+              width: 150,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/logo.png',
+                  key: UniqueKey(), // Forces browser to load the new clean version
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.medical_services_rounded,
+                        size: 60,
+                        color: Color(0xFF62A5F9),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

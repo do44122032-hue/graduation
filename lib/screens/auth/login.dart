@@ -146,9 +146,31 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                   height: 120,
                                   width: 120,
                                   margin: const EdgeInsets.only(bottom: 20),
-                                  child: Image.asset(
-                                    'assets/logo.png',
-                                    fit: BoxFit.contain,
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      'assets/logo.png',
+                                      key: UniqueKey(), // Forces browser to load the new clean version
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.05),
+                                                blurRadius: 10,
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Icon(
+                                            Icons.medical_services_rounded,
+                                            size: 50,
+                                            color: Color(0xFF62A5F9),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),

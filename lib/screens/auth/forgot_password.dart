@@ -149,14 +149,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.userRole == UserRole.student
-                                  ? AppStrings.get('identifierLabel', lang)
-                                  : widget.userRole == UserRole.doctor
-                                  ? AppStrings.get(
-                                      'doctorIdentifierLabel',
-                                      lang,
-                                    )
-                                  : AppStrings.get('emailLabel', lang),
+                              AppStrings.get('phoneLabel', lang),
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -166,9 +159,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                             const SizedBox(height: 8),
                             _buildModernTextField(
                               controller: _identifierController,
-                              hintText: AppStrings.get('emailHint', lang),
-                              prefixIcon: Icons.email_outlined,
+                              hintText: AppStrings.get('phoneHint', lang),
+                              prefixIcon: Icons.phone_outlined,
                               roleColor: roleColor,
+                              keyboardType: TextInputType.phone,
                               validator: (value) =>
                                   (value == null || value.isEmpty)
                                   ? 'Required'
@@ -201,11 +195,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
     required String hintText,
     required IconData prefixIcon,
     required Color roleColor,
+    TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
+      keyboardType: keyboardType,
       style: const TextStyle(
         fontSize: 16,
         color: Color(0xFF1A3A2E),

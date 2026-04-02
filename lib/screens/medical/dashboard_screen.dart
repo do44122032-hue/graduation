@@ -59,6 +59,15 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
       return;
     }
 
+    // 1. Instantly load from local memory/disk for the best UX while waiting for server
+    final localVital = await DashboardService.getLocalVital();
+    if (localVital != null && mounted) {
+      setState(() {
+        _recentVitals = [localVital];
+        _isLoading = false; // Show dashboard immediately with local data
+      });
+    }
+
     try {
       final data = await DashboardService.fetchPatientDashboard(user.id!);
       if (data['success'] == true && mounted) {
@@ -66,8 +75,33 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           _upcomingAppointments = List<Map<String, dynamic>>.from(data['upcomingAppointments'] ?? []);
           _healthAlerts = List<Map<String, dynamic>>.from(data['healthAlerts'] ?? []);
           _activeMedications = List<Map<String, dynamic>>.from(data['activeMedications'] ?? []);
-          _recentVitals = List<Map<String, dynamic>>.from(data['recentVitals'] ?? []);
-          print('DEBUG Dashboard: Received ${_healthAlerts.length} health alerts');
+          _recentVitals = (data['recentVitals'] as List).map((v) {
+            return {
+              'date': v['date']?.toString() ?? '',
+              'bloodPressureSys': (v['bloodPressureSys'] as num?)?.toInt() ?? 0,
+              'bloodPressureDia': (v['bloodPressureDia'] as num?)?.toInt() ?? 0,
+              'heartRate': (v['heartRate'] as num?)?.toInt() ?? 0,
+              'weight': (v['weight'] as num?)?.toInt() ?? 0,
+            };
+          }).toList();
+          
+          // Fallback to local cache if server is behind
+          final localVital = DashboardService.getLastLoggedVital();
+          if (_recentVitals.isEmpty || (localVital != null && _recentVitals.first['date'] != 'Just Now')) {
+            if (localVital != null) {
+              _recentVitals.insert(0, localVital);
+            }
+          }
+          
+          // Use robust sorting newest first
+          _recentVitals.sort((a, b) {
+            try {
+              DateTime da = _parseDateString(a['date']?.toString() ?? '');
+              DateTime db = _parseDateString(b['date']?.toString() ?? '');
+              return db.compareTo(da);
+            } catch(_) { return 0; }
+          });
+          
           _labResults = List<Map<String, dynamic>>.from(data['labResults'] ?? []);
           _isLoading = false;
         });
@@ -78,6 +112,20 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
       print('Failed to load dashboard data: $e');
       if(mounted) setState(() => _isLoading = false);
     }
+  }
+
+  /// Helper to parse various date formats safely
+  DateTime _parseDateString(String dateStr) {
+    if (dateStr.isEmpty) return DateTime.fromMillisecondsSinceEpoch(0);
+    final formats = ['MMM d yyyy', 'MMM dd yyyy', 'yyyy-MM-ddTHH:mm:ss', 'yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd'];
+    String cleanDate = dateStr.trim();
+    if (!cleanDate.contains(RegExp(r'\d{4}'))) {
+      cleanDate = "$cleanDate ${DateTime.now().year}";
+    }
+    for (var format in formats) {
+      try { return DateFormat(format).parse(cleanDate); } catch (_) { continue; }
+    }
+    try { return DateTime.parse(dateStr); } catch (e) { return DateTime.fromMillisecondsSinceEpoch(0); }
   }
 
   @override
@@ -185,7 +233,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 _buildQuickActionsList(languageCode, user),
                 const SizedBox(height: 24),
                 
-                // Display health alerts if any
+                // Health Alerts from server
                 if (_healthAlerts.isNotEmpty) ...[
                   ..._healthAlerts.map((alert) => _buildAnnouncementBanner(
                         alert['title'] ?? 'Health Alert',
@@ -193,7 +241,6 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                         Icons.warning_amber_rounded,
                         isDanger: alert['type'] == 'danger',
                         onTap: () {
-                          // Could navigate to medical records or specific alert details
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -202,11 +249,20 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                           ).then((_) => _loadDashboardData());
                         },
                       )),
+                  const SizedBox(height: 16),
+                ],
+                
+                // Show Vitals Summary Card if data exists
+                if (_recentVitals.isNotEmpty) ...[
+                  _buildLatestVitalsCard(languageCode),
                   const SizedBox(height: 24),
-                ] else if (_recentVitals.isNotEmpty && (_recentVitals.first['bloodPressureSys'] > 130 || _recentVitals.first['bloodPressureDia'] > 85)) ...[
+                ],
+                
+                // Specific Blood Pressure Check - Decoupled from generic alerts
+                if (_recentVitals.isNotEmpty && (_recentVitals.first['bloodPressureSys'] > 130 || _recentVitals.first['bloodPressureDia'] > 85)) ...[
                    _buildAnnouncementBanner(
                         'High Blood Pressure Alert',
-                        'Your last reading was ${_recentVitals.first['bloodPressureSys']}/${_recentVitals.first['bloodPressureDia']}. Please monitor closely.',
+                        'DANGER: Your last reading was ${_recentVitals.first['bloodPressureSys']}/${_recentVitals.first['bloodPressureDia']}. Please rest and consult your doctor.',
                         Icons.warning_amber_rounded,
                         isDanger: true,
                         onTap: () {
@@ -219,7 +275,8 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                         }
                       ),
                   const SizedBox(height: 24),
-                ] else ... [
+                ] else if (_healthAlerts.isEmpty) ... [
+                  // Show lab result update only if no alerts exist to keep UI clean
                   _buildAnnouncementBanner(
                     AppStrings.get('healthUpdate', languageCode),
                     AppStrings.get(
@@ -572,6 +629,13 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
             ),
           ),
         ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15, right: 15),
+            child: _buildAnimatedLogo(),
+          ),
+        ),
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -585,62 +649,8 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Hamburger Menu
-                    Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFCBD77E),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.sort,
-                        color: Color(0xFF282828),
-                        size: 26,
-                      ),
-                    ),
-                    // Profile Image - Larger and positioned like the image
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PatientProfileScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(55),
-                          child: user?.profilePicture != null
-                              ? Image.network(
-                                  user!.profilePicture!,
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  color: const Color(0xFFE6CA9A),
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 60,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(width: 44), // Placeholder for balance
+                    const SizedBox(width: 44), // Placeholder for balance
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -649,6 +659,57 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // User Avatar moved above name
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PatientProfileScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(40),
+                            child: (user?.profilePicture != null && user!.profilePicture!.isNotEmpty)
+                                ? Image.network(
+                                    user.profilePicture!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      color: const Color(0xFFE89B9B),
+                                      child: const Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    color: const Color(0xFFE89B9B),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       Text(
                         user?.name ?? '',
                         style: const TextStyle(
@@ -746,7 +807,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                       MaterialPageRoute(
                         builder: (context) => const BookAppointmentPage(),
                       ),
-                    );
+                    ).then((_) => _loadDashboardData());
                   },
                 ),
                 _buildClinicCard(
@@ -865,9 +926,11 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     VoidCallback? onTap,
     bool isDanger = false,
   }) {
-    final bgColor = isDanger ? const Color(0xFFFFCDD2) : const Color(0xFFCBD77E);
-    final iconBgColor = isDanger ? Colors.white.withOpacity(0.9) : Colors.white;
-    final iconColor = isDanger ? Colors.red : const Color(0xFFCBD77E);
+    final bgColor = isDanger ? const Color(0xFFC62828) : const Color(0xFFCBD77E); // Vibrant Red for Danger
+    final iconBgColor = isDanger ? Colors.white.withOpacity(0.2) : Colors.white;
+    final iconColor = isDanger ? Colors.white : const Color(0xFFCBD77E);
+    final textColor = isDanger ? Colors.white : const Color(0xFF282828);
+    final subTextColor = isDanger ? Colors.white.withOpacity(0.9) : const Color(0xFF4A4A4A);
 
     return InkWell(
       onTap: onTap,
@@ -896,7 +959,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   Text(
                     title,
                     style: TextStyle(
-                      color: isDanger ? Colors.red.shade900 : const Color(0xFF282828),
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -904,7 +967,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: isDanger ? Colors.red.shade800 : const Color(0xFF4A4A4A),
+                      color: subTextColor,
                       fontSize: 12,
                     ),
                   ),
@@ -912,7 +975,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               ),
             ),
             if (onTap != null)
-              const Icon(Icons.chevron_right, color: Color(0xFF282828), size: 24),
+              Icon(Icons.chevron_right, color: textColor, size: 24),
           ],
         ),
       ),
@@ -1011,6 +1074,94 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     );
   }
 
+  Widget _buildLatestVitalsCard(String languageCode) {
+    final latest = _recentVitals.first;
+    final sys = latest['bloodPressureSys'] ?? 0;
+    final dia = latest['bloodPressureDia'] ?? 0;
+    final hr = latest['heartRate'] ?? 0;
+    final weight = latest['weight'] ?? 0;
+    
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Latest Vitals',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Color(0xFF282828),
+                ),
+              ),
+              Text(
+                latest['date'] ?? '',
+                style: TextStyle(
+                  color: const Color(0xFF282828).withOpacity(0.5),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildVitalSummaryItem(Icons.favorite, sys > 130 ? Colors.red : const Color(0xFFCBD77E), '$sys/$dia', 'BP'),
+              _buildVitalSummaryItem(Icons.bolt, const Color(0xFFCBD77E), '$hr', 'BPM'),
+              _buildVitalSummaryItem(Icons.monitor_weight, const Color(0xFFCBD77E), '$weight', 'KG'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVitalSummaryItem(IconData icon, Color color, String value, String label) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Color(0xFF282828),
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: const Color(0xFF282828).withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildPlaceholderContent(
     String title,
     IconData icon,
@@ -1041,6 +1192,70 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAnimatedLogo() {
+    return const PulseAnimatedLogo();
+  }
+}
+
+class PulseAnimatedLogo extends StatefulWidget {
+  const PulseAnimatedLogo({super.key});
+
+  @override
+  State<PulseAnimatedLogo> createState() => _PulseAnimatedLogoState();
+}
+
+class _PulseAnimatedLogoState extends State<PulseAnimatedLogo>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Opacity(
+            opacity: _opacityAnimation.value,
+            child: SizedBox(
+              height: 150,
+              width: 150,
+              child: Image.asset(
+                'assets/logo.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

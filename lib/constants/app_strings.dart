@@ -92,7 +92,7 @@ class AppStrings {
       'identifierLabel': 'Student ID / Email',
       'doctorIdentifierLabel': 'Sheet ID / Email',
       'verificationTitle': 'Verify Code',
-      'verificationSubtitle': 'Enter the 6-digit code sent to your email',
+      'verificationSubtitle': 'Enter the 6-digit code sent to your phone',
       'verifyControl': 'Verify',
 
       // Profile
