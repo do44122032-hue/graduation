@@ -220,7 +220,7 @@ class AuthService extends ChangeNotifier {
         Uri.parse('$_baseUrl/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'phone': phone}),
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(const Duration(seconds: 30));
       
       debugPrint('Reset Password Stats: ${response.statusCode}');
       debugPrint('Reset Password Body: ${response.body}');
