@@ -56,6 +56,18 @@ class AppTextStyles {
     );
   }
 
+  // Smaller headers (H4) - EN: 16-17px, AR: 18-19px
+  static TextStyle h4({String languageCode = 'en', Color? color}) {
+    final fontSize = languageCode == 'ar' || languageCode == 'ku' ? 19.0 : 17.0;
+    return TextStyle(
+      fontFamily: getHeaderFontFamily(languageCode),
+      fontSize: fontSize,
+      fontWeight: FontWeight.w600,
+      color: color ?? AppColors.primaryText,
+      height: 1.4,
+    );
+  }
+
   // Body text - EN: 14-16px, AR: 16-18px
   static TextStyle body({String languageCode = 'en', Color? color}) {
     final fontSize = languageCode == 'ar' || languageCode == 'ku' ? 17.0 : 15.0;

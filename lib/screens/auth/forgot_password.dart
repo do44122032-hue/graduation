@@ -149,7 +149,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              AppStrings.get('phoneLabel', lang),
+                              AppStrings.get('emailLabel', lang),
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -159,13 +159,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                             const SizedBox(height: 8),
                             _buildModernTextField(
                               controller: _identifierController,
-                              hintText: AppStrings.get('phoneHint', lang),
-                              prefixIcon: Icons.phone_outlined,
+                              hintText: AppStrings.get('emailHint', lang),
+                              prefixIcon: Icons.email_outlined,
                               roleColor: roleColor,
-                              keyboardType: TextInputType.phone,
+                              keyboardType: TextInputType.emailAddress,
                               validator: (value) =>
-                                  (value == null || value.isEmpty)
-                                  ? 'Required'
+                                  (value == null || value.isEmpty || !value.contains('@'))
+                                  ? 'Enter a valid email'
                                   : null,
                             ),
                             const SizedBox(height: 32),

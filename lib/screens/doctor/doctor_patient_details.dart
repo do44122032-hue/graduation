@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_spacing.dart';
@@ -29,9 +31,10 @@ class DoctorPatientDetailsPage extends StatefulWidget {
 }
 
 class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
-  XFile? _selectedImage;
+  XFile? _selectedFile;
   Uint8List? _webImage;
   bool _isUploading = false;
+  bool _isPdf = false;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
@@ -44,12 +47,14 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
         if (kIsWeb) {
           final bytes = await image.readAsBytes();
           setState(() {
-            _selectedImage = image;
+            _selectedFile = image;
             _webImage = bytes;
+            _isPdf = false;
           });
         } else {
           setState(() {
-            _selectedImage = image;
+            _selectedFile = image;
+            _isPdf = false;
           });
         }
       }
@@ -58,8 +63,30 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
     }
   }
 
+  Future<void> _pickPdf() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final path = result.files.single.path!;
+        final name = result.files.single.name;
+        
+        setState(() {
+          _selectedFile = XFile(path, name: name);
+          _isPdf = true;
+          _webImage = result.files.single.bytes;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking PDF: $e');
+    }
+  }
+
   Future<void> _uploadLabResult() async {
-    if (_selectedImage == null) return;
+    if (_selectedFile == null) return;
 
     setState(() => _isUploading = true);
 
@@ -68,9 +95,9 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
       // But we call a method in DashboardService that we will create
       final result = await DashboardService.uploadLabResult(
         uid: widget.patientId,
-        imageFile: kIsWeb ? null : File(_selectedImage!.path),
+        imageFile: kIsWeb ? null : File(_selectedFile!.path),
         webBytes: _webImage,
-        fileName: _selectedImage!.name,
+        fileName: _selectedFile!.name,
       );
 
       final success = result['success'] as bool;
@@ -83,7 +110,7 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
             backgroundColor: success ? Colors.green : Colors.red,
           ),
         );
-        if (success) setState(() => _selectedImage = null);
+        if (success) setState(() => _selectedFile = null);
       }
     } catch (e) {
        if (mounted) {
@@ -129,7 +156,7 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
             
             _buildUploadBox(languageCode),
             
-            if (_selectedImage != null) ...[
+            if (_selectedFile != null) ...[
               const SizedBox(height: AppSpacing.lg),
               SizedBox(
                 width: double.infinity,
@@ -205,20 +232,43 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
           border: Border.all(color: AppColors.doctorPrimary.withOpacity(0.3)),
         ),
-        child: _selectedImage != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
-                child: kIsWeb
-                    ? Image.memory(_webImage!, fit: BoxFit.cover)
-                    : Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
-              )
+        child: _selectedFile != null
+            ? (_isPdf 
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.picture_as_pdf, size: 80, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          _selectedFile!.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () => setState(() => _selectedFile = null),
+                        child: const Text('Remove', style: TextStyle(color: Colors.red)),
+                      )
+                    ],
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+                    child: kIsWeb
+                        ? Image.memory(_webImage!, fit: BoxFit.cover)
+                        : Image.file(File(_selectedFile!.path), fit: BoxFit.cover),
+                  ))
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.add_a_photo_outlined, size: 50, color: AppColors.doctorPrimary),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Tap to take a photo of Lab Report',
+                    'Tap to take a photo or pick PDF',
                     style: AppTextStyles.body(languageCode: languageCode).copyWith(color: AppColors.secondaryText),
                   ),
                 ],
@@ -243,10 +293,18 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
+              title: const Text('Photo Gallery'),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+              title: const Text('PDF Document'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickPdf();
               },
             ),
           ],

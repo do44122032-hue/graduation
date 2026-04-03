@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'dart:typed_data';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
@@ -143,16 +143,22 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.add_a_photo, size: 20),
+                        icon: const Icon(Icons.attach_file, size: 20),
                         onPressed: () async {
-                          final picker = ImagePicker();
-                          final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                          if (pickedFile != null) {
-                            final bytes = await pickedFile.readAsBytes();
-                            setDialogState(() {
-                              selectedFileBytes = bytes;
-                              selectedFileName = pickedFile.name;
-                            });
+                          try {
+                            FilePickerResult? result = await FilePicker.platform.pickFiles(
+                              type: FileType.any, // Support PDF, Doc, Image etc.
+                              withData: true,
+                            );
+
+                            if (result != null) {
+                              setDialogState(() {
+                                selectedFileBytes = result.files.single.bytes;
+                                selectedFileName = result.files.single.name;
+                              });
+                            }
+                          } catch (e) {
+                            debugPrint('Error picking file: $e');
                           }
                         },
                       ),

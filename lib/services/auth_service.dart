@@ -213,13 +213,13 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<AuthResult> resetPassword(String phone) async {
+  Future<AuthResult> resetPassword(String email) async {
     _setLoading(true);
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'phone': phone}),
+        body: jsonEncode({'email': email}),
       ).timeout(const Duration(seconds: 30));
       
       debugPrint('Reset Password Stats: ${response.statusCode}');
@@ -227,7 +227,7 @@ class AuthService extends ChangeNotifier {
       
       _setLoading(false);
       if (response.statusCode == 200) {
-        return AuthResult(success: true, message: 'Reset code sent to your phone');
+        return AuthResult(success: true, message: 'Reset code sent to your email');
       } else {
         return AuthResult(success: false, message: _getErrorMessage(response));
       }
@@ -238,13 +238,13 @@ class AuthService extends ChangeNotifier {
   }
 
   // Helper methods matched to existing UI calls
-  Future<AuthResult> verifyRecoveryCode(String phone, String code) async {
+  Future<AuthResult> verifyRecoveryCode(String email, String code) async {
     _setLoading(true);
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/verify-code'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'phone': phone, 'code': code}),
+        body: jsonEncode({'email': email, 'code': code}),
       );
       _setLoading(false);
       if (response.statusCode == 200) {
@@ -258,13 +258,13 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<AuthResult> updatePassword(String phone, String newPassword) async {
+  Future<AuthResult> updatePassword(String email, String newPassword) async {
     _setLoading(true);
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/update-password'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'phone': phone, 'new_password': newPassword}),
+        body: jsonEncode({'email': email, 'new_password': newPassword}),
       );
       _setLoading(false);
       if (response.statusCode == 200) {
