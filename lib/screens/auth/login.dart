@@ -74,6 +74,8 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
     final authService = Provider.of<AuthService>(context);
     final lang = languageService.currentLanguage;
     final isRTL = languageService.isRTL;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     // Get color based on role
     Color roleColor;
@@ -98,6 +100,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -105,7 +108,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
             gradient: LinearGradient(
               begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
-              colors: [roleColor, roleColor.withOpacity(0.7)],
+              colors: isDark 
+                ? [theme.cardColor, theme.scaffoldBackgroundColor]
+                : [roleColor, roleColor.withOpacity(0.7)],
             ),
           ),
           child: SafeArea(
@@ -124,7 +129,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                           isRTL
                               ? Icons.arrow_forward_ios
                               : Icons.arrow_back_ios,
-                          color: const Color(0xFF285430),
+                          color: isDark ? Colors.white : const Color(0xFF285430),
                         ),
                       ),
                     ),
@@ -154,7 +159,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                       errorBuilder: (context, error, stackTrace) {
                                         return Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: isDark ? theme.cardColor : Colors.white,
                                             shape: BoxShape.circle,
                                             boxShadow: [
                                               BoxShadow(
@@ -163,10 +168,10 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                               ),
                                             ],
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.medical_services_rounded,
                                             size: 80,
-                                            color: Color(0xFF62A5F9),
+                                            color: roleColor,
                                           ),
                                         );
                                       },
@@ -181,13 +186,13 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.6),
+                                color: (isDark ? Colors.white : Colors.white).withOpacity(isDark ? 0.1 : 0.6),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 roleName,
-                                style: const TextStyle(
-                                  color: const Color(0xFF285430),
+                                style: TextStyle(
+                                  color: isDark ? roleColor : const Color(0xFF285430),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -202,7 +207,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                               style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w900,
-                                color: const Color(0xFF285430),
+                                color: isDark ? Colors.white : const Color(0xFF285430),
                                 height: 1.1,
                                 fontFamily: isRTL ? 'Cairo' : null,
                               ),
@@ -212,7 +217,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                               AppStrings.get('loginSubtitle', lang),
                               style: TextStyle(
                                 fontSize: 16,
-                                color: const Color(0xFF285430).withOpacity(0.8),
+                                color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.8),
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -229,11 +234,11 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                       child: Container(
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.95),
+                          color: isDark ? theme.cardColor : Colors.white.withOpacity(0.95),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
                               blurRadius: 30,
                               offset: const Offset(0, 15),
                             ),
@@ -277,8 +282,8 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                                 'sheetIdToggle',
                                                 lang,
                                               ),
-                                              style: const TextStyle(
-                                                color: Colors.white,
+                                              style: TextStyle(
+                                                color: !_useEmailLogin ? Colors.white : roleColor,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 13,
                                               ),
@@ -339,15 +344,16 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 // Student ID / Email field
                                 Text(
                                   AppStrings.get('studentIdLabel', lang),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A3A2E),
+                                    color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 _buildModernTextField(
                                   controller: _emailController,
+                                  isDark: isDark,
                                   hintText: AppStrings.get(
                                     'studentIdHint',
                                     lang,
@@ -366,15 +372,16 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 // Password field for Student
                                 Text(
                                   AppStrings.get('passwordLabel', lang),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A3A2E),
+                                    color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 _buildModernTextField(
                                   controller: _passwordController,
+                                  isDark: isDark,
                                   hintText: AppStrings.get(
                                     'passwordHint',
                                     lang,
@@ -387,6 +394,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                       _obscurePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
+                                      color: isDark ? Colors.white54 : null,
                                     ),
                                     onPressed: () => setState(
                                       () =>
@@ -411,9 +419,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                       lang,
                                     ),
                                     style: TextStyle(
-                                      color: const Color(
+                                      color: (isDark ? Colors.white : const Color(
                                         0xFF1A3A2E,
-                                      ).withOpacity(0.5),
+                                      )).withOpacity(0.5),
                                       fontSize: 12,
                                       fontStyle: FontStyle.italic,
                                     ),
@@ -424,16 +432,17 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 // Sheet ID field
                                 Text(
                                   AppStrings.get('sheetIdLabel', lang),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A3A2E),
+                                    color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 _buildModernTextField(
                                   controller:
                                       _emailController, // Reusing for Sheet ID
+                                  isDark: isDark,
                                   hintText: AppStrings.get('sheetIdHint', lang),
                                   prefixIcon: Icons.assignment_ind_outlined,
                                   roleColor: roleColor,
@@ -449,15 +458,16 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 // Password field
                                 Text(
                                   AppStrings.get('passwordLabel', lang),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A3A2E),
+                                    color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 _buildModernTextField(
                                   controller: _passwordController,
+                                  isDark: isDark,
                                   hintText: AppStrings.get(
                                     'passwordHint',
                                     lang,
@@ -470,6 +480,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                       _obscurePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
+                                      color: isDark ? Colors.white54 : null,
                                     ),
                                     onPressed: () => setState(
                                       () =>
@@ -488,15 +499,16 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 // Unified Email field (for Patient or for Student/Doctor choosing Email)
                                 Text(
                                   AppStrings.get('emailLabel', lang),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A3A2E),
+                                    color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 _buildModernTextField(
                                   controller: _emailController,
+                                  isDark: isDark,
                                   hintText: AppStrings.get('emailHint', lang),
                                   prefixIcon: Icons.email_outlined,
                                   keyboardType: TextInputType.emailAddress,
@@ -519,15 +531,16 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 // Password field
                                 Text(
                                   AppStrings.get('passwordLabel', lang),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A3A2E),
+                                    color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 _buildModernTextField(
                                   controller: _passwordController,
+                                  isDark: isDark,
                                   hintText: AppStrings.get(
                                     'passwordHint',
                                     lang,
@@ -540,6 +553,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                       _obscurePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
+                                      color: isDark ? Colors.white54 : null,
                                     ),
                                     onPressed: () => setState(
                                       () =>
@@ -604,9 +618,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                     Text(
                                       AppStrings.get('orSignInWith', lang),
                                       style: TextStyle(
-                                        color: const Color(
+                                        color: (isDark ? Colors.white : const Color(
                                           0xFF1A3A2E,
-                                        ).withOpacity(0.5),
+                                        )).withOpacity(0.5),
                                         fontSize: 13,
                                       ),
                                     ),
@@ -619,12 +633,14 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                           Icons.fingerprint,
                                           roleColor,
                                           () {},
+                                          isDark,
                                         ),
                                         const SizedBox(width: 16),
                                         _buildSocialButton(
                                           Icons.face,
                                           roleColor,
                                           () {},
+                                          isDark,
                                         ),
                                       ],
                                     ),
@@ -649,7 +665,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 '${AppStrings.get('dontHaveAccount', lang)} ',
                                 style: TextStyle(
                                   fontSize: 15,
-                                  color: const Color(0xFF285430).withOpacity(0.8),
+                                  color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.8),
                                 ),
                               ),
                               GestureDetector(
@@ -664,8 +680,8 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 },
                                 child: Text(
                                   AppStrings.get('signUp', lang),
-                                  style: const TextStyle(
-                                    color: const Color(0xFF285430),
+                                  style: TextStyle(
+                                    color: isDark ? roleColor : const Color(0xFF285430),
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     decoration: TextDecoration.underline,
@@ -691,6 +707,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
     required String hintText,
     required IconData prefixIcon,
     required Color roleColor,
+    required bool isDark,
     bool obscureText = false,
     Widget? suffixIcon,
     TextInputType? keyboardType,
@@ -701,25 +718,25 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 16,
-        color: Color(0xFF1A3A2E),
+        color: isDark ? Colors.white : const Color(0xFF1A3A2E),
         fontWeight: FontWeight.w500,
       ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(
-          color: const Color(0xFF1A3A2E).withOpacity(0.3),
+          color: (isDark ? Colors.white : const Color(0xFF1A3A2E)).withOpacity(0.3),
           fontSize: 15,
         ),
         prefixIcon: Icon(
           prefixIcon,
-          color: const Color(0xFF1A3A2E).withOpacity(0.5),
+          color: (isDark ? Colors.white : const Color(0xFF1A3A2E)).withOpacity(0.5),
           size: 22,
         ),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: const Color(0xFFF5F5F5),
+        fillColor: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -798,17 +815,17 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
     );
   }
 
-  Widget _buildSocialButton(IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildSocialButton(IconData icon, Color color, VoidCallback onTap, bool isDark) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F5F5),
+          color: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFF5F5F5),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFF1A3A2E).withOpacity(0.1),
+            color: (isDark ? Colors.white : const Color(0xFF1A3A2E)).withOpacity(0.1),
             width: 1,
           ),
         ),

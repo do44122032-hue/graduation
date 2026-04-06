@@ -97,6 +97,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
     final languageService = Provider.of<LanguageService>(context);
     final lang = languageService.currentLanguage;
     final isRTL = languageService.isRTL;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -104,15 +105,21 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF6AB5D8), // Blue
-                Color(0xFFCBD77E), // Yellow-Green
-                Color(0xFFE6CA9A), // Beige
-              ],
+              colors: isDark 
+                ? [
+                    const Color(0xFF05051A),
+                    const Color(0xFF0A0A2E),
+                    const Color(0xFF0D1040),
+                  ]
+                : [
+                    const Color(0xFF6AB5D8), // Blue
+                    const Color(0xFFCBD77E), // Yellow-Green
+                    const Color(0xFFE6CA9A), // Beige
+                  ],
             ),
           ),
           child: SafeArea(
@@ -131,7 +138,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                             isRTL
                                 ? Icons.arrow_forward_ios
                                 : Icons.arrow_back_ios,
-                            color: const Color(0xFF285430),
+                            color: isDark ? Colors.white : const Color(0xFF285430),
                           ),
                         ),
                       ),
@@ -155,10 +162,10 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                               },
                               child: Text(
                                 AppStrings.get('selectRole', lang),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF285430),
+                                  color: isDark ? Colors.white : const Color(0xFF285430),
                                 ),
                               ),
                             ),
@@ -167,7 +174,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                               AppStrings.get('roleSubtitle', lang),
                               style: TextStyle(
                                 fontSize: 16,
-                                color: const Color(0xFF285430).withOpacity(0.8),
+                                color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.8),
                               ),
                             ),
                             const SizedBox(height: 40),
@@ -182,8 +189,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                                 lang,
                               ),
                               icon: Icons.personal_injury,
-                              color: const Color(0xFFCBD77E),
+                              color: isDark ? const Color(0xFFCBD77E) : const Color(0xFFCBD77E),
                               lang: lang,
+                              isDark: isDark,
                             ),
                             const SizedBox(height: 20),
                             _buildRoleCard(
@@ -197,6 +205,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                               icon: Icons.medical_services,
                               color: AppColors.doctorPrimary,
                               lang: lang,
+                              isDark: isDark,
                             ),
                             const SizedBox(height: 20),
                             _buildRoleCard(
@@ -210,6 +219,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                               icon: Icons.school,
                               color: const Color(0xFFE8C998),
                               lang: lang,
+                              isDark: isDark,
                             ),
                           ],
                         ),
@@ -233,6 +243,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
     required IconData icon,
     required Color color,
     required String lang,
+    required bool isDark,
   }) {
     return Material(
       color: Colors.transparent,
@@ -249,11 +260,12 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(
-              0.6,
-            ), // Increased opacity for contrast
+            color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.6),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+            border: Border.all(
+              color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.4), 
+              width: 1
+            ),
           ),
           child: Row(
             children: [
@@ -272,10 +284,10 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF285430),
+                        color: isDark ? Colors.white : const Color(0xFF285430),
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -283,7 +295,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                       description,
                       style: TextStyle(
                         fontSize: 14,
-                        color: const Color(0xFF285430).withOpacity(0.8),
+                        color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.8),
                       ),
                     ),
                   ],
@@ -291,7 +303,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: const Color(0xFF285430).withOpacity(0.6),
+                color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.6),
                 size: 16,
               ),
             ],

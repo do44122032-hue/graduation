@@ -4,21 +4,31 @@ import 'package:flutter/material.dart';
 import 'role_selection.dart';
 
 // ─────────────────────────────────────────────
-//  Usage in main.dart:
-//
-//  void main() => runApp(MaterialApp(
-//    home: WelcomeScreen(),
-//  ));
+//  WelcomeScreen (Entry point switcher)
 // ─────────────────────────────────────────────
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const NightWelcomeScreen() : const DayWelcomeScreen();
+  }
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
+// ─────────────────────────────────────────────
+//  Day Mode Welcome Screen (Original)
+// ─────────────────────────────────────────────
+
+class DayWelcomeScreen extends StatefulWidget {
+  const DayWelcomeScreen({super.key});
+
+  @override
+  State<DayWelcomeScreen> createState() => _DayWelcomeScreenState();
+}
+
+class _DayWelcomeScreenState extends State<DayWelcomeScreen>
     with TickerProviderStateMixin {
   late AnimationController _raysController;
   late AnimationController _cloud1Controller;
@@ -472,6 +482,467 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 }
 
 // ─────────────────────────────────────────────
+//  Night Mode Welcome Screen (New)
+// ─────────────────────────────────────────────
+
+class NightWelcomeScreen extends StatefulWidget {
+  const NightWelcomeScreen({super.key});
+
+  @override
+  State<NightWelcomeScreen> createState() => _NightWelcomeScreenState();
+}
+
+class _NightWelcomeScreenState extends State<NightWelcomeScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _moonGlowController;
+  late AnimationController _moonFloatController;
+  late List<AnimationController> _starControllers;
+  late List<AnimationController> _shootControllers;
+  late AnimationController _entranceController;
+  late AnimationController _logoFloatController;
+
+  late Animation<double> _moonGlowAnim;
+  late Animation<double> _moonFloatAnim;
+  late List<Animation<double>> _starAnims;
+  late List<Animation<double>> _shootAnims;
+  late Animation<double> _logoFloatAnim;
+
+  late Animation<double> _nameFade;
+  late Animation<Offset> _nameSlide;
+  late Animation<double> _taglineFade;
+  late Animation<double> _buttonFade;
+  late Animation<Offset> _buttonSlide;
+
+  // [top, left, size, animIndex(0-2)]
+  final List<List<double>> _stars = const [
+    [18, 22, 3.0, 0], [25, 80, 2.0, 1], [12, 155, 2.5, 2],
+    [30, 240, 2.0, 0], [8, 310, 3.0, 1], [20, 360, 2.0, 2],
+    [60, 40, 2.0, 1], [55, 110, 2.5, 0], [70, 198, 2.0, 2],
+    [48, 275, 3.0, 0], [65, 345, 2.0, 1], [105, 18, 2.0, 2],
+    [115, 70, 2.5, 0], [95, 170, 2.0, 1], [120, 255, 3.0, 2],
+    [100, 330, 2.0, 0], [162, 130, 2.5, 2], [148, 220, 2.0, 0],
+    [205, 280, 2.0, 0], [210, 30, 2.0, 0], [200, 95, 2.5, 1],
+    [215, 185, 2.0, 2], [170, 300, 2.0, 1], [260, 55, 2.0, 2],
+    [275, 160, 2.0, 0], [255, 320, 2.5, 1],
+  ];
+
+  // [top, left, width, delayMs]
+  final List<List<double>> _shootingStars = const [
+    [40, 20, 120, 1000],
+    [90, 200, 95, 5000],
+    [25, 280, 130, 9000],
+    [140, 60, 100, 13000],
+    [60, 240, 110, 17000],
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Moon glow
+    _moonGlowController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+    _moonGlowAnim = Tween<double>(begin: 0.6, end: 0.9).animate(
+      CurvedAnimation(parent: _moonGlowController, curve: Curves.easeInOut),
+    );
+
+    // Moon float
+    _moonFloatController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
+    _moonFloatAnim = Tween<double>(begin: 0, end: -6).animate(
+      CurvedAnimation(parent: _moonFloatController, curve: Curves.easeInOut),
+    );
+
+    // Stars — 3 twinkle patterns
+    final twinkleDurations = [
+      const Duration(milliseconds: 2800),
+      const Duration(milliseconds: 3500),
+      const Duration(milliseconds: 2200),
+    ];
+    _starControllers = List.generate(3, (i) {
+      final c = AnimationController(vsync: this, duration: twinkleDurations[i]);
+      Future.delayed(Duration(milliseconds: i * 400), () {
+        if (mounted) c.repeat(reverse: true);
+      });
+      return c;
+    });
+    _starAnims = _starControllers
+        .map((c) => Tween<double>(begin: 0.15, end: 1.0).animate(
+              CurvedAnimation(parent: c, curve: Curves.easeInOut),
+            ))
+        .toList();
+
+    // Shooting stars
+    final shootDurations = [3500, 4000, 3800, 3200, 4200];
+    _shootControllers = List.generate(5, (i) {
+      final c = AnimationController(
+          vsync: this, duration: Duration(milliseconds: shootDurations[i]));
+      Future.delayed(
+        Duration(milliseconds: _shootingStars[i][3].toInt()),
+        () {
+          if (mounted) c.repeat();
+        },
+      );
+      return c;
+    });
+    _shootAnims = _shootControllers
+        .map((c) => Tween<double>(begin: 0, end: 1).animate(
+              CurvedAnimation(parent: c, curve: Curves.easeIn),
+            ))
+        .toList();
+
+    // Entrance
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..forward();
+
+    _logoFloatController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+    _logoFloatAnim = Tween<double>(begin: 0, end: -15).animate(
+      CurvedAnimation(parent: _logoFloatController, curve: Curves.easeInOut),
+    );
+
+    _nameFade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+    ));
+    _nameSlide = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+    ));
+    _taglineFade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.3, 0.65, curve: Curves.easeOut),
+    ));
+    _buttonFade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
+    ));
+    _buttonSlide = Tween<Offset>(
+      begin: const Offset(0, 0.4),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
+    ));
+  }
+
+  @override
+  void dispose() {
+    _moonGlowController.dispose();
+    _moonFloatController.dispose();
+    for (final c in _starControllers) c.dispose();
+    for (final c in _shootControllers) c.dispose();
+    _entranceController.dispose();
+    _logoFloatController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF05051A),
+      body: Stack(
+        children: [
+          // ── Background gradient ──
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF05051A),
+                    Color(0xFF0A0A2E),
+                    Color(0xFF0D1040),
+                    Color(0xFF111550),
+                    Color(0xFF0F1A3A),
+                    Color(0xFF0A1528),
+                    Color(0xFF081020),
+                  ],
+                  stops: [0.0, 0.2, 0.38, 0.52, 0.68, 0.82, 1.0],
+                ),
+              ),
+            ),
+          ),
+
+          // ── Stars ──
+          ..._stars.map((s) {
+            final idx = s[3].toInt();
+            return AnimatedBuilder(
+              animation: _starAnims[idx],
+              builder: (_, __) => Positioned(
+                top: s[0],
+                left: s[1],
+                child: Opacity(
+                  opacity: _starAnims[idx].value,
+                  child: Container(
+                    width: s[2],
+                    height: s[2],
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+
+          // ── Moon glow ──
+          AnimatedBuilder(
+            animation: _moonGlowAnim,
+            builder: (_, __) => Positioned(
+              top: 18,
+              left: w / 2 - 80,
+              child: Opacity(
+                opacity: _moonGlowAnim.value,
+                child: Container(
+                  width: 160,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.28),
+                        const Color(0xFFB4D2FF).withOpacity(0.12),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.5, 0.75],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // ── Moon body ──
+          AnimatedBuilder(
+            animation: _moonFloatAnim,
+            builder: (_, __) => Positioned(
+              top: 42 + _moonFloatAnim.value,
+              left: w / 2 - 45,
+              child: CustomPaint(
+                size: const Size(90, 90),
+                painter: _MoonPainter(),
+              ),
+            ),
+          ),
+
+          // ── Shooting stars ──
+          ...List.generate(5, (i) {
+            return AnimatedBuilder(
+              animation: _shootAnims[i],
+              builder: (_, __) {
+                final t = _shootAnims[i].value;
+                final opacity =
+                    (t < 0.7 ? 1.0 : (1.0 - t) / 0.3).clamp(0.0, 1.0);
+                final dx = t * 300;
+                final dy = t * 300;
+                final star = _shootingStars[i];
+                return Positioned(
+                  top: star[0] + dy,
+                  left: star[1] + dx,
+                  child: Opacity(
+                    opacity: opacity,
+                    child: Transform.rotate(
+                      angle: 45 * pi / 180,
+                      child: CustomPaint(
+                        size: Size(star[2], 4),
+                        painter: _ShootingStarPainter(),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
+
+          // ── Ground + Trees (taller canvas so trees show above hills) ──
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: CustomPaint(
+              size: Size(w, 140),
+              painter: _NightGroundPainter(),
+            ),
+          ),
+
+          // ── Moonlight ground reflection ──
+          Positioned(
+            bottom: 80,
+            left: w / 2 - 90,
+            child: Container(
+              width: 180,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFC8DCFF).withOpacity(0.10),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.75],
+                ),
+              ),
+            ),
+          ),
+
+          // ── App name + tagline ──
+          SafeArea(
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
+
+                FadeTransition(
+                  opacity: _nameFade,
+                  child: SlideTransition(
+                    position: _nameSlide,
+                    child: Column(
+                      children: [
+                        // Clean Floating Logo
+                        AnimatedBuilder(
+                          animation: _logoFloatAnim,
+                          builder: (context, child) {
+                            return Transform.translate(
+                              offset: Offset(0, _logoFloatAnim.value),
+                              child: child,
+                            );
+                          },
+                          child: SizedBox(
+                            width: 250,
+                            height: 250,
+                            child: Image.asset(
+                              'assets/logo.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                    Icons.medical_services_rounded,
+                                    size: 140,
+                                    color: Colors.white,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Carely',
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            letterSpacing: 2.4,
+                            shadows: [
+                              Shadow(
+                                color: Color(0x33000000),
+                                blurRadius: 14,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                FadeTransition(
+                  opacity: _taglineFade,
+                  child: const Text(
+                    'Your Health, In Your Hands',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xDDC8DCFF),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+
+                const Spacer(flex: 3),
+
+                // ── Welcome button ──
+                FadeTransition(
+                  opacity: _buttonFade,
+                  child: SlideTransition(
+                    position: _buttonSlide,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const RoleSelectionScreen(),
+                              ),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(
+                              color: Color(0x4DFFFFFF),
+                              width: 1.5,
+                            ),
+                            backgroundColor: Colors.white.withOpacity(0.12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Welcome',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 48),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
 //  Painters
 // ─────────────────────────────────────────────
 
@@ -886,5 +1357,158 @@ class _EnhancedGroundPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+// ─────────────────────────────────────────────
+//  Night Mode Painters
+// ─────────────────────────────────────────────
 
+class _MoonPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r = size.width / 2 - 1;
 
+    // Moon disc
+    final moonPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.25, -0.35),
+        radius: 1.0,
+        colors: const [
+          Color(0xFFFFFDE8),
+          Color(0xFFE8EFD8),
+          Color(0xFFC8D8C0),
+          Color(0xFFA8C0A8),
+        ],
+        stops: const [0.0, 0.4, 0.8, 1.0],
+      ).createShader(Rect.fromCircle(center: Offset(cx, cy), radius: r));
+    canvas.drawCircle(Offset(cx, cy), r, moonPaint);
+
+    // Shine
+    canvas.drawCircle(
+      Offset(cx, cy), r,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-0.45, -0.50),
+          radius: 0.75,
+          colors: [Colors.white.withOpacity(0.6), Colors.transparent],
+        ).createShader(Rect.fromCircle(center: Offset(cx, cy), radius: r)),
+    );
+
+    // Craters
+    final cp = Paint()..color = const Color(0xFF96AF96).withOpacity(0.32);
+    canvas.drawCircle(Offset(cx - 13, cy - 7), 5, cp);
+    canvas.drawCircle(Offset(cx + 13, cy - 15), 3.5, cp);
+    canvas.drawCircle(Offset(cx + 5, cy + 10), 4, cp);
+    canvas.drawCircle(Offset(cx - 17, cy + 11), 2.5, cp);
+    canvas.drawCircle(Offset(cx + 17, cy + 3), 3, cp);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter old) => false;
+}
+
+class _ShootingStarPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Trail
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width - 2, 2),
+        const Radius.circular(1),
+      ),
+      Paint()
+        ..shader = LinearGradient(
+          colors: [
+            Colors.white.withOpacity(0.0),
+            Colors.white.withOpacity(0.85),
+            Colors.white,
+          ],
+          stops: const [0.0, 0.75, 1.0],
+        ).createShader(Rect.fromLTWH(0, 0, size.width, 2)),
+    );
+    // Head glow
+    canvas.drawCircle(
+      Offset(size.width, 1),
+      2.5,
+      Paint()
+        ..color = Colors.white
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter old) => false;
+}
+
+class _NightGroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height; // 140px — gives trees room above hills
+
+    // Hill 1 (back, lighter dark)
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, h)
+        ..quadraticBezierTo(w * 0.13, h * 0.57, w * 0.28, h * 0.71)
+        ..quadraticBezierTo(w * 0.45, h * 0.86, w * 0.58, h * 0.56)
+        ..quadraticBezierTo(w * 0.72, h * 0.34, w * 0.85, h * 0.66)
+        ..quadraticBezierTo(w * 0.93, h * 0.77, w, h * 0.66)
+        ..lineTo(w, h)
+        ..close(),
+      Paint()..color = const Color(0xFF0A0F23),
+    );
+
+    // Hill 2 (front, darkest)
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, h)
+        ..quadraticBezierTo(w * 0.12, h * 0.73, w * 0.26, h * 0.80)
+        ..quadraticBezierTo(w * 0.41, h * 0.89, w * 0.55, h * 0.75)
+        ..quadraticBezierTo(w * 0.69, h * 0.61, w * 0.82, h * 0.77)
+        ..quadraticBezierTo(w * 0.91, h * 0.86, w, h * 0.77)
+        ..lineTo(w, h)
+        ..close(),
+      Paint()..color = const Color(0xFF05080E),
+    );
+
+    // Trees — drawn AFTER hills so they appear on top
+    final tp = Paint()..color = const Color(0xFF05080F);
+
+    // Left trees
+    _tree(canvas, tp, w * 0.040, h * 0.41, h * 0.42);
+    _tree(canvas, tp, w * 0.095, h * 0.49, h * 0.32);
+    _tree(canvas, tp, w * 0.148, h * 0.44, h * 0.38);
+
+    // Right trees
+    _tree(canvas, tp, w * 0.815, h * 0.39, h * 0.44);
+    _tree(canvas, tp, w * 0.870, h * 0.45, h * 0.35);
+    _tree(canvas, tp, w * 0.922, h * 0.41, h * 0.40);
+  }
+
+  void _tree(Canvas canvas, Paint p, double x, double base, double h) {
+    // Trunk
+    canvas.drawRect(Rect.fromLTWH(x - 3, base, 6, h * 0.35), p);
+    // Lower cone
+    canvas.drawPath(
+      Path()
+        ..moveTo(x, base - h * 0.30)
+        ..lineTo(x - h * 0.20, base + h * 0.08)
+        ..lineTo(x + h * 0.20, base + h * 0.08)
+        ..close(),
+      p,
+    );
+    // Upper cone
+    canvas.drawPath(
+      Path()
+        ..moveTo(x, base - h * 0.55)
+        ..lineTo(x - h * 0.14, base - h * 0.18)
+        ..lineTo(x + h * 0.14, base - h * 0.18)
+        ..close(),
+      p,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter old) => false;
+}

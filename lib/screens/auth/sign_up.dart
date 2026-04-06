@@ -84,6 +84,8 @@ class _SignUpScreenState extends State<SignUpScreen>
     final authService = Provider.of<AuthService>(context);
     final lang = languageService.currentLanguage;
     final isRTL = languageService.isRTL;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     Color roleColor;
     String roleName;
@@ -107,6 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen>
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -114,7 +117,9 @@ class _SignUpScreenState extends State<SignUpScreen>
             gradient: LinearGradient(
               begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
-              colors: [roleColor, roleColor.withOpacity(0.7)],
+              colors: isDark 
+                ? [theme.cardColor, theme.scaffoldBackgroundColor]
+                : [roleColor, roleColor.withOpacity(0.7)],
             ),
           ),
           child: SafeArea(
@@ -133,7 +138,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           isRTL
                               ? Icons.arrow_forward_ios
                               : Icons.arrow_back_ios,
-                          color: const Color(0xFF285430),
+                          color: isDark ? Colors.white : const Color(0xFF285430),
                         ),
                       ),
                     ),
@@ -163,7 +168,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                                       errorBuilder: (context, error, stackTrace) {
                                         return Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: isDark ? theme.cardColor : Colors.white,
                                             shape: BoxShape.circle,
                                             boxShadow: [
                                               BoxShadow(
@@ -172,10 +177,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                                               ),
                                             ],
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.medical_services_rounded,
                                             size: 80,
-                                            color: Color(0xFF62A5F9),
+                                            color: roleColor,
                                           ),
                                         );
                                       },
@@ -190,13 +195,13 @@ class _SignUpScreenState extends State<SignUpScreen>
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.6),
+                                color: (isDark ? Colors.white : Colors.white).withOpacity(isDark ? 0.1 : 0.6),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 roleName,
-                                style: const TextStyle(
-                                  color: const Color(0xFF285430),
+                                style: TextStyle(
+                                  color: isDark ? roleColor : const Color(0xFF285430),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -207,7 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                               style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.w900,
-                                color: const Color(0xFF285430),
+                                color: isDark ? Colors.white : const Color(0xFF285430),
                                 height: 1.1,
                                 fontFamily: isRTL ? 'Cairo' : null,
                               ),
@@ -217,7 +222,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                               AppStrings.get('signUpSubtitle', lang),
                               style: TextStyle(
                                 fontSize: 16,
-                                color: const Color(0xFF285430).withOpacity(0.8),
+                                color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.8),
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -234,11 +239,11 @@ class _SignUpScreenState extends State<SignUpScreen>
                       child: Container(
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.95),
+                          color: isDark ? theme.cardColor : Colors.white.withOpacity(0.95),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
                               blurRadius: 30,
                               offset: const Offset(0, 15),
                             ),
@@ -251,70 +256,79 @@ class _SignUpScreenState extends State<SignUpScreen>
                             children: [
                               _buildLabel(
                                 AppStrings.get('fullNameLabel', lang),
+                                isDark,
                               ),
                               _buildTextField(
                                 controller: _nameController,
                                 hintText: AppStrings.get('fullNameHint', lang),
                                 icon: Icons.person_outline,
                                 roleColor: roleColor,
+                                isDark: isDark,
                                 validator: (v) =>
                                     v!.isEmpty ? 'Required' : null,
                               ),
 
-                              _buildLabel(AppStrings.get('emailLabel', lang)),
+                              _buildLabel(AppStrings.get('emailLabel', lang), isDark),
                               _buildTextField(
                                 controller: _emailController,
                                 hintText: AppStrings.get('emailHint', lang),
                                 icon: Icons.email_outlined,
                                 keyboardType: TextInputType.emailAddress,
                                 roleColor: roleColor,
+                                isDark: isDark,
                                 validator: _validateEmail,
                               ),
 
-                              _buildLabel(AppStrings.get('phoneLabel', lang)),
+                              _buildLabel(AppStrings.get('phoneLabel', lang), isDark),
                               _buildTextField(
                                 controller: _phoneController,
                                 hintText: AppStrings.get('phoneHint', lang),
                                 icon: Icons.phone_outlined,
                                 keyboardType: TextInputType.phone,
                                 roleColor: roleColor,
+                                isDark: isDark,
                                 validator: (v) =>
                                     v!.isEmpty ? 'Required' : null,
                               ),
 
                               if (widget.userRole == UserRole.doctor) ...[
-                                _buildLabel(AppStrings.get('departmentLabel', lang).isEmpty ? 'Department' : AppStrings.get('departmentLabel', lang)),
+                                _buildLabel(AppStrings.get('departmentLabel', lang).isEmpty ? 'Department' : AppStrings.get('departmentLabel', lang), isDark),
                                 _buildTextField(
                                   controller: _departmentController,
                                   hintText: AppStrings.get('departmentHint', lang).isEmpty ? 'E.g. Cardiology' : AppStrings.get('departmentHint', lang),
                                   icon: Icons.local_hospital_outlined,
                                   roleColor: roleColor,
+                                  isDark: isDark,
                                   validator: (v) =>
                                       v!.isEmpty ? 'Required' : null,
                                 ),
-                                _buildLabel(AppStrings.get('bioLabel', lang).isEmpty ? 'Bio (Optional)' : AppStrings.get('bioLabel', lang)),
+                                _buildLabel(AppStrings.get('bioLabel', lang).isEmpty ? 'Bio (Optional)' : AppStrings.get('bioLabel', lang), isDark),
                                 _buildTextField(
                                   controller: _bioController,
                                   hintText: AppStrings.get('bioHint', lang).isEmpty ? 'Short description about you...' : AppStrings.get('bioHint', lang),
                                   icon: Icons.info_outline,
                                   roleColor: roleColor,
+                                  isDark: isDark,
                                 ),
                               ],
 
                               _buildLabel(
                                 AppStrings.get('passwordLabel', lang),
+                                isDark,
                               ),
                               _buildTextField(
                                 controller: _passwordController,
                                 hintText: AppStrings.get('passwordHint', lang),
                                 icon: Icons.lock_outline,
                                 roleColor: roleColor,
+                                isDark: isDark,
                                 obscureText: _obscurePassword,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscurePassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
+                                    color: isDark ? Colors.white54 : null,
                                   ),
                                   onPressed: () => setState(
                                     () => _obscurePassword = !_obscurePassword,
@@ -326,6 +340,7 @@ class _SignUpScreenState extends State<SignUpScreen>
 
                               _buildLabel(
                                 AppStrings.get('confirmPasswordLabel', lang),
+                                isDark,
                               ),
                               _buildTextField(
                                 controller: _confirmPasswordController,
@@ -335,12 +350,14 @@ class _SignUpScreenState extends State<SignUpScreen>
                                 ),
                                 icon: Icons.lock_outline,
                                 roleColor: roleColor,
+                                isDark: isDark,
                                 obscureText: _obscureConfirmPassword,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscureConfirmPassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
+                                    color: isDark ? Colors.white54 : null,
                                   ),
                                   onPressed: () => setState(
                                     () => _obscureConfirmPassword =
@@ -380,7 +397,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                             Text(
                               '${AppStrings.get('alreadyHaveAccount', lang)} ',
                               style: TextStyle(
-                                color: const Color(0xFF285430).withOpacity(0.8),
+                                color: (isDark ? Colors.white : const Color(0xFF285430)).withOpacity(0.8),
                                 fontSize: 15,
                               ),
                             ),
@@ -388,8 +405,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                               onTap: () => Navigator.pop(context),
                               child: Text(
                                 AppStrings.get('signIn', lang),
-                                style: const TextStyle(
-                                  color: Color(0xFF285430),
+                                style: TextStyle(
+                                  color: isDark ? roleColor : const Color(0xFF285430),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.underline,
@@ -411,15 +428,15 @@ class _SignUpScreenState extends State<SignUpScreen>
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: 8.0, top: 16.0),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1A3A2E),
+          color: isDark ? Colors.white70 : const Color(0xFF1A3A2E),
         ),
       ),
     );
@@ -430,6 +447,7 @@ class _SignUpScreenState extends State<SignUpScreen>
     required String hintText,
     required IconData icon,
     required Color roleColor,
+    required bool isDark,
     bool obscureText = false,
     Widget? suffixIcon,
     TextInputType? keyboardType,
@@ -440,21 +458,24 @@ class _SignUpScreenState extends State<SignUpScreen>
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(fontSize: 16, color: Color(0xFF1A3A2E)),
+      style: TextStyle(
+        fontSize: 16, 
+        color: isDark ? Colors.white : const Color(0xFF1A3A2E)
+      ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(
-          color: const Color(0xFF1A3A2E).withOpacity(0.3),
+          color: (isDark ? Colors.white : const Color(0xFF1A3A2E)).withOpacity(0.3),
           fontSize: 15,
         ),
         prefixIcon: Icon(
           icon,
-          color: const Color(0xFF1A3A2E).withOpacity(0.5),
+          color: (isDark ? Colors.white : const Color(0xFF1A3A2E)).withOpacity(0.5),
           size: 22,
         ),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: const Color(0xFFF5F5F5),
+        fillColor: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
