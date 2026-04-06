@@ -27,15 +27,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
   // Local State for Lists
   List<ChronicCondition> _conditions = [];
 
-  // Colors (matching dashboard)
-  static const Color colorSecondaryBg = Color(0xFFF7F7F7);
-  static const Color colorCharcoal = Color(0xFF282828);
-  static const Color colorSecondaryText = Color(0xFF4A4A4A);
-  static const Color colorAccentOlive = Color(0xFFCBD77E);
-  static const Color colorAccentBeige = Color(0xFFE6CA9A);
-  static const Color colorWhite = Colors.white;
-  static const Color colorMainButton = Color(0xFFCBD77E);
-  static const Color colorSecondaryButton = Color(0xFFE6CA9A);
+  // Using dynamic colors from build() context
 
   @override
   Widget build(BuildContext context) {
@@ -43,34 +35,34 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
     final languageCode = languageService.currentLanguage;
 
     return Scaffold(
-      backgroundColor: colorSecondaryBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
-              colors: [colorMainButton, colorSecondaryButton],
+              colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
             ),
           ),
         ),
         title: Text(
           AppStrings.get('actionEditMedicalProfile', languageCode),
           style: const TextStyle(
-            color: colorCharcoal,
+            color: Color(0xFF282828),
             fontWeight: FontWeight.bold,
           ),
         ),
         elevation: 0,
-        iconTheme: const IconThemeData(color: colorCharcoal),
+        iconTheme: const IconThemeData(color: Color(0xFF282828)),
         actions: [
           TextButton.icon(
             onPressed: () => _saveData(languageCode),
-            icon: const Icon(Icons.save, color: colorCharcoal),
+            icon: const Icon(Icons.save, color: Color(0xFF282828)),
             label: Text(
               AppStrings.get('actionSave', languageCode),
               style: const TextStyle(
-                color: colorCharcoal,
+                color: Color(0xFF282828),
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -111,25 +103,24 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            colorAccentOlive.withOpacity(0.2),
-            colorAccentBeige.withOpacity(0.1),
+            const Color(0xFFCBD77E).withOpacity(0.2),
+            const Color(0xFFE6CA9A).withOpacity(0.1),
           ],
         ),
-        borderRadius: BorderRadius.circular(10),
-        border: const Border(
-          left: BorderSide(color: colorAccentOlive, width: 4),
+        borderRadius: BorderRadius.circular(12),
+        border: const BorderDirectional(start: BorderSide(color: Color(0xFFCBD77E), width: 4),
         ),
       ),
       child: Row(
         children: [
-          Icon(icon, color: colorCharcoal, size: 24),
+          Icon(icon, color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFCBD77E) : const Color(0xFF282828), size: 24),
           const SizedBox(width: 8),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: colorCharcoal,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -141,8 +132,8 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorWhite,
-        borderRadius: BorderRadius.circular(16),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -163,7 +154,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
             children: [
               Expanded(
                 child: _buildTextField(
-                  AppStrings.get('labelAgeNormal', languageCode),
+                  AppStrings.get('labelAge', languageCode),
                   _ageController,
                   Icons.calendar_today,
                   isNumber: true,
@@ -172,7 +163,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildTextField(
-                  AppStrings.get('labelBloodType', languageCode),
+                  AppStrings.get('bloodType', languageCode),
                   _bloodTypeController,
                   Icons.bloodtype,
                 ),
@@ -225,11 +216,13 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
     return TextField(
       controller: controller,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: colorAccentOlive),
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+        prefixIcon: Icon(icon, color: const Color(0xFFCBD77E)),
         filled: true,
-        fillColor: colorSecondaryBg,
+        fillColor: Theme.of(context).scaffoldBackgroundColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -251,7 +244,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
             child: Center(
               child: Text(
                 AppStrings.get('msgNoConditions', languageCode),
-                style: const TextStyle(color: colorSecondaryText),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
               ),
             ),
           ),
@@ -269,12 +262,12 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
 
   Widget _buildConditionItem(ChronicCondition condition, String languageCode) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorWhite,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorSecondaryBg),
+        border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
       ),
       child: Row(
         children: [
@@ -291,8 +284,8 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
                 ),
                 Text(
                   '${AppStrings.get('labelStatus', languageCode)} ${condition.currentStatus}',
-                  style: const TextStyle(
-                    color: colorSecondaryText,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                     fontSize: 12,
                   ),
                 ),
@@ -321,11 +314,11 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 14),
-          side: const BorderSide(color: colorAccentOlive),
+          side: const BorderSide(color: Color(0xFFCBD77E)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          foregroundColor: colorAccentOlive,
+          foregroundColor: const Color(0xFFCBD77E),
         ),
         icon: const Icon(Icons.add),
         label: Text(label),
@@ -383,7 +376,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
               });
               Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: colorAccentOlive),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFCBD77E)),
             child: Text(AppStrings.get('actionAdd', languageCode)),
           ),
         ],
@@ -414,7 +407,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
           content: Text(
             AppStrings.get('msgMedicalProfileUpdated', languageCode),
           ),
-          backgroundColor: colorAccentOlive,
+          backgroundColor: const Color(0xFFCBD77E),
         ),
       );
       // Navigate to dashboard and remove all previous routes
@@ -433,3 +426,7 @@ class _PatientDataEntryPageState extends State<PatientDataEntryPage> {
     }
   }
 }
+
+
+
+

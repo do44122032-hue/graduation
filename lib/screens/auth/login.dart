@@ -103,7 +103,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [roleColor, roleColor.withOpacity(0.7)],
             ),
@@ -143,9 +143,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                               child: ScaleTransition(
                                 scale: _scaleAnimation,
                                 child: Container(
-                                  height: 120,
-                                  width: 120,
-                                  margin: const EdgeInsets.only(bottom: 20),
+                                  height: 160,
+                                  width: 160,
+                                  margin: const EdgeInsetsDirectional.only(bottom: 20),
                                   child: ClipOval(
                                     child: Image.asset(
                                       'assets/logo.png',
@@ -165,7 +165,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                           ),
                                           child: const Icon(
                                             Icons.medical_services_rounded,
-                                            size: 50,
+                                            size: 80,
                                             color: Color(0xFF62A5F9),
                                           ),
                                         );
@@ -182,7 +182,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 roleName,
@@ -230,7 +230,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.95),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
@@ -264,9 +264,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                             color: !_useEmailLogin
                                                 ? roleColor
                                                 : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                                            borderRadius: BorderRadius.circular(12),
                                             border: Border.all(
                                               color: !_useEmailLogin
                                                   ? Colors.transparent
@@ -306,9 +304,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                             color: _useEmailLogin
                                                 ? roleColor
                                                 : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                                            borderRadius: BorderRadius.circular(12),
                                             border: Border.all(
                                               color: _useEmailLogin
                                                   ? Colors.transparent
@@ -408,7 +404,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 const SizedBox(height: 8),
                                 // ID Hint section as requested
                                 Align(
-                                  alignment: Alignment.centerLeft,
+                                  alignment: AlignmentDirectional.centerStart,
                                   child: Text(
                                     AppStrings.get(
                                       'studentEmailLoginHint',
@@ -564,7 +560,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
 
                               // Forgot password
                               Align(
-                                alignment: Alignment.centerRight,
+                                alignment: AlignmentDirectional.centerEnd,
                                 child: TextButton(
                                   onPressed: () {
                                     Navigator.push(
@@ -725,23 +721,23 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
         filled: true,
         fillColor: const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: roleColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -763,7 +759,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
       height: 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.4),
@@ -776,7 +772,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
         color: Colors.transparent,
         child: InkWell(
           onTap: isLoading ? null : onPressed,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: Center(
             child: isLoading
                 ? const SizedBox(
@@ -810,7 +806,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
         height: 60,
         decoration: BoxDecoration(
           color: const Color(0xFFF5F5F5),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: const Color(0xFF1A3A2E).withOpacity(0.1),
             width: 1,
@@ -865,7 +861,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
         );
@@ -873,3 +869,6 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
     }
   }
 }
+
+
+

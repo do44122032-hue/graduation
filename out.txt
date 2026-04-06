@@ -1,0 +1,35 @@
+Analyzing medicalrecord.dart...
+
+warning - medicalrecord.dart:25:10 - The value of the field '_activeNav' isn't used. Try removing the field, or using it. - unused_field
+warning - medicalrecord.dart:40:33 - The operand can't be 'null', so the condition is always 'false'. Try removing the condition, an enclosing condition, or the whole conditional statement. - unnecessary_null_comparison
+warning - medicalrecord.dart:70:72 - The '!' will have no effect because the receiver can't be null. Try removing the '!' operator. - unnecessary_non_null_assertion
+warning - medicalrecord.dart:715:10 - The declaration '_buildConditionsTab' isn't referenced. Try removing the declaration of '_buildConditionsTab'. - unused_element
+warning - medicalrecord.dart:1085:47 - The operand can't be 'null', so the condition is always 'false'. Try removing the condition, an enclosing condition, or the whole conditional statement. - unnecessary_null_comparison
+warning - medicalrecord.dart:1085:65 - The '!' will have no effect because the receiver can't be null. Try removing the '!' operator. - unnecessary_non_null_assertion
+warning - medicalrecord.dart:1100:33 - The '!' will have no effect because the receiver can't be null. Try removing the '!' operator. - unnecessary_non_null_assertion
+   info - medicalrecord.dart:17:9 - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter. - use_super_parameters
+   info - medicalrecord.dart:25:10 - The private field _activeNav could be 'final'. Try making the field 'final'. - prefer_final_fields
+   info - medicalrecord.dart:27:13 - The private field _expandedItems could be 'final'. Try making the field 'final'. - prefer_final_fields
+   info - medicalrecord.dart:69:7 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:71:7 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:73:9 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:108:17 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:112:13 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:136:7 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:172:7 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - medicalrecord.dart:358:33 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:372:35 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:393:35 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:406:35 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:457:44 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:463:46 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:622:35 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:684:33 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:708:62 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:732:39 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:945:33 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - medicalrecord.dart:1136:44 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - medicalrecord.dart:1146:25 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - medicalrecord.dart:1237:33 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+
+31 issues found.

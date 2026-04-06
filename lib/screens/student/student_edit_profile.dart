@@ -73,7 +73,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [studentThemeColor, Color(0xFFF5DDB8)],
             ),
@@ -144,12 +144,12 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                     foregroundColor: charcoal,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
-                    AppStrings.get('save', lang),
+                    AppStrings.get('actionSave', lang),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -194,15 +194,15 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: studentThemeColor, width: 2),
         ),
       ),
@@ -220,7 +220,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButtonFormField<String>(
@@ -236,7 +236,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
           ),
           items: [
             AppStrings.get('labelSemester1_2026', lang),
-            'Spring 2025',
+            'Spring 2025', // These can be added to AppStrings if needed, but for now leave or add them
             'Summer 2025',
           ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
           onChanged: (val) {
@@ -254,7 +254,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
       // In a real app, you'd call a service to save data
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppStrings.get('msgProfileUpdatedStudent', lang)),
+          content: Text(AppStrings.get('msgMedicalProfileUpdated', lang)),
           backgroundColor: studentThemeColor,
         ),
       );
@@ -262,3 +262,6 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
     }
   }
 }
+
+
+

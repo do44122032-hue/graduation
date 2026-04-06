@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../models/course_model.dart';
+import 'package:provider/provider.dart';
+import '../../services/language_service.dart';
+import '../../constants/app_strings.dart';
 
 class CourseDetailsScreen extends StatefulWidget {
   final Course course;
@@ -28,25 +31,28 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final languageService = Provider.of<LanguageService>(context);
+    final lang = languageService.currentLanguage;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       body: Column(
         children: [
           _buildHeader(),
-          _buildTabBar(),
+          _buildTabBar(lang),
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildSyllabusTab(),
-                _buildAssignmentsTab(),
+                _buildSyllabusTab(lang),
+                _buildAssignmentsTab(lang),
                 _buildResourcesTab(),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: _buildBottomBar(lang),
     );
   }
 
@@ -54,9 +60,9 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+        borderRadius: const BorderRadiusDirectional.only(
+          bottomStart: Radius.circular(30),
+          bottomEnd: Radius.circular(30),
         ),
         boxShadow: [
           BoxShadow(
@@ -88,7 +94,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 30),
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 30),
               child: Row(
                 children: [
                   Expanded(
@@ -166,7 +172,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(String lang) {
     return Container(
       color: Colors.white,
       child: TabBar(
@@ -175,26 +181,26 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
         unselectedLabelColor: Colors.grey,
         indicatorColor: widget.course.color,
         indicatorWeight: 3,
-        tabs: const [
-          Tab(text: 'Syllabus'),
-          Tab(text: 'Assignments'),
-          Tab(text: 'Resources'),
+        tabs: [
+          Tab(text: AppStrings.get('tabSyllabus', lang)),
+          Tab(text: AppStrings.get('tabAssignments', lang)),
+          Tab(text: AppStrings.get('tabResources', lang)),
         ],
       ),
     );
   }
 
-  Widget _buildSyllabusTab() {
+  Widget _buildSyllabusTab(String lang) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        _buildSectionTitle('Course Overview'),
+        _buildSectionTitle(AppStrings.get('sectCourseOverview', lang)),
         const Text(
           'This course provides a comprehensive overview of clinical medicine, focusing on diagnosis, treatment, and management of common diseases.',
           style: TextStyle(color: Color(0xFF4A4A4A), height: 1.5),
         ),
         const SizedBox(height: 24),
-        _buildSectionTitle('Modules'),
+        _buildSectionTitle(AppStrings.get('sectModules', lang)),
         _buildModuleItem(1, 'Cardiology Fundamentals', true),
         _buildModuleItem(2, 'Pulmonology & Respiratory Care', true),
         _buildModuleItem(3, 'Gastroenterology Basics', true),
@@ -206,7 +212,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
 
   Widget _buildModuleItem(int number, String title, bool completed) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -267,11 +273,11 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
     );
   }
 
-  Widget _buildAssignmentsTab() {
+  Widget _buildAssignmentsTab(String lang) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        _buildSectionTitle('Upcoming'),
+        _buildSectionTitle(AppStrings.get('sectUpcoming', lang)),
         _buildAssignmentItem(
           'Case Study Analysis',
           'Due: Oct 25, 2026',
@@ -279,7 +285,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
           false,
         ),
         const SizedBox(height: 24),
-        _buildSectionTitle('Past'),
+        _buildSectionTitle(AppStrings.get('sectPast', lang)),
         _buildAssignmentItem(
           'Midterm Exam',
           'Grade: 92/100',
@@ -303,7 +309,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
     bool completed,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -361,7 +367,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
 
   Widget _buildResourceItem(String title) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -380,7 +386,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.red.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.picture_as_pdf,
@@ -407,7 +413,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsetsDirectional.only(bottom: 12),
       child: Text(
         title,
         style: const TextStyle(
@@ -419,7 +425,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(String lang) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -438,7 +444,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Contacting instructor...'),
+                content: Text(AppStrings.get('msgContactingInstructor', lang)),
                 backgroundColor: widget.course.color,
               ),
             );
@@ -448,16 +454,19 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen>
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             elevation: 0,
           ),
-          child: const Text(
-            'Contact Instructor',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          child: Text(
+            AppStrings.get('actionContactInstructor', lang),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
       ),
     );
   }
 }
+
+
+

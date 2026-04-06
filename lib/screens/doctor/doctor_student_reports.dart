@@ -69,7 +69,7 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: const Text('Assign New Task'),
           content: SingleChildScrollView(
             child: Column(
@@ -210,7 +210,7 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                 }
               },
               style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: isSaving ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Assign'),
             ),
@@ -276,17 +276,17 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Academic Management', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: const Text('Academic Management', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.doctorPrimary,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.doctorPrimary,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: AppColors.doctorPrimary,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
           tabs: const [
             Tab(text: 'Submissions'),
             Tab(text: 'Tasks'),
@@ -331,9 +331,9 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                     : report.submittedAt;
 
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  color: AppColors.cardBackground,
+                  margin: const EdgeInsetsDirectional.only(bottom: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  color: Theme.of(context).cardColor,
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -346,9 +346,10 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                             Expanded(
                               child: Text(
                                 report.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -356,7 +357,7 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.orange.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 report.status.toUpperCase(),
@@ -375,7 +376,10 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                           style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.doctorPrimary),
                         ),
                         const SizedBox(height: 8),
-                        Text(report.description),
+                        Text(
+                          report.description,
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+                        ),
                         const SizedBox(height: 12),
                         const Divider(),
                         Row(
@@ -416,18 +420,19 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
               itemBuilder: (context, index) {
                 final task = _tasks[index];
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  color: AppColors.cardBackground,
+                  margin: const EdgeInsetsDirectional.only(bottom: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  color: Theme.of(context).cardColor,
                   elevation: 0,
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16),
-                    title: Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(task.title, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 4),
-                        Text(task.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                        Text(task.description, maxLines: 2, overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
                         const SizedBox(height: 8),
                         Row(
                           children: [
@@ -439,7 +444,7 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: task.status == 'completed' ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 task.status.toUpperCase(),
@@ -461,3 +466,6 @@ class _DoctorStudentReportsPageState extends State<DoctorStudentReportsPage> wit
     );
   }
 }
+
+
+

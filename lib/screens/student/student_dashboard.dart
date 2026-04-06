@@ -62,21 +62,21 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         ),
         child: Column(
           children: [
             // Handle for bottom sheet
             Center(
               child: Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                margin: const EdgeInsetsDirectional.only(top: 12, bottom: 8),
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
@@ -91,7 +91,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                       height: 200,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
@@ -101,7 +101,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(12),
                         child: Image.asset(
                           'C:/Users/User/.gemini/antigravity/brain/ca0bd178-e7d3-4763-b245-8cbeb6400837/hospital_building_1767119126123.png',
                           fit: BoxFit.cover,
@@ -120,10 +120,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
 
                     Text(
                       AppStrings.get('hospitalName', languageCode),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF282828),
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -141,7 +141,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                           AppStrings.get('hospitalAddress', languageCode),
                           style: TextStyle(
                             fontSize: 14,
-                            color: const Color(0xFF282828).withOpacity(0.6),
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -189,17 +189,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF282828),
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       AppStrings.get('hospitalDesc', languageCode),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         height: 1.6,
-                        color: Color(0xFF4A4A4A),
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8),
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -214,14 +214,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         icon: const Icon(Icons.close),
                         label: Text(AppStrings.get('closeInfo', languageCode)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFFCBD77E,
-                          ).withOpacity(0.1),
+                          backgroundColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.1)
+                              : const Color(0xFFCBD77E).withOpacity(0.1),
                           foregroundColor: const Color(0xFFCBD77E),
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -246,7 +246,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
@@ -341,7 +341,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -349,9 +349,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             Positioned.fill(child: _buildContent(languageCode)),
 
             // Floating Navigation Bar
-            Positioned(
-              left: 0,
-              right: 0,
+            PositionedDirectional(
+              start: 0,
+              end: 0,
               bottom: 20,
               child: Center(
                 child: ModernHorizontalNavBar(
@@ -478,7 +478,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             height: 240,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
+                begin: AlignmentDirectional.topStart,
                 end: Alignment.bottomRight,
                 colors: [orangePrimary, orangeLight],
               ),
@@ -486,9 +486,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           ),
         ),
         Align(
-          alignment: Alignment.topRight,
+          alignment: AlignmentDirectional.topEnd,
           child: Padding(
-            padding: const EdgeInsets.only(top: 15, right: 15),
+            padding: const EdgeInsetsDirectional.only(top: 15, end: 15),
             child: _buildAnimatedLogo(),
           ),
         ),
@@ -511,7 +511,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 ),
                 const SizedBox(height: 12),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsetsDirectional.only(start: 8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -533,14 +533,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.1) ?? Colors.black.withOpacity(0.1),
                                 blurRadius: 10,
                                 offset: const Offset(0, 5),
                               ),
                             ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(40),
+                          child: ClipOval(
                             child: (user?.profilePicture != null && user!.profilePicture!.isNotEmpty)
                                 ? Image.network(
                                     user.profilePicture!,
@@ -576,10 +575,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                       const SizedBox(height: 12),
                       Text(
                         user?.name ?? 'Alex Thompson',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF282828),
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -625,7 +624,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                             ).replaceAll('{value}', '2024-88429'),
                             style: TextStyle(
                               fontSize: 12,
-                              color: const Color(0xFF282828).withOpacity(0.5),
+                              color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -770,12 +769,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
   Widget _buildTaskBanner(String title, String subtitle, IconData icon, {VoidCallback? onTap}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: orangePrimary.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: orangePrimary.withOpacity(0.3)),
         ),
         child: Row(
@@ -824,7 +823,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: const Center(
         child: SizedBox(
@@ -866,9 +865,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             Expanded(
               child: InkWell(
                 onTap: _showAttendanceDialog,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
                 child: _buildAttendanceCard(
-                  'Attendance',
+                  AppStrings.get('labelAttendance', languageCode),
                   '94%',
                   Colors.green, // Success color for good attendance
                 ),
@@ -891,8 +890,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       height: 160,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.15),
@@ -917,7 +916,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             label,
             style: TextStyle(
               fontSize: 12,
-              color: const Color(0xFF282828).withOpacity(0.6),
+              color: (Theme.of(context).textTheme.bodyLarge?.color ?? const Color(0xFF282828))
+                  .withOpacity(0.6),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -927,15 +927,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF282828),
+                  color: Theme.of(context).textTheme.bodyLarge?.color ?? const Color(0xFF282828),
                 ),
               ),
               const SizedBox(width: 4),
               Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
+                padding: const EdgeInsetsDirectional.only(bottom: 2.0),
                 child: Text(
                   subtitle,
                   style: TextStyle(
@@ -957,8 +957,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       height: 160,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.1),
@@ -1006,7 +1006,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF282828).withOpacity(0.8),
+              color: (Theme.of(context).textTheme.bodyLarge?.color ?? const Color(0xFF282828))
+                  .withOpacity(0.8),
             ),
           ),
         ],
@@ -1037,7 +1038,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                     return const SizedBox(height: 100);
                   }
                   final study = studies[index];
-                  return _buildCaseStudyCard(study);
+                  return _buildCaseStudyCard(context, study, languageCode);
                 },
               );
             },
@@ -1047,14 +1048,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
     );
   }
 
-  Widget _buildCaseStudyCard(Map<String, String> study) {
+  Widget _buildCaseStudyCard(BuildContext context, Map<String, String> study, String languageCode) {
     final hasImage = study['image'] != null && study['image']!.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsetsDirectional.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
@@ -1065,9 +1067,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(12),
           onTap: () => _showCaseStudyDetails(study),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -1115,17 +1117,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         children: [
                           Text(
                             study['title']!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF282828),
+                              color: Theme.of(context).textTheme.bodyLarge?.color ?? const Color(0xFF282828),
                             ),
                           ),
                           const SizedBox(height: 6),
                           Row(
                             children: [
                               Text(
-                                'By ',
+                                AppStrings.get('labelBy', languageCode),
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey[600],
@@ -1149,7 +1151,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                             study['specialty']! + ' • ' + study['date']!,
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[500],
+                              color: isDark ? Colors.grey[400] : Colors.grey[500],
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -1164,12 +1166,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF9F3E5),
+                    color: isDark ? orangePrimary.withOpacity(0.15) : const Color(0xFFF9F3E5),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: Text(
-                      'View Case Study',
+                      AppStrings.get('actionViewCaseStudy', languageCode),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -1200,10 +1202,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+      padding: const EdgeInsetsDirectional.only(start: 24, end: 24, bottom: 24),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
+          begin: AlignmentDirectional.topStart,
           end: Alignment.bottomRight,
           colors: [orangePrimary, orangeLight],
         ),
@@ -1262,9 +1264,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Find a Doctor',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                AppStrings.get('titleFindDoctor', languageCode),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               if (_isLoadingDoctors)
@@ -1274,12 +1276,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
               else
                 ..._realDoctors.map(
                   (doctor) => Container(
-                    margin: const EdgeInsets.only(bottom: 12),
+                    margin: const EdgeInsetsDirectional.only(bottom: 12),
                     decoration: BoxDecoration(
                       color: _selectedDoctor == doctor.name
                           ? orangePrimary.withOpacity(0.1)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                          : Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: _selectedDoctor == doctor.name
                             ? orangePrimary
@@ -1388,7 +1390,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           builder: (context, setDialogState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1399,7 +1401,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: const Color(0xFF9B8FD9).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.upload_file,
@@ -1473,9 +1475,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Supervisor (Doctor)',
-                      style: TextStyle(
+                    Text(
+                      AppStrings.get('labelSupervisorDoctor', languageCode),
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1491,7 +1493,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         fillColor: Colors.grey[50],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                       ),
-                      hint: const Text('Select a Doctor'),
+                      hint: Text(AppStrings.get('hintSelectDoctor', languageCode)),
                       items: _realDoctors.map((doc) {
                         return DropdownMenuItem<int>(
                           value: int.parse(doc.id),
@@ -1525,7 +1527,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  selectedFileName != null ? 'File Attached' : AppStrings.get('labelAttachFile', languageCode),
+                                  selectedFileName != null ? AppStrings.get('labelFileAttached', languageCode) : AppStrings.get('labelAttachFile', languageCode),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
@@ -1579,7 +1581,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                       : () async {
                           if (reportTitle.isEmpty || selectedDoctorId == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Title and Doctor are required')),
+                              SnackBar(content: Text(AppStrings.get('msgTitleDoctorRequired', languageCode))),
                             );
                             return;
                           }
@@ -1606,13 +1608,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                                   backgroundColor: const Color(0xFF9B8FD9),
                                   behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Failed to submit report')),
+                                SnackBar(content: Text(AppStrings.get('msgReportSubmitError', languageCode))),
                               );
                             }
                           }
@@ -1659,7 +1661,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
           title: Text(AppStrings.get('titleSubmittedReports', languageCode)),
           content: SizedBox(
@@ -1679,7 +1681,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(
-                      'Error loading reports',
+                      AppStrings.get('errorLoadReports', languageCode),
                       style: TextStyle(color: Colors.red[300]),
                     ),
                   );
@@ -1687,14 +1689,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
 
                 final reports = snapshot.data ?? [];
 
-                if (reports.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text('No reports submitted yet.'),
-                    ),
-                  );
-                }
+                  if (reports.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(AppStrings.get('msgNoReports', languageCode)),
+                      ),
+                    );
+                  }
 
                 return ListView.builder(
                   shrinkWrap: true,
@@ -1713,7 +1715,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                     return ListTile(
                       leading: const Icon(Icons.check_circle, color: Colors.green),
                       title: Text(report.title),
-                      subtitle: Text('Submitted: $formattedDate\nTo Doctor ID: ${report.doctorId}'),
+                      subtitle: Text(AppStrings.get('msgSubmittedAt', languageCode)
+                          .replaceAll('{date}', formattedDate)
+                          .replaceAll('{id}', report.doctorId.toString())),
                       isThreeLine: true,
                       onTap: () {
                         // View report details if needed
@@ -1727,7 +1731,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(AppStrings.get('close', languageCode)),
             ),
           ],
         );
@@ -1748,7 +1752,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
           title: Text(AppStrings.get('titleAssignments', languageCode)),
           content: SizedBox(
@@ -1780,9 +1784,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                   shrinkWrap: true,
                   children: [
                     if (tasks.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Center(child: Text('No tasks assigned yet.')),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: Text(AppStrings.get('msgNoTasks', languageCode))),
                       ),
                     ...tasks.map((task) => _buildAssignmentItem(task, languageCode)),
                     const Divider(),
@@ -1791,7 +1795,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.add, color: Colors.black54),
                       ),
@@ -1841,7 +1845,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: cardColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           isCompleted ? Icons.check_circle : Icons.assignment,
@@ -1867,7 +1871,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           ),
           if (task.fileUrl != null && task.fileUrl!.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsetsDirectional.only(top: 4),
               child: InkWell(
                 onTap: () async {
                   final fullUrl = DashboardService.baseUrl + task.fileUrl!;
@@ -1908,7 +1912,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           minimumSize: Size.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Text(
           isCompleted ? 'Done' : AppStrings.get('actionView', languageCode),
@@ -1928,7 +1932,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -2115,7 +2119,7 @@ class _InteractiveToolCardState extends State<_InteractiveToolCard> {
         scale: _isPressed ? 0.92 : 1.0,
         duration: const Duration(milliseconds: 100),
         child: Padding(
-          padding: const EdgeInsets.only(right: 16.0),
+          padding: const EdgeInsetsDirectional.only(end: 16.0),
           child: Column(
             children: [
               // Square Card Container (Matching Patient Mode style)
@@ -2124,7 +2128,7 @@ class _InteractiveToolCardState extends State<_InteractiveToolCard> {
                 height: 100,
                 decoration: BoxDecoration(
                   color: widget.cardColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: widget.cardColor.withOpacity(0.3),
                     width: 1.5,
@@ -2139,7 +2143,7 @@ class _InteractiveToolCardState extends State<_InteractiveToolCard> {
                 ),
                 child: Center(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                     child: SizedBox(
                       width: 44,
                       height: 44,
@@ -2178,10 +2182,10 @@ class _InteractiveToolCardState extends State<_InteractiveToolCard> {
               const SizedBox(height: 8),
               Text(
                 widget.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold, // Bolder to match patient mode
-                  color: Color(0xFF282828),
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -2216,3 +2220,6 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
+
+

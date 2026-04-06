@@ -45,13 +45,15 @@ class _CourseDiscoveryScreenState extends State<CourseDiscoveryScreen> {
 
     final success = await DashboardService.enrollInCourse(user.id, courseId);
     if (success) {
+      final lang = Provider.of<LanguageService>(context, listen: false).currentLanguage;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Successfully joined the course!')),
+        SnackBar(content: Text(AppStrings.get('messageJoinSuccess', lang))),
       );
       _loadAvailableCourses(); // Refresh list
     } else {
+      final lang = Provider.of<LanguageService>(context, listen: false).currentLanguage;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to join course.')),
+        SnackBar(content: Text(AppStrings.get('messageJoinError', lang))),
       );
     }
   }
@@ -101,17 +103,17 @@ class _CourseDiscoveryScreenState extends State<CourseDiscoveryScreen> {
                         final success = await DashboardService.seedCourses();
                         if (success) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Sample courses seeded successfully!')),
+                            SnackBar(content: Text(AppStrings.get('sampleCoursesSeeded', lang))),
                           );
                           _loadAvailableCourses();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Courses already exist or failed to seed.')),
+                            SnackBar(content: Text(AppStrings.get('coursesExistOrFailed', lang))),
                           );
                         }
                       },
                       icon: const Icon(Icons.auto_awesome),
-                      label: const Text('Seed Sample Courses'),
+                      label: Text(AppStrings.get('actionSeedCourses', lang)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: accentOliveColor,
                         foregroundColor: charcoalColor,
@@ -141,10 +143,10 @@ class _CourseDiscoveryScreenState extends State<CourseDiscoveryScreen> {
 
   Widget _buildDiscoveryCard(Course course, String lang) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsetsDirectional.only(bottom: 20),
       decoration: BoxDecoration(
         color: whiteColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -164,7 +166,7 @@ class _CourseDiscoveryScreenState extends State<CourseDiscoveryScreen> {
                   height: 56,
                   decoration: BoxDecoration(
                     color: course.color.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(course.icon, color: course.color, size: 28),
                 ),
@@ -208,3 +210,6 @@ class _CourseDiscoveryScreenState extends State<CourseDiscoveryScreen> {
     );
   }
 }
+
+
+

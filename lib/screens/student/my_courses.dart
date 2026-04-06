@@ -55,10 +55,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
+            padding: const EdgeInsetsDirectional.fromSTEB(24, 60, 24, 30),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
+                begin: AlignmentDirectional.topStart,
                 end: Alignment.bottomRight,
                 colors: [accentBeigeColor, Color(0xFFF5DDB8)],
               ),
@@ -107,7 +107,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.school_outlined,
@@ -123,7 +123,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
@@ -131,7 +131,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: accentOliveColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.play_circle_fill,
@@ -198,7 +198,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                               Icon(Icons.book_outlined, size: 64, color: Colors.grey[400]),
                               const SizedBox(height: 16),
                               Text(
-                                'No courses enrolled yet',
+                                AppStrings.get('msgNoCoursesEnrolled', lang),
                                 style: TextStyle(color: Colors.grey[600], fontSize: 16),
                               ),
                             ],
@@ -245,10 +245,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
   Widget _buildCourseCard(Course course, String lang) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsetsDirectional.only(bottom: 20),
       decoration: BoxDecoration(
         color: whiteColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
@@ -259,9 +259,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(12),
           onTap: () {
             Navigator.push(
               context,
@@ -283,7 +283,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       height: 56,
                       decoration: BoxDecoration(
                         color: course.color.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(course.icon, color: course.color, size: 28),
                     ),
@@ -365,7 +365,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                           ),
                           const SizedBox(height: 8),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(12),
                             child: LinearProgressIndicator(
                               value: course.progress,
                               minHeight: 6,
@@ -433,3 +433,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
     );
   }
 }
+
+
+

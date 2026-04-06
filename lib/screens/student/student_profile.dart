@@ -42,7 +42,7 @@ class StudentProfileScreen extends StatelessWidget {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
+                begin: AlignmentDirectional.topStart,
                 end: Alignment.bottomRight,
                 colors: [studentThemeColor, Color(0xFFF5DDB8)],
               ),
@@ -107,7 +107,7 @@ class StudentProfileScreen extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: studentThemeColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: studentThemeColor),
                 ),
                 child: Text(
@@ -193,7 +193,7 @@ class StudentProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -272,7 +272,7 @@ class StudentProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
@@ -309,12 +309,12 @@ class StudentProfileScreen extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -335,3 +335,6 @@ class StudentProfileScreen extends StatelessWidget {
     );
   }
 }
+
+
+

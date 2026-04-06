@@ -20,7 +20,29 @@ class DashboardService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('last_vital_cache', jsonEncode(vital));
+      
+      final strList = prefs.getString('vitals_list_cache');
+      List<dynamic> list = [];
+      if (strList != null) {
+        list = jsonDecode(strList);
+      }
+      list.insert(0, vital);
+      await prefs.setString('vitals_list_cache', jsonEncode(list));
     } catch (_) {}
+  }
+  
+  static Future<List<Map<String, dynamic>>> getLocalVitalsList() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final strList = prefs.getString('vitals_list_cache');
+      if (strList != null) {
+        final List<dynamic> list = jsonDecode(strList);
+        return list.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      }
+    } catch (e) {
+      print('DEBUG DashboardService: getLocalVitalsList Error: $e');
+    }
+    return [];
   }
   
   static Future<Map<String, dynamic>?> getLocalVital() async {
@@ -110,8 +132,12 @@ class DashboardService {
           'bloodPressureDia': dia,
           'heartRate': hr,
           'temperature': temp,
+          'respiratoryRate': rr,
+          'oxygenSaturation': o2,
           'weight': weight,
-          'date': 'Just Now'
+          'bmi': bmi,
+          'bloodGlucose': glucose,
+          'date': DateTime.now().toIso8601String(),
         });
 
         return {
@@ -379,6 +405,27 @@ class DashboardService {
       }
     } catch (e) {
       print('Error adding schedule: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteDoctorSchedule({
+    required String doctorId,
+    required int scheduleId,
+  }) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/users/doctors/$doctorId/schedule/$scheduleId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['success'] ?? false;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error deleting schedule: $e');
       return false;
     }
   }

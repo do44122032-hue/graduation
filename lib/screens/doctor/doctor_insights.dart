@@ -45,14 +45,14 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
       );
     } else {
       // Local path selected via FilePicker
-      await OpenFilex.open(resource.url);
+      await OpenFilex.open(resource.url!);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.secondaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,19 +61,19 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
               AppStrings.get('doctorInsightsTitle', languageCode),
               style: AppTextStyles.h2(
                 languageCode: languageCode,
-                color: AppColors.primaryText,
-              ),
+              ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             Text(
               AppStrings.get('doctorInsightsSubtitle', languageCode),
-              style: AppTextStyles.caption(languageCode: languageCode),
+              style: AppTextStyles.caption(languageCode: languageCode).copyWith(color: Colors.white70),
             ),
           ],
         ),
         centerTitle: false,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.doctorPrimary,
         elevation: 0,
         toolbarHeight: 80,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showPublishResearchSheet,
@@ -141,15 +141,15 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
       backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          padding: EdgeInsets.only(
+          padding: EdgeInsetsDirectional.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
             top: 24,
-            left: 24,
-            right: 24,
+            start: 24,
+            end: 24,
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -389,8 +389,8 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -425,7 +425,7 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
         itemBuilder: (context, index) {
           final isSelected = selectedCategory == categories[index];
           return Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsetsDirectional.only(end: 8),
             child: FilterChip(
               label: Text(categories[index]),
               selected: isSelected,
@@ -439,16 +439,16 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
               labelStyle: TextStyle(
                 color: isSelected
                     ? AppColors.doctorPrimary
-                    : AppColors.secondaryText,
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).cardColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
                   color: isSelected
                       ? AppColors.doctorPrimary
-                      : Colors.grey.shade200,
+                      : Theme.of(context).dividerColor.withOpacity(0.1),
                 ),
               ),
             ),
@@ -483,9 +483,9 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
       return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade100),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
         ),
         child: Center(
           child: Column(
@@ -538,7 +538,7 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
         if (results.isEmpty)
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 40),
+              padding: const EdgeInsetsDirectional.only(top: 40),
               child: Text(AppStrings.get('noResultsFound', languageCode)),
             ),
           )
@@ -550,10 +550,10 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
 
   Widget _buildResourceCard(MedicalResource resource) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsetsDirectional.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -566,7 +566,7 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _openResource(resource),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -593,8 +593,8 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
                         ),
                       ),
                       if (resource.url != null)
-                        Positioned(
-                          right: 4,
+                        PositionedDirectional(
+                          end: 4,
                           top: 4,
                           child: Container(
                             padding: const EdgeInsets.all(4),
@@ -628,7 +628,7 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.doctorPrimary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 resource.category,
@@ -680,7 +680,7 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
                               vertical: 4,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         )
@@ -704,3 +704,6 @@ class _DoctorInsightsPageState extends State<DoctorInsightsPage> {
     );
   }
 }
+
+
+

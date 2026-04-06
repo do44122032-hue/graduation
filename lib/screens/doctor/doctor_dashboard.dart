@@ -56,7 +56,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     final authService = Provider.of<AuthService>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white, // White background for the body
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Column(
@@ -65,9 +65,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             ],
           ),
           // Floating Navigation Bar
-          Positioned(
-            left: 0,
-            right: 0,
+          PositionedDirectional(
+            start: 0,
+            end: 0,
             bottom: 20,
             child: Center(
               child: ModernHorizontalNavBar(
@@ -145,7 +145,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 100),
+      padding: const EdgeInsetsDirectional.only(bottom: 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -157,18 +157,20 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 child: Container(
                   height: 200,
                   width: double.infinity,
-                  color: AppColors.doctorBackground,
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? const Color(0xFF1E2220) 
+                      : AppColors.doctorBackground,
                 ),
               ),
               Align(
-                alignment: Alignment.topRight,
+                alignment: AlignmentDirectional.topEnd,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 15, right: 15),
+                  padding: const EdgeInsetsDirectional.only(top: 15, end: 15),
                   child: _buildAnimatedLogo(),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: const EdgeInsetsDirectional.fromSTEB(
                   AppSpacing.lg,
                   48,
                   AppSpacing.lg,
@@ -206,8 +208,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                 ),
                               ],
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(40),
+                            child: ClipOval(
                               child: (user?.profilePicture != null && user!.profilePicture!.isNotEmpty)
                                   ? Image.network(
                                       user.profilePicture!,
@@ -234,14 +235,14 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                           style: AppTextStyles.h2(languageCode: languageCode)
                               .copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primaryText,
+                                color: Theme.of(context).textTheme.titleLarge?.color,
                               ),
                         ),
                         Text(
                           user?.email ?? "jaimin.panchal@gmail.com",
                           style: AppTextStyles.caption(
                             languageCode: languageCode,
-                          ).copyWith(color: AppColors.secondaryText),
+                          ).copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
                         ),
                       ],
                     ),
@@ -262,25 +263,26 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               children: [
                 Text(
                   AppStrings.get('doctorPatientListTitle', languageCode),
-                  style: AppTextStyles.h3(languageCode: languageCode).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryText,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.xs,
+                    horizontal: 12,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.doctorPrimary,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     "${_patients.length} ${AppStrings.get('navPatients', languageCode)}",
-                    style: AppTextStyles.caption(
-                      languageCode: languageCode,
-                    ).copyWith(color: Colors.white),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -307,8 +309,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                         itemBuilder: (context, index) {
                           final patient = _patients[index];
                           return Padding(
-                            padding: const EdgeInsets.only(
-                              right: AppSpacing.md,
+                            padding: const EdgeInsetsDirectional.only(
+                              end: AppSpacing.md,
                             ),
                             child: _buildPatientCard(
                               patient.name,
@@ -339,7 +341,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.doctorPrimary,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.doctorPrimary.withOpacity(0.3),
@@ -462,8 +464,10 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
         width: 130,
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.doctorPrimary : AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+          color: isActive 
+              ? AppColors.doctorPrimary 
+              : Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -497,7 +501,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.body(languageCode: languageCode).copyWith(
-                color: isActive ? Colors.white : AppColors.primaryText,
+                color: isActive 
+                    ? Colors.white 
+                    : Theme.of(context).textTheme.bodyMedium?.color,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
@@ -515,7 +521,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     Color color,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsetsDirectional.only(bottom: 16),
       child: Row(
         children: [
           Container(
@@ -531,7 +537,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             child: Text(
               label,
               style: const TextStyle(fontSize: 16).copyWith(
-                color: AppColors.secondaryText,
+                color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -663,3 +669,6 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
+
+

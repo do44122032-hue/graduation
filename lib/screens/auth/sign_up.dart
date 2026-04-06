@@ -112,7 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen>
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [roleColor, roleColor.withOpacity(0.7)],
             ),
@@ -152,9 +152,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                               child: ScaleTransition(
                                 scale: _scaleAnimation,
                                 child: Container(
-                                  height: 120,
-                                  width: 120,
-                                  margin: const EdgeInsets.only(bottom: 20),
+                                  height: 160,
+                                  width: 160,
+                                  margin: const EdgeInsetsDirectional.only(bottom: 20),
                                   child: ClipOval(
                                     child: Image.asset(
                                       'assets/logo.png',
@@ -174,7 +174,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                                           ),
                                           child: const Icon(
                                             Icons.medical_services_rounded,
-                                            size: 50,
+                                            size: 80,
                                             color: Color(0xFF62A5F9),
                                           ),
                                         );
@@ -191,7 +191,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 roleName,
@@ -235,7 +235,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.95),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
@@ -413,7 +413,7 @@ class _SignUpScreenState extends State<SignUpScreen>
 
   Widget _buildLabel(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
+      padding: const EdgeInsetsDirectional.only(bottom: 8.0, top: 16.0),
       child: Text(
         text,
         style: const TextStyle(
@@ -456,11 +456,11 @@ class _SignUpScreenState extends State<SignUpScreen>
         filled: true,
         fillColor: const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: roleColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -482,7 +482,7 @@ class _SignUpScreenState extends State<SignUpScreen>
       height: 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.4),
@@ -495,7 +495,7 @@ class _SignUpScreenState extends State<SignUpScreen>
         color: Colors.transparent,
         child: InkWell(
           onTap: isLoading ? null : onPressed,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: Center(
             child: isLoading
                 ? const SizedBox(
@@ -564,7 +564,7 @@ class _SignUpScreenState extends State<SignUpScreen>
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
         );
@@ -593,3 +593,6 @@ class _SignUpScreenState extends State<SignUpScreen>
     return null;
   }
 }
+
+
+

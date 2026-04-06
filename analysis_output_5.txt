@@ -1,0 +1,1381 @@
+Analyzing graduation_project...                                 
+
+   info - Parameter 'key' could be a super parameter - lib\main.dart:22:9 - use_super_parameters
+   info - 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\main.dart:57:17 - deprecated_member_use
+   info - 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\main.dart:77:17 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\main.dart:94:58 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\ai\chatbot_screen.dart:5:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ai\chatbot_screen.dart:51:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ai\chatbot_screen.dart:70:97 - deprecated_member_use
+  error - The named parameter 'side' isn't defined - lib\screens\ai\chatbot_screen.dart:143:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ai\chatbot_screen.dart:143:59 - deprecated_member_use
+  error - The named parameter 'onPressed' isn't defined - lib\screens\ai\chatbot_screen.dart:145:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\ai\chatbot_screen.dart:147:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ai\chatbot_screen.dart:166:35 - deprecated_member_use
+  error - The method 'copyWith' isn't defined for the type 'Radius' - lib\screens\ai\chatbot_screen.dart:197:73 - undefined_method
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\ai\chatbot_screen.dart:201:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ai\chatbot_screen.dart:203:35 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\ai\chatbot_screen.dart:209:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\ai\chatbot_screen.dart:219:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ai\chatbot_screen.dart:234:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\ai\chatbot_screen.dart:249:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\ai\chatbot_screen.dart:260:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\ai\chatbot_screen.dart:271:9 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\auth\forgot_password.dart:12:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\forgot_password.dart:123:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\forgot_password.dart:136:45 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\forgot_password.dart:138:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\forgot_password.dart:140:49 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\forgot_password.dart:146:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\forgot_password.dart:184:17 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\forgot_password.dart:214:42 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\forgot_password.dart:220:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\forgot_password.dart:221:11 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\auth\forgot_password.dart:223:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\forgot_password.dart:224:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\forgot_password.dart:225:11 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\auth\forgot_password.dart:227:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\forgot_password.dart:232:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\forgot_password.dart:245:56 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\forgot_password.dart:247:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\forgot_password.dart:249:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\forgot_password.dart:255:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\auth\forgot_password.dart:259:25 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\auth\forgot_password.dart:260:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\forgot_password.dart:281:6 - expected_token
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\forgot_password.dart:295:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\forgot_password.dart:304:30 - use_build_context_synchronously
+   info - Parameter 'key' could be a super parameter - lib\screens\auth\login.dart:17:9 - use_super_parameters
+warning - This default clause is covered by the previous cases - lib\screens\auth\login.dart:92:7 - unreachable_switch_default
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:108:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:161:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:184:53 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:187:31 - undefined_named_parameter
+   info - Unnecessary 'const' keyword - lib\screens\auth\login.dart:190:42 - unnecessary_const
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\auth\login.dart:195:29 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:215:64 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\auth\login.dart:219:27 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:232:47 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\login.dart:234:27 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:236:51 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:242:25 - undefined_named_parameter
+  error - The named parameter 'border' isn't defined - lib\screens\auth\login.dart:270:45 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:273:63 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:276:43 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\auth\login.dart:292:37 - extra_positional_arguments_could_be_named
+  error - The named parameter 'border' isn't defined - lib\screens\auth\login.dart:312:45 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:315:63 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:318:43 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\login.dart:336:35 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:420:41 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\screens\auth\login.dart:510:39 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\auth\login.dart:515:39 - curly_braces_in_flow_control_structures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:613:43 - deprecated_member_use
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\auth\login.dart:644:21 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:656:66 - deprecated_member_use
+   info - Unnecessary 'const' keyword - lib\screens\auth\login.dart:672:44 - unnecessary_const
+  error - Expected to find ')' - lib\screens\auth\login.dart:683:19 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:716:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:721:42 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\login.dart:728:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\login.dart:729:11 - undefined_named_parameter
+  error - The named parameter 'enabledBorder' isn't defined - lib\screens\auth\login.dart:731:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\login.dart:732:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\login.dart:733:11 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\auth\login.dart:735:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\login.dart:736:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\login.dart:737:11 - undefined_named_parameter
+  error - The named parameter 'errorBorder' isn't defined - lib\screens\auth\login.dart:739:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\login.dart:740:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\login.dart:741:11 - undefined_named_parameter
+  error - The named parameter 'focusedErrorBorder' isn't defined - lib\screens\auth\login.dart:743:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\login.dart:744:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\login.dart:745:11 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\auth\login.dart:747:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\login.dart:752:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:765:56 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\login.dart:767:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:769:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:775:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\auth\login.dart:779:25 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:780:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\login.dart:802:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\auth\login.dart:814:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login.dart:815:44 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\login.dart:819:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\login.dart:821:6 - expected_token
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\login.dart:858:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\login.dart:862:30 - use_build_context_synchronously
+  error - Expected to find ')' - lib\screens\auth\login.dart:871:10 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\auth\reset_password_screen.dart:12:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\reset_password_screen.dart:127:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\reset_password_screen.dart:140:45 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\reset_password_screen.dart:142:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\reset_password_screen.dart:144:49 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\reset_password_screen.dart:150:23 - undefined_named_parameter
+   info - Statements in an if should be enclosed in a block - lib\screens\auth\reset_password_screen.dart:182:35 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\auth\reset_password_screen.dart:184:35 - curly_braces_in_flow_control_structures
+  error - Expected to find ')' - lib\screens\auth\reset_password_screen.dart:230:17 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\reset_password_screen.dart:261:42 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\reset_password_screen.dart:268:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\reset_password_screen.dart:269:11 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\auth\reset_password_screen.dart:271:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\reset_password_screen.dart:272:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\reset_password_screen.dart:273:11 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\auth\reset_password_screen.dart:275:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\reset_password_screen.dart:280:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\reset_password_screen.dart:293:56 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\reset_password_screen.dart:295:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\reset_password_screen.dart:297:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\reset_password_screen.dart:303:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\auth\reset_password_screen.dart:307:25 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\auth\reset_password_screen.dart:308:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\reset_password_screen.dart:329:6 - expected_token
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\reset_password_screen.dart:344:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\reset_password_screen.dart:359:30 - use_build_context_synchronously
+   info - Parameter 'key' could be a super parameter - lib\screens\auth\role_selection.dart:12:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\role_selection.dart:170:64 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\auth\role_selection.dart:248:23 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\auth\role_selection.dart:249:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\role_selection.dart:252:33 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\auth\role_selection.dart:256:13 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\role_selection.dart:256:52 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\role_selection.dart:258:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\role_selection.dart:263:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\role_selection.dart:286:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\role_selection.dart:294:48 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\auth\role_selection.dart:301:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\auth\sign_up.dart:16:9 - use_super_parameters
+warning - This default clause is covered by the previous cases - lib\screens\auth\sign_up.dart:101:7 - unreachable_switch_default
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:117:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:170:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:193:53 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\sign_up.dart:196:31 - undefined_named_parameter
+   info - Unnecessary 'const' keyword - lib\screens\auth\sign_up.dart:199:42 - unnecessary_const
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\auth\sign_up.dart:204:29 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:220:64 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\auth\sign_up.dart:224:27 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:237:47 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\sign_up.dart:239:27 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:241:51 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\sign_up.dart:247:25 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\auth\sign_up.dart:371:21 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:383:64 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\auth\sign_up.dart:404:19 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:447:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:452:42 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\sign_up.dart:459:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\sign_up.dart:460:11 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\auth\sign_up.dart:462:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\sign_up.dart:463:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\sign_up.dart:464:11 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\auth\sign_up.dart:466:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\sign_up.dart:471:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:484:56 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\sign_up.dart:486:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\sign_up.dart:488:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\sign_up.dart:494:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\auth\sign_up.dart:498:25 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\auth\sign_up.dart:499:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\sign_up.dart:520:6 - expected_token
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\sign_up.dart:538:13 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\sign_up.dart:546:13 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\sign_up.dart:554:13 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\sign_up.dart:561:30 - use_build_context_synchronously
+  error - Expected to find ')' - lib\screens\auth\sign_up.dart:570:10 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\auth\verification_code_screen.dart:13:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\verification_code_screen.dart:127:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\verification_code_screen.dart:140:45 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\verification_code_screen.dart:142:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\verification_code_screen.dart:144:49 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\verification_code_screen.dart:150:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\verification_code_screen.dart:201:17 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\verification_code_screen.dart:233:42 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\verification_code_screen.dart:239:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\verification_code_screen.dart:240:11 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\auth\verification_code_screen.dart:242:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\auth\verification_code_screen.dart:243:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\auth\verification_code_screen.dart:244:11 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\auth\verification_code_screen.dart:246:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\verification_code_screen.dart:251:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\verification_code_screen.dart:264:56 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\auth\verification_code_screen.dart:266:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\verification_code_screen.dart:268:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\verification_code_screen.dart:274:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\auth\verification_code_screen.dart:278:25 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\auth\verification_code_screen.dart:279:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\auth\verification_code_screen.dart:300:6 - expected_token
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\verification_code_screen.dart:315:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\auth\verification_code_screen.dart:324:30 - use_build_context_synchronously
+  error - The named parameter 'child' isn't defined - lib\screens\auth\welcome.dart:253:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:268:53 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\auth\welcome.dart:270:33 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:271:55 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\auth\welcome.dart:275:31 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\auth\welcome.dart:303:17 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\auth\welcome.dart:304:15 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:345:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:346:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:443:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:487:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:528:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:544:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:667:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:681:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:723:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:741:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:755:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:763:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:770:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:792:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:822:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\welcome.dart:832:48 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\doctor\doctor_change_password.dart:7:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_change_password.dart:101:50 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\screens\doctor\doctor_change_password.dart:121:21 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\doctor\doctor_change_password.dart:123:21 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\doctor\doctor_change_password.dart:137:21 - curly_braces_in_flow_control_structures
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\doctor\doctor_change_password.dart:149:24 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\doctor\doctor_change_password.dart:156:21 - undefined_named_parameter
+  error - The named parameter 'shadowColor' isn't defined - lib\screens\doctor\doctor_change_password.dart:157:21 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_change_password.dart:157:46 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_change_password.dart:159:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_change_password.dart:169:13 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\doctor\doctor_change_password.dart:221:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\doctor\doctor_change_password.dart:222:15 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\doctor\doctor_change_password.dart:224:13 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\doctor\doctor_change_password.dart:225:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\doctor\doctor_change_password.dart:226:15 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\doctor\doctor_change_password.dart:231:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_change_password.dart:237:7 - expected_token
+   info - Don't invoke 'print' in production code - lib\screens\doctor\doctor_dashboard.dart:49:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:203:55 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_dashboard.dart:211:31 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:216:72 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:221:70 - deprecated_member_use
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\doctor\doctor_dashboard.dart:231:25 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_dashboard.dart:246:23 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_dashboard.dart:279:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_dashboard.dart:286:15 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_dashboard.dart:343:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:345:52 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_dashboard.dart:351:15 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_dashboard.dart:359:21 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\doctor\doctor_dashboard.dart:361:19 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_dashboard.dart:390:17 - expected_token
+  error - Too many positional arguments: 0 expected, but 5 found - lib\screens\doctor\doctor_dashboard.dart:395:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_dashboard.dart:447:9 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_dashboard.dart:467:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:469:35 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_dashboard.dart:475:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:481:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:482:45 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\doctor\doctor_dashboard.dart:508:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_dashboard.dart:527:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 5 found - lib\screens\doctor\doctor_dashboard.dart:529:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_dashboard.dart:547:9 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_dashboard.dart:617:49 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\doctor\doctor_insights.dart:170:37 - argument_type_not_assignable
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_insights.dart:174:17 - extra_positional_arguments_could_be_named
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\doctor\doctor_insights.dart:181:37 - argument_type_not_assignable
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_insights.dart:185:17 - extra_positional_arguments_could_be_named
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\doctor\doctor_insights.dart:187:19 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\doctor\doctor_insights.dart:207:37 - argument_type_not_assignable
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_insights.dart:211:17 - extra_positional_arguments_could_be_named
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\doctor\doctor_insights.dart:232:46 - use_build_context_synchronously
+  error - The named parameter 'color' isn't defined - lib\screens\doctor\doctor_insights.dart:250:23 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_insights.dart:251:53 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:254:21 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_insights.dart:291:17 - extra_positional_arguments_could_be_named
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\doctor\doctor_insights.dart:299:37 - argument_type_not_assignable
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_insights.dart:303:17 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\doctor\doctor_insights.dart:306:26 - missing_required_argument
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:370:21 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\doctor\doctor_insights.dart:380:17 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:381:15 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_insights.dart:394:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_insights.dart:396:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:402:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:415:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_insights.dart:437:54 - deprecated_member_use
+  error - The named parameter 'side' isn't defined - lib\screens\doctor\doctor_insights.dart:448:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:455:12 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\doctor\doctor_insights.dart:488:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:490:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:502:8 - expected_token
+   info - Unnecessary use of 'toList' in a spread - lib\screens\doctor\doctor_insights.dart:546:70 - unnecessary_to_list_in_spreads
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_insights.dart:557:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_insights.dart:559:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:565:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\doctor\doctor_insights.dart:569:25 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:570:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:577:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_insights.dart:615:17 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_insights.dart:630:64 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_insights.dart:633:31 - undefined_named_parameter
+  error - Expected an identifier - lib\screens\doctor\doctor_insights.dart:643:27 - missing_identifier
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:643:27 - expected_token
+  error - Expected to find ',' - lib\screens\doctor\doctor_insights.dart:643:27 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_insights.dart:677:57 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:687:23 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:699:15 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_insights.dart:704:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\doctor\doctor_messages.dart:13:9 - use_super_parameters
+  error - The named parameter 'elevation' isn't defined - lib\screens\doctor\doctor_messages.dart:126:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_messages.dart:127:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\doctor\doctor_messages.dart:140:23 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_messages.dart:141:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_messages.dart:152:62 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\doctor\doctor_messages.dart:248:6 - expected_token
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart' - lib\screens\doctor\doctor_patient_details.dart:2:8 - unnecessary_import
+warning - Unused import: '../../constants/app_strings.dart' - lib\screens\doctor\doctor_patient_details.dart:11:8 - unused_import
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_patient_details.dart:188:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_patient_details.dart:190:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_patient_details.dart:195:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_patient_details.dart:199:54 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\doctor\doctor_patient_details.dart:221:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\doctor\doctor_patient_details.dart:233:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_patient_details.dart:233:61 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_patient_details.dart:235:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_patient_details.dart:261:21 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_patient_details.dart:265:13 - expected_token
+  error - Expected an identifier - lib\screens\doctor\doctor_patient_details.dart:276:8 - missing_identifier
+  error - Expected to find ':' - lib\screens\doctor\doctor_patient_details.dart:276:8 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_patient_details.dart:277:6 - expected_token
+   info - The local variable '_showAddPatientDialog' starts with an underscore - lib\screens\doctor\doctor_patients.dart:53:10 - no_leading_underscores_for_local_identifiers
+  error - The named parameter 'title' isn't defined - lib\screens\doctor\doctor_patients.dart:69:11 - undefined_named_parameter
+  error - The named parameter 'content' isn't defined - lib\screens\doctor\doctor_patients.dart:76:11 - undefined_named_parameter
+  error - The named parameter 'actions' isn't defined - lib\screens\doctor\doctor_patients.dart:110:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_patients.dart:146:8 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_patients.dart:204:17 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_patients.dart:212:15 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_patients.dart:216:66 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\doctor\doctor_patients.dart:295:12 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_patients.dart:317:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_patients.dart:336:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_profile.dart:221:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_profile.dart:229:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_profile.dart:237:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\doctor\doctor_profile.dart:239:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_profile.dart:277:9 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_profile.dart:279:6 - expected_token
+   info - Don't use 'BuildContext's across async gaps - lib\screens\doctor\doctor_schedule.dart:67:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\doctor\doctor_schedule.dart:74:28 - use_build_context_synchronously
+  error - The named parameter 'border' isn't defined - lib\screens\doctor\doctor_schedule.dart:194:13 - undefined_named_parameter
+  error - The named parameter 'start' isn't defined - lib\screens\doctor\doctor_schedule.dart:195:15 - undefined_named_parameter
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\doctor\doctor_schedule.dart:197:13 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_schedule.dart:205:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_schedule.dart:231:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_schedule.dart:240:19 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_schedule.dart:339:10 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_settings.dart:85:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 9 found - lib\screens\doctor\doctor_settings.dart:91:11 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\doctor\doctor_settings.dart:121:20 - missing_required_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_settings.dart:131:58 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_settings.dart:138:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\doctor\doctor_settings.dart:148:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\doctor\doctor_settings.dart:149:9 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_settings.dart:181:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_settings.dart:187:32 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_settings.dart:190:11 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\doctor\doctor_settings.dart:192:9 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\doctor\doctor_settings.dart:199:9 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\doctor\doctor_settings.dart:205:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_settings.dart:207:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\doctor\doctor_student_reports.dart:17:9 - use_super_parameters
+  error - The named parameter 'title' isn't defined - lib\screens\doctor\doctor_student_reports.dart:73:11 - undefined_named_parameter
+  error - The named parameter 'content' isn't defined - lib\screens\doctor\doctor_student_reports.dart:74:11 - undefined_named_parameter
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\doctor\doctor_student_reports.dart:79:19 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_student_reports.dart:126:40 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\doctor\doctor_student_reports.dart:128:21 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_student_reports.dart:128:59 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_student_reports.dart:130:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:168:15 - expected_token
+  error - The named parameter 'actions' isn't defined - lib\screens\doctor\doctor_student_reports.dart:171:11 - undefined_named_parameter
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\doctor\doctor_student_reports.dart:176:13 - missing_required_argument
+   info - Don't use 'BuildContext's across async gaps - lib\screens\doctor\doctor_student_reports.dart:201:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\doctor\doctor_student_reports.dart:202:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\doctor\doctor_student_reports.dart:207:40 - use_build_context_synchronously
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_student_reports.dart:215:15 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:217:11 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:220:6 - expected_token
+   info - Don't invoke 'print' in production code - lib\screens\doctor\doctor_student_reports.dart:243:9 - avoid_print
+  error - The named parameter 'color' isn't defined - lib\screens\doctor\doctor_student_reports.dart:336:19 - undefined_named_parameter
+  error - The named parameter 'elevation' isn't defined - lib\screens\doctor\doctor_student_reports.dart:337:19 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_student_reports.dart:338:19 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_student_reports.dart:358:54 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_student_reports.dart:361:31 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:370:27 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:401:18 - expected_token
+  error - The named parameter 'color' isn't defined - lib\screens\doctor\doctor_student_reports.dart:421:19 - undefined_named_parameter
+  error - The named parameter 'elevation' isn't defined - lib\screens\doctor\doctor_student_reports.dart:422:19 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_student_reports.dart:423:19 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_student_reports.dart:441:82 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\doctor\doctor_student_reports.dart:441:115 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\doctor\doctor_student_reports.dart:444:31 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:453:27 - expected_token
+  error - Expected to find ')' - lib\screens\doctor\doctor_student_reports.dart:458:18 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\medical\dashboard_screen.dart:23:9 - use_super_parameters
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\medical\dashboard_screen.dart:57:33 - unnecessary_null_comparison
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\medical\dashboard_screen.dart:72:72 - unnecessary_non_null_assertion
+   info - Don't invoke 'print' in production code - lib\screens\medical\dashboard_screen.dart:121:7 - avoid_print
+  error - The named parameter 'border' isn't defined - lib\screens\medical\dashboard_screen.dart:344:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:344:59 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\medical\dashboard_screen.dart:345:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:347:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:353:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:358:46 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:361:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\medical\dashboard_screen.dart:369:11 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:389:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:390:51 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:399:9 - expected_token
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:401:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\medical\dashboard_screen.dart:433:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:435:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:441:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:449:50 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:452:17 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\medical\dashboard_screen.dart:454:15 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:469:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:482:50 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:485:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:494:13 - expected_token
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\medical\dashboard_screen.dart:530:24 - missing_required_argument
+  error - The named parameter 'padding' isn't defined - lib\screens\medical\dashboard_screen.dart:538:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:540:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\medical\dashboard_screen.dart:543:15 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\medical\dashboard_screen.dart:545:24 - missing_required_argument
+  error - The named parameter 'padding' isn't defined - lib\screens\medical\dashboard_screen.dart:556:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:558:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:561:13 - expected_token
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:565:6 - expected_token
+  error - The named parameter 'title' isn't defined - lib\screens\medical\dashboard_screen.dart:573:9 - undefined_named_parameter
+  error - The named parameter 'content' isn't defined - lib\screens\medical\dashboard_screen.dart:574:9 - undefined_named_parameter
+  error - The named parameter 'actions' isn't defined - lib\screens\medical\dashboard_screen.dart:577:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:591:6 - expected_token
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:621:10 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:702:53 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:710:29 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\medical\dashboard_screen.dart:734:23 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:748:74 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:752:21 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:786:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:795:11 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:897:47 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\medical\dashboard_screen.dart:900:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:903:37 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\medical\dashboard_screen.dart:906:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:908:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:914:15 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:920:100 - deprecated_member_use
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\medical\dashboard_screen.dart:924:13 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:930:64 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:933:11 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:947:92 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:948:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:951:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:951:93 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\medical\dashboard_screen.dart:955:21 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:956:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:962:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:970:15 - undefined_named_parameter
+  error - Expected an identifier - lib\screens\medical\dashboard_screen.dart:995:13 - missing_identifier
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:995:13 - expected_token
+  error - Expected to find ',' - lib\screens\medical\dashboard_screen.dart:995:13 - expected_token
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:1000:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1027:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1075:64 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\medical\dashboard_screen.dart:1107:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1109:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\dashboard_screen.dart:1115:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1132:50 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\medical\dashboard_screen.dart:1149:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1158:26 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1176:44 - deprecated_member_use
+warning - The declaration '_buildPlaceholderContent' isn't referenced - lib\screens\medical\dashboard_screen.dart:1183:10 - unused_element
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1276:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\dashboard_screen.dart:1277:38 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\medical\doctor_schedule_management.dart:11:9 - use_super_parameters
+  error - The named parameter 'items' is required, but there's no corresponding argument - lib\screens\medical\doctor_schedule_management.dart:157:19 - missing_required_argument
+  error - The named parameter 'onChanged' is required, but there's no corresponding argument - lib\screens\medical\doctor_schedule_management.dart:157:19 - missing_required_argument
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\medical\doctor_schedule_management.dart:158:21 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\medical\doctor_schedule_management.dart:161:64 - argument_type_not_assignable
+  error - The named parameter 'items' isn't defined - lib\screens\medical\doctor_schedule_management.dart:163:21 - undefined_named_parameter
+  error - The named parameter 'onChanged' isn't defined - lib\screens\medical\doctor_schedule_management.dart:164:21 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\medical\doctor_schedule_management.dart:169:19 - extra_positional_arguments_could_be_named
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\medical\doctor_schedule_management.dart:184:72 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\medical\doctor_schedule_management.dart:186:29 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\medical\doctor_schedule_management.dart:196:23 - extra_positional_arguments_could_be_named
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\medical\doctor_schedule_management.dart:209:72 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\medical\doctor_schedule_management.dart:211:29 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\medical\doctor_schedule_management.dart:221:21 - expected_token
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\medical\doctor_schedule_management.dart:227:28 - missing_required_argument
+  error - The named parameter 'child' isn't defined - lib\screens\medical\doctor_schedule_management.dart:234:23 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\medical\doctor_schedule_management.dart:237:19 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\medical\doctor_schedule_management.dart:238:17 - expected_token
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\medical\doctor_schedule_management.dart:319:29 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\medical\doctor_schedule_management.dart:333:27 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\medical\doctor_schedule_management.dart:346:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:348:49 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\medical\doctor_schedule_management.dart:353:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:354:59 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\doctor_schedule_management.dart:357:23 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:362:60 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\doctor_schedule_management.dart:365:27 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\medical\doctor_schedule_management.dart:367:25 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\medical\doctor_schedule_management.dart:368:25 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\medical\doctor_schedule_management.dart:378:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:381:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\medical\doctor_schedule_management.dart:381:93 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\medical\doctor_schedule_management.dart:384:27 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\medical\doctor_schedule_management.dart:394:22 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\about_app.dart:7:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:26:96 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:105:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:117:84 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\about_app.dart:119:29 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:121:53 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\about_app.dart:127:27 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\patinte.dart\about_app.dart:181:25 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\about_app.dart:182:23 - expected_token
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\patinte.dart\about_app.dart:217:9 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\about_app.dart:218:7 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:232:38 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\about_app.dart:234:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:234:47 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\about_app.dart:236:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\about_app.dart:241:83 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\about_app.dart:272:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\booking.dart:28:9 - use_super_parameters
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\booking.dart:55:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\booking.dart:84:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\booking.dart:183:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\booking.dart:189:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\booking.dart:191:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\booking.dart:208:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:350:45 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:353:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:360:17 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:369:43 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:372:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:374:23 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\booking.dart:401:19 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:417:58 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:422:17 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:440:68 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:479:63 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:484:65 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:489:31 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:495:86 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:515:22 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:588:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:593:63 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:598:29 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:613:26 - expected_token
+warning - The receiver can't be null, so the null-aware operator '?.' is unnecessary - lib\screens\patinte.dart\booking.dart:634:42 - invalid_null_aware_operator
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\patinte.dart\booking.dart:639:39 - unnecessary_null_comparison
+warning - Dead code - lib\screens\patinte.dart\booking.dart:639:48 - dead_code
+warning - The receiver can't be null, so the null-aware operator '?.' is unnecessary - lib\screens\patinte.dart\booking.dart:640:42 - invalid_null_aware_operator
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\patinte.dart\booking.dart:646:41 - unnecessary_non_null_assertion
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:689:53 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\booking.dart:692:23 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:695:64 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:702:21 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:734:15 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:757:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 6 found - lib\screens\patinte.dart\booking.dart:763:11 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:786:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\booking.dart:881:11 - extra_positional_arguments_could_be_named
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\booking.dart:892:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:894:52 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:900:15 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:912:9 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:957:51 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:960:29 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\booking.dart:967:25 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:979:49 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:982:27 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:988:23 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\booking.dart:999:25 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1007:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:1042:19 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:1071:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:1076:59 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1081:25 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:1107:20 - expected_token
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\patinte.dart\booking.dart:1164:31 - missing_required_argument
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1171:33 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:1173:29 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\booking.dart:1189:23 - undefined_named_parameter
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\booking.dart:1190:23 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1198:21 - undefined_named_parameter
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\booking.dart:1216:33 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:1220:39 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1226:31 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1228:33 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\booking.dart:1257:29 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:1291:27 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\booking.dart:1305:31 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\booking.dart:1309:37 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\booking.dart:1315:29 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:1342:23 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\booking.dart:1345:18 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\chat_screen.dart:18:9 - use_super_parameters
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\chat_screen.dart:74:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:218:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:245:123 - deprecated_member_use
+  error - The method 'copyWith' isn't defined for the type 'Radius' - lib\screens\patinte.dart\chat_screen.dart:345:73 - undefined_method
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\chat_screen.dart:349:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:351:35 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\chat_screen.dart:357:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:366:36 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\chat_screen.dart:374:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:401:62 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\chat_screen.dart:404:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\chat_screen.dart:431:7 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:459:62 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\chat_screen.dart:462:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\chat_screen.dart:480:7 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:509:62 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\chat_screen.dart:512:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\chat_screen.dart:525:7 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\chat_screen.dart:537:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\chat_screen.dart:560:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\chat_screen.dart:571:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\chat_screen.dart:582:9 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\doctor_selection.dart:11:9 - use_super_parameters
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\doctor_selection.dart:73:23 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:77:68 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:91:93 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\doctor_selection.dart:104:22 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\doctor_selection.dart:114:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:139:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:158:50 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\doctor_selection.dart:161:17 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\doctor_selection.dart:167:13 - extra_positional_arguments_could_be_named
+  error - The named parameter 'padding' isn't defined - lib\screens\patinte.dart\doctor_selection.dart:189:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\patinte.dart\doctor_selection.dart:193:13 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\doctor_selection.dart:199:93 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\doctor_selection.dart:201:11 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\help_center.dart:7:9 - use_super_parameters
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\help_center.dart:44:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\help_center.dart:46:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\help_center.dart:52:15 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\help_center.dart:56:71 - deprecated_member_use
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\help_center.dart:98:13 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\help_center.dart:100:11 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\help_center.dart:116:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\help_center.dart:116:82 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\help_center.dart:119:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\help_center.dart:148:6 - expected_token
+warning - The value of the field 'colorWhite' isn't used - lib\screens\patinte.dart\labresulit.dart:23:22 - unused_field
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\patinte.dart\labresulit.dart:44:33 - unnecessary_null_comparison
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\labresulit.dart:59:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:120:37 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:123:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\labresulit.dart:133:13 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:148:37 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:151:15 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\labresulit.dart:161:11 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:184:89 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\labresulit.dart:195:13 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:195:70 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\labresulit.dart:196:13 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:198:37 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:204:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:247:45 - deprecated_member_use
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\patinte.dart\labresulit.dart:254:9 - extra_positional_arguments_could_be_named
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\labresulit.dart:275:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:277:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:283:15 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:286:19 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\patinte.dart\labresulit.dart:296:17 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\patinte.dart\labresulit.dart:300:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:302:83 - deprecated_member_use
+  error - The named parameter 'trailing' isn't defined - lib\screens\patinte.dart\labresulit.dart:304:17 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\labresulit.dart:307:45 - deprecated_member_use
+  error - The named parameter 'onTap' isn't defined - lib\screens\patinte.dart\labresulit.dart:312:17 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:317:23 - undefined_named_parameter
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\patinte.dart\labresulit.dart:330:36 - missing_required_argument
+  error - The named parameter 'onPressed' is required, but there's no corresponding argument - lib\screens\patinte.dart\labresulit.dart:330:36 - missing_required_argument
+  error - The named parameter 'minimumSize' isn't defined - lib\screens\patinte.dart\labresulit.dart:337:33 - undefined_named_parameter
+  error - The named parameter 'onPressed' isn't defined - lib\screens\patinte.dart\labresulit.dart:339:31 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\labresulit.dart:340:31 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\labresulit.dart:343:25 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\labresulit.dart:346:20 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\labresulit.dart:349:14 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\labresulit.dart:352:7 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\medicalrecord.dart:17:9 - use_super_parameters
+   info - The private field _activeNav could be 'final' - lib\screens\patinte.dart\medicalrecord.dart:25:10 - prefer_final_fields
+warning - The value of the field '_activeNav' isn't used - lib\screens\patinte.dart\medicalrecord.dart:25:10 - unused_field
+   info - The private field _expandedItems could be 'final' - lib\screens\patinte.dart\medicalrecord.dart:27:13 - prefer_final_fields
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\patinte.dart\medicalrecord.dart:40:33 - unnecessary_null_comparison
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:69:7 - avoid_print
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\patinte.dart\medicalrecord.dart:70:72 - unnecessary_non_null_assertion
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:71:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:73:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:108:17 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:112:13 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:136:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\medicalrecord.dart:173:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:359:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:373:35 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:376:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\medicalrecord.dart:382:11 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:394:35 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:397:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\medicalrecord.dart:402:11 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:407:35 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:410:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:423:9 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:458:44 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:461:21 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:464:46 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:468:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:478:14 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\patinte.dart\medicalrecord.dart:615:21 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:616:7 - undefined_named_parameter
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:620:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:620:68 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:621:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:623:35 - deprecated_member_use
+  error - The named parameter 'padding' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:629:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:630:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:670:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:683:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:685:33 - deprecated_member_use
+  error - The named parameter 'padding' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:691:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:692:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:709:62 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:713:6 - expected_token
+warning - The declaration '_buildConditionsTab' isn't referenced - lib\screens\patinte.dart\medicalrecord.dart:716:10 - unused_element
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:730:15 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:730:72 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:731:15 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:733:39 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:739:13 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:817:21 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:837:15 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:840:10 - expected_token
+  error - The named parameter 'label' is required, but there's no corresponding argument - lib\screens\patinte.dart\medicalrecord.dart:852:18 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:861:15 - undefined_named_parameter
+  error - The named parameter 'icon' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:863:13 - undefined_named_parameter
+  error - The named parameter 'label' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:864:13 - undefined_named_parameter
+  error - Expected an identifier - lib\screens\patinte.dart\medicalrecord.dart:870:9 - missing_identifier
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:870:9 - expected_token
+  error - Expected to find ',' - lib\screens\patinte.dart\medicalrecord.dart:870:9 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:930:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:932:7 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:943:9 - undefined_named_parameter
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:944:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:946:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:952:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:981:6 - expected_token
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\patinte.dart\medicalrecord.dart:1082:15 - missing_required_argument
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\patinte.dart\medicalrecord.dart:1086:47 - unnecessary_null_comparison
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\patinte.dart\medicalrecord.dart:1086:65 - unnecessary_non_null_assertion
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\patinte.dart\medicalrecord.dart:1101:33 - unnecessary_non_null_assertion
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\patinte.dart\medicalrecord.dart:1137:44 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\patinte.dart\medicalrecord.dart:1147:25 - use_build_context_synchronously
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1172:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:1180:13 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\patinte.dart\medicalrecord.dart:1216:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1217:15 - undefined_named_parameter
+  error - The named parameter 'suffixText' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1219:13 - undefined_named_parameter
+  error - The named parameter 'suffixStyle' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1220:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:1226:7 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1235:9 - undefined_named_parameter
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1236:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\medicalrecord.dart:1238:33 - deprecated_member_use
+  error - The named parameter 'padding' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1244:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1245:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:1260:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1584:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:1592:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1607:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\medicalrecord.dart:1609:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\medicalrecord.dart:1635:8 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\messages.dart:12:9 - use_super_parameters
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\messages.dart:42:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\messages.dart:88:89 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\messages.dart:134:7 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\patinte.dart\messages.dart:147:23 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\messages.dart:148:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\messages.dart:159:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\messages.dart:231:77 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\messages.dart:264:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\patient_change_password.dart:9:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patient_change_password.dart:127:76 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\screens\patinte.dart\patient_change_password.dart:148:21 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\patinte.dart\patient_change_password.dart:150:21 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\patinte.dart\patient_change_password.dart:165:21 - curly_braces_in_flow_control_structures
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\patinte.dart\patient_change_password.dart:178:24 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\patinte.dart\patient_change_password.dart:185:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patient_change_password.dart:187:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_change_password.dart:203:13 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\patinte.dart\patient_change_password.dart:257:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\patinte.dart\patient_change_password.dart:258:15 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\patinte.dart\patient_change_password.dart:260:13 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\patinte.dart\patient_change_password.dart:261:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\patinte.dart\patient_change_password.dart:262:15 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\patinte.dart\patient_change_password.dart:267:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_change_password.dart:273:7 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\patient_data_entry.dart:11:9 - use_super_parameters
+   info - The private field _conditions could be 'final' - lib\screens\patinte.dart\patient_data_entry.dart:28:26 - prefer_final_fields
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patient_data_entry.dart:114:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patient_data_entry.dart:115:30 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:119:9 - undefined_named_parameter
+  error - The named parameter 'start' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:120:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:123:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_data_entry.dart:137:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:146:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patient_data_entry.dart:148:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:154:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_data_entry.dart:216:6 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\patinte.dart\patient_data_entry.dart:234:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:235:11 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:237:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_data_entry.dart:242:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:277:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:279:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_data_entry.dart:312:6 - expected_token
+  error - The named parameter 'label' is required, but there's no corresponding argument - lib\screens\patinte.dart\patient_data_entry.dart:320:14 - missing_required_argument
+  error - The named parameter 'foregroundColor' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:328:11 - undefined_named_parameter
+  error - The named parameter 'icon' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:330:9 - undefined_named_parameter
+  error - The named parameter 'label' isn't defined - lib\screens\patinte.dart\patient_data_entry.dart:331:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patient_data_entry.dart:333:6 - expected_token
+warning - Unused import: '../../constants/app_colors.dart' - lib\screens\patinte.dart\patinteprfile.dart:4:8 - unused_import
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\patinteprfile.dart:10:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:56:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:89:48 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:91:17 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:93:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\patinte.dart\patinteprfile.dart:103:13 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:146:45 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\patinteprfile.dart:157:11 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:173:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:175:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:181:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:189:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\patinteprfile.dart:191:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\patinteprfile.dart:215:9 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\patinteprfile.dart:217:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:252:22 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:254:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:254:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:256:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\patinteprfile.dart:263:46 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\patinte.dart\patinteprfile.dart:277:6 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\patinte.dart\patinteprfile.dart:290:21 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:291:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\patinteprfile.dart:297:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\patinteprfile.dart:313:6 - expected_token
+warning - The operand can't be 'null', so the condition is always 'false' - lib\screens\patinte.dart\pharmacy.dart:41:33 - unnecessary_null_comparison
+warning - The '!' will have no effect because the receiver can't be null - lib\screens\patinte.dart\pharmacy.dart:47:72 - unnecessary_non_null_assertion
+   info - Don't invoke 'print' in production code - lib\screens\patinte.dart\pharmacy.dart:58:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:129:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:145:37 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:148:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\pharmacy.dart:158:13 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:167:11 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\pharmacy.dart:180:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:188:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:193:39 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:196:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\patinte.dart\pharmacy.dart:198:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:232:9 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:234:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\pharmacy.dart:243:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:243:52 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:245:7 - undefined_named_parameter
+  error - The named parameter 'tabs' is required, but there's no corresponding argument - lib\screens\patinte.dart\pharmacy.dart:245:14 - missing_required_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:250:35 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\pharmacy.dart:252:11 - undefined_named_parameter
+  error - The named parameter 'padding' isn't defined - lib\screens\patinte.dart\pharmacy.dart:254:9 - undefined_named_parameter
+  error - The named parameter 'tabs' isn't defined - lib\screens\patinte.dart\pharmacy.dart:255:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:260:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\patinte.dart\pharmacy.dart:295:13 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:303:11 - undefined_named_parameter
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\pharmacy.dart:313:23 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:314:49 - deprecated_member_use
+  error - The named parameter 'image' isn't defined - lib\screens\patinte.dart\pharmacy.dart:316:23 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\pharmacy.dart:322:19 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:345:53 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\pharmacy.dart:347:35 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:349:33 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:358:27 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:371:17 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:407:21 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:416:17 - expected_token
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\patinte.dart\pharmacy.dart:422:26 - missing_required_argument
+  error - The named parameter 'padding' isn't defined - lib\screens\patinte.dart\pharmacy.dart:441:23 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:443:21 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:452:13 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:454:10 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\patinte.dart\pharmacy.dart:511:13 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:513:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:521:17 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\pharmacy.dart:526:15 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\pharmacy.dart:577:48 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\pharmacy.dart:580:27 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:589:23 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:594:13 - expected_token
+  error - Expected to find ')' - lib\screens\patinte.dart\pharmacy.dart:596:10 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\patinte.dart\settings.dart:12:9 - use_super_parameters
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\settings.dart:76:13 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\settings.dart:94:54 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\settings.dart:97:21 - undefined_named_parameter
+  error - The named parameter 'activeColor' isn't defined - lib\screens\patinte.dart\settings.dart:102:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\patinte.dart\settings.dart:104:17 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\settings.dart:104:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\settings.dart:110:54 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\settings.dart:113:21 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\patinte.dart\settings.dart:115:19 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\patinte.dart\settings.dart:122:19 - undefined_named_parameter
+  error - The named parameter 'onTap' isn't defined - lib\screens\patinte.dart\settings.dart:135:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\settings.dart:137:15 - expected_token
+  error - Too many positional arguments: 0 expected, but 6 found - lib\screens\patinte.dart\settings.dart:141:11 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\patinte.dart\settings.dart:175:20 - missing_required_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\settings.dart:185:58 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\settings.dart:192:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\patinte.dart\settings.dart:202:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\patinte.dart\settings.dart:203:9 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\settings.dart:298:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\patinte.dart\settings.dart:304:44 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\patinte.dart\settings.dart:307:11 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\patinte.dart\settings.dart:309:9 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\patinte.dart\settings.dart:316:9 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\patinte.dart\settings.dart:322:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\patinte.dart\settings.dart:324:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\course_details.dart:7:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:63:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:111:68 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\course_details.dart:214:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:216:37 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\course_details.dart:219:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:221:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_details.dart:227:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\course_details.dart:267:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\course_details.dart:311:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:313:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_details.dart:319:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\course_details.dart:347:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\course_details.dart:369:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:371:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_details.dart:377:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:382:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_details.dart:385:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\student\course_details.dart:391:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\course_details.dart:403:9 - expected_token
+  error - Expected to find ')' - lib\screens\student\course_details.dart:405:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_details.dart:429:33 - deprecated_member_use
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\course_details.dart:437:16 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\student\course_details.dart:453:13 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_details.dart:455:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\course_details.dart:461:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\course_discovery.dart:10:9 - use_super_parameters
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\course_discovery.dart:48:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\course_discovery.dart:53:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\course_discovery.dart:103:48 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\course_discovery.dart:108:48 - use_build_context_synchronously
+  error - Expected to find ')' - lib\screens\student\course_discovery.dart:122:19 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\course_discovery.dart:148:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_discovery.dart:150:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_discovery.dart:156:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\course_discovery.dart:166:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_discovery.dart:169:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\course_discovery.dart:171:17 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\course_discovery.dart:185:15 - expected_token
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\course_discovery.dart:190:22 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\student\course_discovery.dart:196:19 - undefined_named_parameter
+  error - The named parameter 'padding' isn't defined - lib\screens\student\course_discovery.dart:197:19 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\course_discovery.dart:199:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\course_discovery.dart:205:11 - expected_token
+  error - Expected to find ')' - lib\screens\student\course_discovery.dart:208:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\my_courses.dart:12:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\my_courses.dart:109:45 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:112:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:118:19 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\my_courses.dart:125:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:128:19 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\my_courses.dart:133:51 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:136:25 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\student\my_courses.dart:142:23 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:172:21 - expected_token
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:175:15 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\my_courses.dart:252:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\my_courses.dart:254:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:260:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:263:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\student\my_courses.dart:264:25 - argument_type_not_assignable
+  error - The named parameter 'onTap' isn't defined - lib\screens\student\my_courses.dart:265:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:273:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\my_courses.dart:285:45 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:288:23 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\my_courses.dart:290:21 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:336:19 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:369:29 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:378:25 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\student\my_courses.dart:393:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\my_courses.dart:395:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:428:15 - expected_token
+  error - Expected to find ')' - lib\screens\student\my_courses.dart:433:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\patient_case_study.dart:7:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:115:45 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\patient_case_study.dart:117:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:118:47 - deprecated_member_use
+  error - The named parameter 'padding' isn't defined - lib\screens\student\patient_case_study.dart:121:23 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:122:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:186:17 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:257:31 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:260:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:262:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:272:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:280:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:301:17 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\patient_case_study.dart:340:15 - extra_positional_arguments_could_be_named
+  error - The named parameter 'border' isn't defined - lib\screens\student\patient_case_study.dart:346:19 - undefined_named_parameter
+  error - The named parameter 'start' isn't defined - lib\screens\student\patient_case_study.dart:347:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:350:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:380:13 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\student\patient_case_study.dart:447:25 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:453:23 - undefined_named_parameter
+  error - Too many positional arguments: 1 expected, but 3 found - lib\screens\student\patient_case_study.dart:483:15 - extra_positional_arguments
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:493:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:515:13 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:594:11 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\student\patient_case_study.dart:618:9 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:619:7 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:633:11 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\student\patient_case_study.dart:661:9 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:678:7 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\patient_case_study.dart:693:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:695:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:701:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:740:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\patient_case_study.dart:749:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:751:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:757:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:778:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\student\patient_case_study.dart:808:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:812:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:835:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:845:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:863:6 - expected_token
+  error - The named parameter 'border' isn't defined - lib\screens\student\patient_case_study.dart:877:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:881:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:912:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:926:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:941:34 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:945:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:954:9 - expected_token
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:956:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\patient_case_study.dart:965:33 - deprecated_member_use
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\patient_case_study.dart:977:24 - missing_required_argument
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:986:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\patient_case_study.dart:996:15 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\patient_case_study.dart:998:24 - missing_required_argument
+  error - The named parameter 'child' isn't defined - lib\screens\student\patient_case_study.dart:1008:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\patient_case_study.dart:1018:13 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\student_change_password.dart:7:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_change_password.dart:98:50 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\screens\student\student_change_password.dart:118:21 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\student\student_change_password.dart:120:21 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\student\student_change_password.dart:134:21 - curly_braces_in_flow_control_structures
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\student_change_password.dart:143:24 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\student\student_change_password.dart:150:21 - undefined_named_parameter
+  error - The named parameter 'shadowColor' isn't defined - lib\screens\student\student_change_password.dart:151:21 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_change_password.dart:151:46 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_change_password.dart:153:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_change_password.dart:163:13 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_change_password.dart:215:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\student\student_change_password.dart:216:15 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\student\student_change_password.dart:218:13 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_change_password.dart:219:29 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\student\student_change_password.dart:220:15 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\student\student_change_password.dart:225:13 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_change_password.dart:231:7 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\student_dashboard.dart:21:9 - use_super_parameters
+   info - Don't invoke 'print' in production code - lib\screens\student\student_dashboard.dart:52:7 - avoid_print
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\student\student_dashboard.dart:84:13 - extra_positional_arguments_could_be_named
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\student_dashboard.dart:95:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:97:49 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:103:23 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:105:25 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 12 found - lib\screens\student\student_dashboard.dart:119:21 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:144:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:219:29 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:229:19 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:233:11 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:248:22 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:251:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:274:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:536:53 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:544:29 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\student\student_dashboard.dart:576:23 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:595:52 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:598:29 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\student_dashboard.dart:620:27 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:628:62 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:632:25 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:634:21 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:670:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:679:42 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\student\student_dashboard.dart:773:21 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:774:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:777:32 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\student_dashboard.dart:779:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:779:51 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:781:9 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:789:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\student\student_dashboard.dart:791:13 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:807:54 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:815:11 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:818:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:829:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:836:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:848:46 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\student\student_dashboard.dart:869:31 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:870:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:877:11 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\student_dashboard.dart:896:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:898:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:904:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:910:28 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:913:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\student\student_dashboard.dart:915:11 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:920:46 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:950:9 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:952:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\student_dashboard.dart:962:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:964:26 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:970:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:981:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1009:46 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1014:6 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\student_dashboard.dart:1058:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1060:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1066:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1069:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\student\student_dashboard.dart:1070:25 - argument_type_not_assignable
+  error - The named parameter 'onTap' isn't defined - lib\screens\student\student_dashboard.dart:1071:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1072:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1085:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1088:48 - deprecated_member_use
+   info - Use interpolation to compose strings and values - lib\screens\student\student_dashboard.dart:1149:29 - prefer_interpolation_to_compose_strings
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1170:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1181:15 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1186:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1242:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1280:43 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\student_dashboard.dart:1283:23 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1286:43 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1290:21 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1341:13 - expected_token
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_dashboard.dart:1393:15 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1401:58 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1404:25 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\student_dashboard.dart:1409:23 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1417:21 - expected_token
+  error - The named parameter 'content' isn't defined - lib\screens\student\student_dashboard.dart:1429:15 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_dashboard.dart:1448:41 - argument_type_not_assignable
+  error - The named parameter 'filled' isn't defined - lib\screens\student\student_dashboard.dart:1450:25 - undefined_named_parameter
+  error - The named parameter 'fillColor' isn't defined - lib\screens\student\student_dashboard.dart:1451:25 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\student\student_dashboard.dart:1454:21 - extra_positional_arguments_could_be_named
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_dashboard.dart:1469:41 - argument_type_not_assignable
+  error - The named parameter 'filled' isn't defined - lib\screens\student\student_dashboard.dart:1471:25 - undefined_named_parameter
+  error - The named parameter 'fillColor' isn't defined - lib\screens\student\student_dashboard.dart:1472:25 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 4 found - lib\screens\student\student_dashboard.dart:1475:21 - extra_positional_arguments_could_be_named
+  error - The named parameter 'items' is required, but there's no corresponding argument - lib\screens\student\student_dashboard.dart:1484:21 - missing_required_argument
+  error - The named parameter 'onChanged' is required, but there's no corresponding argument - lib\screens\student\student_dashboard.dart:1484:21 - missing_required_argument
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\student\student_dashboard.dart:1485:23 - deprecated_member_use
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_dashboard.dart:1488:41 - argument_type_not_assignable
+  error - The named parameter 'filled' isn't defined - lib\screens\student\student_dashboard.dart:1490:25 - undefined_named_parameter
+  error - The named parameter 'fillColor' isn't defined - lib\screens\student\student_dashboard.dart:1491:25 - undefined_named_parameter
+  error - The named parameter 'contentPadding' isn't defined - lib\screens\student\student_dashboard.dart:1492:25 - undefined_named_parameter
+  error - The named parameter 'items' isn't defined - lib\screens\student\student_dashboard.dart:1495:23 - undefined_named_parameter
+  error - The named parameter 'onChanged' isn't defined - lib\screens\student\student_dashboard.dart:1501:23 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\student_dashboard.dart:1507:21 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1511:56 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\student_dashboard.dart:1513:25 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1514:58 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1519:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1565:19 - expected_token
+  error - The named parameter 'actions' isn't defined - lib\screens\student\student_dashboard.dart:1568:15 - undefined_named_parameter
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\student_dashboard.dart:1576:17 - missing_required_argument
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\student_dashboard.dart:1600:45 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\student_dashboard.dart:1601:52 - use_build_context_synchronously
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1612:32 - expected_token
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\student_dashboard.dart:1614:52 - use_build_context_synchronously
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1632:19 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1640:15 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1641:14 - expected_token
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_dashboard.dart:1664:11 - undefined_named_parameter
+  error - The named parameter 'content' isn't defined - lib\screens\student\student_dashboard.dart:1665:11 - undefined_named_parameter
+  error - The named parameter 'actions' isn't defined - lib\screens\student\student_dashboard.dart:1727:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1733:10 - expected_token
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_dashboard.dart:1753:11 - undefined_named_parameter
+  error - The named parameter 'content' isn't defined - lib\screens\student\student_dashboard.dart:1754:11 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1796:25 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_dashboard.dart:1798:23 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\student\student_dashboard.dart:1801:23 - undefined_named_parameter
+  error - The named parameter 'onTap' isn't defined - lib\screens\student\student_dashboard.dart:1804:23 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1809:19 - expected_token
+  error - The named parameter 'actions' isn't defined - lib\screens\student\student_dashboard.dart:1814:11 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1820:10 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1843:28 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1846:9 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_dashboard.dart:1851:7 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\student\student_dashboard.dart:1858:7 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\student\student_dashboard.dart:1897:7 - undefined_named_parameter
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\student_dashboard.dart:1897:17 - missing_required_argument
+   info - Don't use 'BuildContext's across async gaps - lib\screens\student\student_dashboard.dart:1901:27 - use_build_context_synchronously
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1913:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1918:6 - expected_token
+  error - The named parameter 'content' isn't defined - lib\screens\student\student_dashboard.dart:1933:11 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:1940:39 - deprecated_member_use
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\student_dashboard.dart:1964:15 - missing_required_argument
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:1987:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1989:13 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:1991:10 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:2061:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:2126:43 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\student_dashboard.dart:2128:19 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:2129:45 - deprecated_member_use
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\student_dashboard.dart:2132:19 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_dashboard.dart:2134:43 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:2140:17 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_dashboard.dart:2143:21 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\student_dashboard.dart:2178:15 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\student_dashboard.dart:2190:13 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\student_edit_profile.dart:8:9 - use_super_parameters
+   info - The 'if' statement could be replaced by a null-aware assignment - lib\screens\student\student_edit_profile.dart:59:5 - prefer_conditional_assignment
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\student_edit_profile.dart:140:24 - missing_required_argument
+  error - The named parameter 'elevation' isn't defined - lib\screens\student\student_edit_profile.dart:149:21 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_edit_profile.dart:151:19 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\student\student_edit_profile.dart:160:15 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\student_edit_profile.dart:161:13 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_edit_profile.dart:197:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\student\student_edit_profile.dart:198:11 - undefined_named_parameter
+  error - The named parameter 'enabledBorder' isn't defined - lib\screens\student\student_edit_profile.dart:200:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_edit_profile.dart:201:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\student\student_edit_profile.dart:202:11 - undefined_named_parameter
+  error - The named parameter 'focusedBorder' isn't defined - lib\screens\student\student_edit_profile.dart:204:9 - undefined_named_parameter
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius'.  - lib\screens\student\student_edit_profile.dart:205:25 - argument_type_not_assignable
+  error - The named parameter 'borderSide' isn't defined - lib\screens\student\student_edit_profile.dart:206:11 - undefined_named_parameter
+  error - The named parameter 'validator' isn't defined - lib\screens\student\student_edit_profile.dart:209:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_edit_profile.dart:215:6 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_edit_profile.dart:225:7 - undefined_named_parameter
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\student\student_edit_profile.dart:227:11 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_edit_profile.dart:249:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\student_profile.dart:9:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:66:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:109:44 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\student_profile.dart:111:19 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_profile.dart:113:17 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 3 found - lib\screens\student\student_profile.dart:123:15 - extra_positional_arguments_could_be_named
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:167:47 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_profile.dart:180:13 - expected_token
+  error - The named parameter 'boxShadow' isn't defined - lib\screens\student\student_profile.dart:197:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:199:33 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_profile.dart:205:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_profile.dart:213:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 2 found - lib\screens\student\student_profile.dart:215:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\student_profile.dart:239:9 - expected_token
+  error - Expected to find ')' - lib\screens\student\student_profile.dart:241:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:274:22 - deprecated_member_use
+  error - The named parameter 'border' isn't defined - lib\screens\student\student_profile.dart:276:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:276:41 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_profile.dart:278:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_profile.dart:285:46 - deprecated_member_use
+  error - Expected to find ')' - lib\screens\student\student_profile.dart:299:6 - expected_token
+  error - The argument type 'BorderRadiusDirectional' can't be assigned to the parameter type 'BorderRadius?'.  - lib\screens\student\student_profile.dart:312:21 - argument_type_not_assignable
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_profile.dart:313:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_profile.dart:319:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_profile.dart:335:6 - expected_token
+   info - Parameter 'key' could be a super parameter - lib\screens\student\student_settings.dart:10:9 - use_super_parameters
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_settings.dart:82:13 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 6 found - lib\screens\student\student_settings.dart:89:11 - extra_positional_arguments_could_be_named
+  error - The named parameter 'child' is required, but there's no corresponding argument - lib\screens\student\student_settings.dart:104:20 - missing_required_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_settings.dart:114:58 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_settings.dart:121:15 - undefined_named_parameter
+  error - Too many positional arguments: 0 expected, but 1 found - lib\screens\student\student_settings.dart:131:11 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\screens\student\student_settings.dart:132:9 - expected_token
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_settings.dart:163:7 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_settings.dart:169:44 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_settings.dart:172:11 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_settings.dart:174:9 - undefined_named_parameter
+  error - The named parameter 'subtitle' isn't defined - lib\screens\student\student_settings.dart:181:9 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\student\student_settings.dart:187:9 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_settings.dart:189:6 - expected_token
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\student\student_settings.dart:199:42 - deprecated_member_use
+  error - The named parameter 'child' isn't defined - lib\screens\student\student_settings.dart:202:9 - undefined_named_parameter
+  error - The named parameter 'title' isn't defined - lib\screens\student\student_settings.dart:204:7 - undefined_named_parameter
+  error - The named parameter 'trailing' isn't defined - lib\screens\student\student_settings.dart:211:7 - undefined_named_parameter
+  error - Expected to find ')' - lib\screens\student\student_settings.dart:225:6 - expected_token
+   info - Don't invoke 'print' in production code - lib\services\chat_service.dart:29:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\chat_service.dart:33:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\chat_service.dart:37:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\chat_service.dart:54:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\chat_service.dart:71:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:65:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:71:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:74:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:77:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:81:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:113:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:120:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:121:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:125:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:142:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:149:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:189:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:208:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:224:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:240:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:242:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:246:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:261:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:276:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:295:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:313:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:331:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:349:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:357:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:362:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:365:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:368:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:372:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:401:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:440:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:444:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:462:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:480:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:497:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:515:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:533:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:551:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:569:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:591:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:609:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:656:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:660:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\dashboard_service.dart:678:7 - avoid_print
+   info - Parameter 'key' could be a super parameter - lib\widgets\modern_horizontal_nav_bar.dart:19:9 - use_super_parameters
+  error - The named parameter 'boxShadow' isn't defined - lib\widgets\modern_horizontal_nav_bar.dart:53:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\modern_horizontal_nav_bar.dart:55:33 - deprecated_member_use
+  error - The named parameter 'padding' isn't defined - lib\widgets\modern_horizontal_nav_bar.dart:61:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\widgets\modern_horizontal_nav_bar.dart:62:7 - undefined_named_parameter
+  error - The named parameter 'child' isn't defined - lib\widgets\modern_horizontal_nav_bar.dart:78:17 - undefined_named_parameter
+  error - Expected to find ')' - lib\widgets\modern_horizontal_nav_bar.dart:107:12 - expected_token
+  error - Expected to find ')' - lib\widgets\modern_horizontal_nav_bar.dart:110:6 - expected_token
+   info - Use interpolation to compose strings and values - test_signup.dart:8:14 - prefer_interpolation_to_compose_strings
+   info - Don't invoke 'print' in production code - test_signup.dart:16:3 - avoid_print
+   info - Don't invoke 'print' in production code - test_signup.dart:23:5 - avoid_print
+   info - Use interpolation to compose strings and values - test_signup.dart:23:11 - prefer_interpolation_to_compose_strings
+   info - Don't invoke 'print' in production code - test_signup.dart:24:5 - avoid_print
+   info - Use interpolation to compose strings and values - test_signup.dart:24:11 - prefer_interpolation_to_compose_strings
+   info - Don't invoke 'print' in production code - test_signup.dart:26:5 - avoid_print
+   info - Use interpolation to compose strings and values - test_signup.dart:26:11 - prefer_interpolation_to_compose_strings
+

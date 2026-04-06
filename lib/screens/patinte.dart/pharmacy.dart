@@ -120,7 +120,7 @@ class _PharmacyPageState extends State<PharmacyPage>
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
+          begin: AlignmentDirectional.topStart,
           end: Alignment.bottomRight,
           colors: [colorAccentOlive, colorAccentBeige],
         ),
@@ -143,7 +143,7 @@ class _PharmacyPageState extends State<PharmacyPage>
               height: 40,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
                 icon: const Icon(
@@ -176,7 +176,7 @@ class _PharmacyPageState extends State<PharmacyPage>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorWhite,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.05),
@@ -287,11 +287,11 @@ class _PharmacyPageState extends State<PharmacyPage>
         final progress = (med['remaining'] as int) / (med['total'] as int);
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsetsDirectional.only(bottom: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: colorWhite,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             boxShadow: const [
               BoxShadow(
                 color: Color.fromRGBO(0, 0, 0, 0.05),
@@ -343,7 +343,7 @@ class _PharmacyPageState extends State<PharmacyPage>
                                 ),
                                 decoration: BoxDecoration(
                                   color: colorAlert.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(12),
                                   border: Border.all(color: colorAlert),
                                 ),
                                 child: Text(
@@ -403,7 +403,7 @@ class _PharmacyPageState extends State<PharmacyPage>
                   ),
                   const SizedBox(height: 8),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(12),
                     child: LinearProgressIndicator(
                       value: progress,
                       backgroundColor: colorSecondaryBg,
@@ -503,7 +503,7 @@ class _PharmacyPageState extends State<PharmacyPage>
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsetsDirectional.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: colorWhite,
@@ -516,7 +516,7 @@ class _PharmacyPageState extends State<PharmacyPage>
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: colorSecondaryBg,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.receipt_long,
@@ -575,7 +575,7 @@ class _PharmacyPageState extends State<PharmacyPage>
                           ),
                           decoration: BoxDecoration(
                             color: statusColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             localizedStatus,
@@ -598,3 +598,6 @@ class _PharmacyPageState extends State<PharmacyPage>
     );
   }
 }
+
+
+

@@ -51,11 +51,11 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.get('callMyDoctors', lang).isEmpty ? 'Active Doctors' : AppStrings.get('callMyDoctors', lang)),
-        backgroundColor: const Color(0xFFE8F1BD),
-        foregroundColor: const Color(0xFF282828),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
       ),
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: _isLoading 
           ? const Center(child: CircularProgressIndicator(color: AppColors.mainButton))
           : _activeDoctors.isEmpty
@@ -66,9 +66,10 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
                   itemBuilder: (context, index) {
                     final doctor = _activeDoctors[index];
                     return Card(
+                      color: Theme.of(context).cardColor,
                       elevation: 2,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      margin: const EdgeInsetsDirectional.only(bottom: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(16),
                         leading: CircleAvatar(
@@ -84,10 +85,10 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsetsDirectional.only(top: 8.0),
                           child: Text(
                             doctor.department ?? 'General',
-                            style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 14),
                           ),
                         ),
                         trailing: Icon(isRtl ? Icons.chevron_left : Icons.chevron_right, color: Colors.grey),
@@ -122,11 +123,11 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Doctor Profile'),
-        backgroundColor: const Color(0xFF6AB5D8),
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
       ),
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -146,7 +147,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
             Center(
               child: Text(
                 widget.doctor.name,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF282828)),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
             const SizedBox(height: 8),
@@ -155,7 +156,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6AB5D8).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   widget.doctor.department ?? 'General Department',
@@ -184,7 +185,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                   backgroundColor: const Color(0xFFCBD77E),
                   foregroundColor: const Color(0xFF282828),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
               ),
@@ -195,7 +196,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
             const SizedBox(height: 8),
             Text(
               widget.doctor.bio?.isNotEmpty == true ? widget.doctor.bio! : 'No biography provided.',
-              style: TextStyle(fontSize: 15, color: Colors.grey[700], height: 1.5),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), height: 1.5),
             ),
           ],
         ),
@@ -203,3 +204,6 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     );
   }
 }
+
+
+

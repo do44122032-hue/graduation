@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'services/language_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'services/auth_service.dart';
+import 'services/theme_service.dart';
 import 'screens/auth/welcome.dart';
 import 'enums/user_role.dart';
 import 'screens/medical/dashboard_screen.dart';
@@ -26,15 +27,22 @@ class MyChartApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageService()),
         ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => ThemeService()),
       ],
-      child: Consumer<LanguageService>(
-        builder: (context, languageService, child) {
+      child: Consumer2<LanguageService, ThemeService>(
+        builder: (context, languageService, themeService, child) {
+          final isRTL = languageService.isRTL;
+          
           return MaterialApp(
+            themeMode: themeService.themeMode,
             debugShowCheckedModeBanner: false,
             title: 'MyChart',
-            // Add supported locales for English, Arabic, and Kurdish
-            supportedLocales: const [Locale('en'), Locale('ar'), Locale('ku')],
-            // Add localization delegates for material widgets and cupertino
+            locale: Locale(languageService.currentLanguage),
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('ar', ''),
+              Locale('ku', ''),
+            ],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
@@ -42,14 +50,46 @@ class MyChartApp extends StatelessWidget {
               KurdishMaterialLocalizationsDelegate(),
               KurdishCupertinoLocalizationsDelegate(),
             ],
+            localeResolutionCallback: (locale, supportedLocales) {
+              if (locale?.languageCode == 'ku') {
+                return const Locale('ku', '');
+              }
+              for (var supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale?.languageCode) {
+                  return supportedLocale;
+                }
+              }
+              return supportedLocales.first;
+            },
             theme: ThemeData(
-              primarySwatch: Colors.green,
               useMaterial3: true,
+              brightness: Brightness.light,
+              // Ensure color scheme and fonts are consistent
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF2D5F4C),
+                primary: const Color(0xFF2D5F4C),
+                secondary: const Color(0xFFCBD77E),
+                surface: Colors.white,
+                background: const Color(0xFFF8FAF8),
+              ),
+              scaffoldBackgroundColor: const Color(0xFFF8FAF8),
+              cardColor: Colors.white,
+              fontFamily: 'SF Pro Display',
+            ),
+            darkTheme: ThemeData(
+              useMaterial3: true,
+              brightness: Brightness.dark,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF2D5F4C),
+                brightness: Brightness.dark,
+              ),
+              scaffoldBackgroundColor: const Color(0xFF0F1210),
+              cardColor: const Color(0xFF1A1F1C),
               fontFamily: 'SF Pro Display',
             ),
             builder: (context, child) {
               return Directionality(
-                textDirection: languageService.textDirection,
+                textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                 child: child!,
               );
             },

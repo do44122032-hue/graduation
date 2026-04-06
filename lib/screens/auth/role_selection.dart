@@ -106,7 +106,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
           height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [
                 Color(0xFF6AB5D8), // Blue
@@ -245,14 +245,14 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
             ),
           );
         },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(
               0.6,
             ), // Increased opacity for contrast
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
           ),
           child: Row(
@@ -301,3 +301,6 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
     );
   }
 }
+
+
+

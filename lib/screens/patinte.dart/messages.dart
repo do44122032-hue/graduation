@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import '../../services/auth_service.dart';
@@ -49,12 +50,12 @@ class _MessagesPageState extends State<MessagesPage> {
     final languageCode = languageService.currentLanguage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.get('navMessages', languageCode),
-          style: const TextStyle(
-            color: Color(0xFF282828),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -64,7 +65,7 @@ class _MessagesPageState extends State<MessagesPage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
             ),
@@ -84,7 +85,7 @@ class _MessagesPageState extends State<MessagesPage> {
                         AppStrings.get('noMessages', languageCode).isEmpty 
                             ? 'No messages yet' 
                             : AppStrings.get('noMessages', languageCode),
-                        style: TextStyle(color: Colors.grey[500]),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                       ),
                     ],
                   ),
@@ -115,20 +116,21 @@ class _MessagesPageState extends State<MessagesPage> {
     
     String timeStr = '';
     if (lastMsg != null) {
+      final localTimestamp = lastMsg.timestamp.toLocal();
       final now = DateTime.now();
-      final diff = now.difference(lastMsg.timestamp);
-      if (diff.inDays == 0) {
-        timeStr = "${lastMsg.timestamp.hour}:${lastMsg.timestamp.minute.toString().padLeft(2, '0')}";
-      } else if (diff.inDays == 1) {
+      final diff = now.difference(localTimestamp);
+      if (diff.inDays == 0 && now.day == localTimestamp.day) {
+        timeStr = DateFormat.jm().format(localTimestamp);
+      } else if (diff.inDays <= 1 && now.day - localTimestamp.day == 1) {
         timeStr = AppStrings.get('timeAgo_yesterday', languageCode);
       } else {
-        timeStr = "${lastMsg.timestamp.day}/${lastMsg.timestamp.month}";
+        timeStr = "${localTimestamp.day}/${localTimestamp.month}";
       }
     }
 
     return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -142,7 +144,7 @@ class _MessagesPageState extends State<MessagesPage> {
             ),
           ).then((_) => _loadConversations());
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -160,8 +162,8 @@ class _MessagesPageState extends State<MessagesPage> {
                         : null,
                   ),
                   if (conv.unreadCount > 0)
-                    Positioned(
-                      right: 0,
+                    PositionedDirectional(
+                      end: 0,
                       bottom: 0,
                       child: Container(
                         width: 14,
@@ -185,10 +187,10 @@ class _MessagesPageState extends State<MessagesPage> {
                       children: [
                         Text(
                           partner['name'] ?? 'Doctor',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF282828),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         Text(
@@ -225,8 +227,8 @@ class _MessagesPageState extends State<MessagesPage> {
                             style: TextStyle(
                               fontSize: 14,
                               color: conv.unreadCount > 0
-                                  ? const Color(0xFF282828)
-                                  : const Color(0xFF757575),
+                                  ? Theme.of(context).colorScheme.onSurface
+                                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                               fontWeight: conv.unreadCount > 0
                                   ? FontWeight.w600
                                   : FontWeight.normal,
@@ -262,3 +264,6 @@ class _MessagesPageState extends State<MessagesPage> {
     );
   }
 }
+
+
+

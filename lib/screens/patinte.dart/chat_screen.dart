@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../constants/app_strings.dart';
 import '../../constants/app_colors.dart';
 import '../../services/language_service.dart';
@@ -126,9 +127,9 @@ class _ChatScreenState extends State<ChatScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -234,7 +235,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = authService.currentUser;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           children: [
@@ -250,26 +251,19 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Text(
                   widget.receiverName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF282828),
-                  ),
-                ),
-                Text(
-                  AppStrings.get('labelOnline', languageCode),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: currentUser?.role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF282828)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: Column(
         children: [
@@ -326,7 +320,9 @@ class _ChatScreenState extends State<ChatScreen> {
         content = Text(
           message.content,
           style: TextStyle(
-            color: isMe ? Colors.white : const Color(0xFF282828),
+            color: isMe 
+                ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white)
+                : Theme.of(context).colorScheme.onSurface,
             fontSize: 15,
           ),
         );
@@ -343,8 +339,10 @@ class _ChatScreenState extends State<ChatScreen> {
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: isMe ? primaryColor : Colors.white,
-          borderRadius: BorderRadius.circular(16).copyWith(
+          color: isMe 
+              ? primaryColor 
+              : Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12).copyWith(
             bottomRight: isMe ? Radius.zero : null,
             bottomLeft: !isMe ? Radius.zero : null,
           ),
@@ -362,7 +360,7 @@ class _ChatScreenState extends State<ChatScreen> {
             content,
             const SizedBox(height: 4),
             Text(
-              "${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0')}",
+              DateFormat.jm().format(message.timestamp.toLocal()),
               style: TextStyle(
                 color: isMe
                     ? Colors.white.withOpacity(0.8)
@@ -400,8 +398,8 @@ class _ChatScreenState extends State<ChatScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,8 +456,8 @@ class _ChatScreenState extends State<ChatScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,8 +506,8 @@ class _ChatScreenState extends State<ChatScreen> {
           padding: const EdgeInsets.all(8),
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,12 +529,12 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageInput(String languageCode, UserRole? role) {
     final primaryColor = role == UserRole.doctor ? AppColors.doctorPrimary : const Color(0xFFCBD77E);
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 40),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -556,8 +554,8 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F7F7),
-                borderRadius: BorderRadius.circular(24),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
                 controller: _messageController,
@@ -586,3 +584,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+
+
+

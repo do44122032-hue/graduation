@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
-import '../../constants/app_colors.dart';
 import '../../constants/app_strings.dart';
 import '../../services/language_service.dart';
 import 'patient_data_entry.dart';
@@ -17,7 +16,7 @@ class PatientProfileScreen extends StatelessWidget {
     final languageCode = languageService.currentLanguage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.get('profileTitle', languageCode),
@@ -32,7 +31,7 @@ class PatientProfileScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
             ),
@@ -62,7 +61,7 @@ class PatientProfileScreen extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    user?.name.substring(0, 1).toUpperCase() ?? 'U',
+                    user?.name != null && user!.name.isNotEmpty ? user.name.substring(0, 1).toUpperCase() : 'U',
                     style: const TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
@@ -75,11 +74,11 @@ class PatientProfileScreen extends StatelessWidget {
             const SizedBox(height: 16),
             // User Name & Role
             Text(
-              user?.name ?? 'Unknown User',
-              style: const TextStyle(
+              user?.name ?? AppStrings.get('labelUnknownUser', languageCode),
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF282828),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
@@ -87,7 +86,7 @@ class PatientProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: const Color(0xFFCBD77E).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFFCBD77E)),
               ),
               child: Text(
@@ -108,18 +107,20 @@ class PatientProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _buildProfileItem(
+                    context: context,
                     icon: Icons.email_outlined,
                     label: AppStrings.get('labelEmailAddress', languageCode),
-                    value: user?.email ?? 'N/A',
+                    value: user?.email ?? AppStrings.get('labelNotAvailable', languageCode),
                   ),
                   const SizedBox(height: 16),
                   _buildProfileItem(
+                    context: context,
                     icon: Icons.phone_outlined,
                     label: AppStrings.get('labelPhoneNumber', languageCode),
-                    value: user?.phoneNumber ?? 'N/A',
+                    value: user?.phoneNumber ?? AppStrings.get('labelNotAvailable', languageCode),
                   ),
                   const SizedBox(height: 16),
-                  _buildStatsRow(user, languageCode),
+                  _buildStatsRow(context, user, languageCode),
                   const SizedBox(height: 32),
 
                   // Actions
@@ -127,8 +128,8 @@ class PatientProfileScreen extends StatelessWidget {
                     context,
                     label: AppStrings.get('actionEditProfile', languageCode),
                     icon: Icons.edit_note,
-                    color: const Color(0xFF282828),
-                    textColor: Colors.white,
+                    color: const Color(0xFFCBD77E),
+                    textColor: const Color(0xFF282828),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -161,6 +162,7 @@ class PatientProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
@@ -168,8 +170,8 @@ class PatientProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -183,10 +185,10 @@ class PatientProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFF7F7F7),
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF282828)),
+            child: Icon(icon, color: const Color(0xFFCBD77E)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -195,18 +197,18 @@ class PatientProfileScreen extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF4A4A4A),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF282828),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -217,23 +219,25 @@ class PatientProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow(dynamic user, String languageCode) {
+  Widget _buildStatsRow(BuildContext context, dynamic user, String languageCode) {
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
+            context: context,
             label: AppStrings.get('labelAge', languageCode),
             value: user?.age != null
                 ? '${user.age} ${AppStrings.get('unitYears', languageCode)}'
-                : 'N/A',
+                : AppStrings.get('labelNotAvailable', languageCode),
             color: const Color(0xFFCBD77E),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _buildStatCard(
+            context: context,
             label: AppStrings.get('labelBlood', languageCode),
-            value: user?.bloodType ?? 'N/A',
+            value: user?.bloodType ?? AppStrings.get('labelNotAvailable', languageCode),
             color: const Color(0xFFE6CA9A),
           ),
         ),
@@ -242,6 +246,7 @@ class PatientProfileScreen extends StatelessWidget {
   }
 
   Widget _buildStatCard({
+    required BuildContext context,
     required String label,
     required String value,
     required Color color,
@@ -250,7 +255,7 @@ class PatientProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.5)),
       ),
       child: Column(
@@ -260,16 +265,16 @@ class PatientProfileScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF282828).withOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF282828),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -287,12 +292,12 @@ class PatientProfileScreen extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -313,3 +318,6 @@ class PatientProfileScreen extends StatelessWidget {
     );
   }
 }
+
+
+

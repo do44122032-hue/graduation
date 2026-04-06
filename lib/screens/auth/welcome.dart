@@ -180,15 +180,15 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             );
                           },
                           child: SizedBox(
-                            width: 190,
-                            height: 190,
+                            width: 250,
+                            height: 250,
                             child: Image.asset(
                               'assets/logo.png',
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
                                   const Icon(
                                     Icons.medical_services_rounded,
-                                    size: 110,
+                                    size: 140,
                                     color: Colors.white,
                                   ),
                             ),
@@ -249,7 +249,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 100),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(12),
                         child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                           child: GestureDetector(
@@ -266,7 +266,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               height: 60,
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: Colors.white.withOpacity(0.3),
                                   width: 1.5,
@@ -315,7 +315,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
+          begin: AlignmentDirectional.topStart,
           end: Alignment.bottomRight,
           colors: [
             Color(0xFF7ECFC8),
@@ -377,9 +377,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           // Cloud 1 (Large, white)
           AnimatedBuilder(
             animation: _cloud1Anim,
-            builder: (_, __) => Positioned(
+            builder: (_, __) => PositionedDirectional(
               top: 115,
-              left: _cloud1Anim.value,
+              start: _cloud1Anim.value,
               child: CustomPaint(
                 size: const Size(400, 120),
                 painter: _RealisticCloudPainter(
@@ -394,9 +394,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           // Cloud 2 (Medium, light green)
           AnimatedBuilder(
             animation: _cloud2Anim,
-            builder: (_, __) => Positioned(
+            builder: (_, __) => PositionedDirectional(
               top: 205,
-              left: _cloud2Anim.value,
+              start: _cloud2Anim.value,
               child: CustomPaint(
                 size: const Size(300, 95),
                 painter: _RealisticCloudPainter(
@@ -411,9 +411,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           // Cloud 3 (Small, yellow-green)
           AnimatedBuilder(
             animation: _cloud3Anim,
-            builder: (_, __) => Positioned(
+            builder: (_, __) => PositionedDirectional(
               top: 82,
-              left: _cloud3Anim.value,
+              start: _cloud3Anim.value,
               child: CustomPaint(
                 size: const Size(220, 75),
                 painter: _RealisticCloudPainter(
@@ -428,10 +428,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           // Shimmer
           AnimatedBuilder(
             animation: _shimmerAnim,
-            builder: (_, __) => Positioned(
+            builder: (_, __) => PositionedDirectional(
               bottom: 88,
-              left: 0,
-              right: 0,
+              start: 0,
+              end: 0,
               child: Container(
                 height: 110,
                 decoration: BoxDecoration(
@@ -449,10 +449,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           ),
 
           // Ground & trees
-          Positioned(
+          PositionedDirectional(
             bottom: 0,
-            left: 0,
-            right: 0,
+            start: 0,
+            end: 0,
             child: AnimatedBuilder(
               animation: _groundController,
               builder: (context, child) {
@@ -885,3 +885,6 @@ class _EnhancedGroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
+

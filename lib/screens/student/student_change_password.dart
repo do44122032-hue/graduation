@@ -53,7 +53,7 @@ class _StudentChangePasswordScreenState
       backgroundColor: const Color(0xFFF7F7F7),
       appBar: AppBar(
         title: Text(
-          AppStrings.get('titleChangePassword', lang),
+          AppStrings.get('optChangePassword', lang),
           style: const TextStyle(
             color: Color(0xFF282828),
             fontWeight: FontWeight.bold,
@@ -68,7 +68,7 @@ class _StudentChangePasswordScreenState
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [primaryGold, Color(0xFFF5DDB8)],
             ),
@@ -83,7 +83,7 @@ class _StudentChangePasswordScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppStrings.get('titleSecurityUpdate', lang),
+                AppStrings.get('sectSecurityUpdate', lang),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -92,7 +92,7 @@ class _StudentChangePasswordScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                AppStrings.get('subSecurityUpdateStudent', lang),
+                AppStrings.get('subSecurityUpdate', lang),
                 style: TextStyle(
                   fontSize: 14,
                   color: const Color(0xFF282828).withOpacity(0.6),
@@ -117,7 +117,7 @@ class _StudentChangePasswordScreenState
                   if (val == null || val.isEmpty)
                     return AppStrings.get('errorRequired', lang);
                   if (val.length < 6)
-                    return AppStrings.get('errPasswordShort', lang);
+                    return AppStrings.get('errorPasswordShort', lang);
                   return null;
                 },
                 lang: lang,
@@ -131,7 +131,7 @@ class _StudentChangePasswordScreenState
                     setState(() => _obscureConfirm = !_obscureConfirm),
                 validator: (val) {
                   if (val != _newPasswordController.text)
-                    return AppStrings.get('errPasswordMismatch', lang);
+                    return AppStrings.get('errorPasswordsMismatch', lang);
                   return null;
                 },
                 lang: lang,
@@ -145,7 +145,7 @@ class _StudentChangePasswordScreenState
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGold,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 4,
                     shadowColor: primaryGold.withOpacity(0.4),
@@ -212,11 +212,11 @@ class _StudentChangePasswordScreenState
               onPressed: onToggle,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
                 color: Color(0xFFE8C998),
                 width: 1.5,
@@ -232,3 +232,6 @@ class _StudentChangePasswordScreenState
     );
   }
 }
+
+
+

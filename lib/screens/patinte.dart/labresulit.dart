@@ -71,7 +71,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
           ? const Center(child: CircularProgressIndicator(color: colorAccentOlive))
           : SingleChildScrollView(child: _buildLabResultsContent(languageCode))
       : Scaffold(
-          backgroundColor: colorSecondaryBg,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: _isLoading
               ? const Center(child: CircularProgressIndicator(color: colorAccentOlive))
               : Column(
@@ -95,7 +95,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
+          begin: AlignmentDirectional.topStart,
           end: Alignment.bottomRight,
           colors: [colorAccentOlive, colorAccentBeige],
         ),
@@ -118,7 +118,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
               height: 40,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
                 icon: const Icon(
@@ -131,10 +131,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
               ),
             ),
             Text(
-              // Using fallback if string is not available
-              AppStrings.get('labResultsTitle', languageCode) == 'labResultsTitle' 
-                  ? 'Lab Results' 
-                  : AppStrings.get('labResultsTitle', languageCode),
+              AppStrings.get('labResultsTitle', languageCode),
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -146,7 +143,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
               height: 40,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
                 icon: const Icon(
@@ -166,33 +163,31 @@ class _LabResultsPageState extends State<LabResultsPage> {
 
   Widget _buildLabResultsContent(String languageCode) {
     if (_labResults.isEmpty) {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      final userId = authService.currentUser?.id ?? 'Unknown';
-      return Center(child: Text("No lab results available for ID: $userId"));
+      return Center(child: Text(AppStrings.get('noLabResults', languageCode)));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Blood Glucose Trends",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorCharcoal),
+        Text(
+          AppStrings.get('labTrends', languageCode),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        const Text(
-          "Extracted from your uploaded lab reports using Smart OCR.",
-          style: TextStyle(fontSize: 12, color: colorSecondaryText),
+        Text(
+          AppStrings.get('labTrendsDesc', languageCode),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
         ),
         const SizedBox(height: 20),
         
         // OCR Data Chart
         Container(
           height: 200,
-          padding: const EdgeInsets.only(right: 20, top: 10),
+          padding: const EdgeInsetsDirectional.only(end: 20, top: 10),
           decoration: BoxDecoration(
-            color: colorWhite,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colorSecondaryBg),
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.06),
@@ -253,9 +248,9 @@ class _LabResultsPageState extends State<LabResultsPage> {
         ),
         const SizedBox(height: 30),
         
-        const Text(
-          "Recent Lab Reports",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorCharcoal),
+        Text(
+          AppStrings.get('recentLabReports', languageCode),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         
@@ -267,11 +262,11 @@ class _LabResultsPageState extends State<LabResultsPage> {
           itemBuilder: (context, index) {
             final result = _labResults[index];
             return Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsetsDirectional.only(bottom: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: colorWhite,
-                borderRadius: BorderRadius.circular(16),
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -282,7 +277,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
               ),
               child: ListTile(
                 leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     result['image'] != null && result['image'].toString().startsWith('/')
                         ? '${DashboardService.baseUrl}${result['image']}'
@@ -294,12 +289,12 @@ class _LabResultsPageState extends State<LabResultsPage> {
                   ),
                 ),
                 title: Text(
-                  "Report from ${result['date']}",
-                  style: const TextStyle(fontWeight: FontWeight.w600, color: colorCharcoal),
+                  AppStrings.get('reportFrom', languageCode).replaceAll('{date}', result['date'] ?? ''),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(
-                  "Extracted Glucose: ${result['glucose']} mg/dL",
-                  style: const TextStyle(color: colorSecondaryText),
+                  AppStrings.get('extractedGlucose', languageCode).replaceAll('{value}', result['glucose'].toString()),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
                 ),
                 trailing: Container(
                   padding: const EdgeInsets.all(8),
@@ -313,7 +308,7 @@ class _LabResultsPageState extends State<LabResultsPage> {
                   showDialog(
                     context: context,
                     builder: (context) => Dialog(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -329,15 +324,15 @@ class _LabResultsPageState extends State<LabResultsPage> {
                             padding: const EdgeInsets.all(16.0),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: colorCharcoal,
-                                foregroundColor: colorWhite,
+                                backgroundColor: Theme.of(context).colorScheme.onSurface,
+                                foregroundColor: Theme.of(context).cardColor,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 minimumSize: const Size(double.infinity, 48),
                               ),
-                              onPressed: () => Navigator.pop(context), 
-                              child: const Text("Close"),
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(AppStrings.get('close', languageCode)),
                             ),
                           ),
                         ],
@@ -353,3 +348,6 @@ class _LabResultsPageState extends State<LabResultsPage> {
     );
   }
 }
+
+
+

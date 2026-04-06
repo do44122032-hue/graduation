@@ -44,7 +44,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load appointments')),
+          SnackBar(content: Text(AppStrings.get('errorLoadAppointments', Provider.of<LanguageService>(context, listen: false).currentLanguage))),
         );
       }
     }
@@ -83,7 +83,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update appointment status')),
+          SnackBar(content: Text(AppStrings.get('errorUpdateStatus', Provider.of<LanguageService>(context, listen: false).currentLanguage))),
         );
       }
     }
@@ -94,17 +94,17 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
     return Scaffold(
-      backgroundColor: AppColors.secondaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.get('doctorScheduleTitle', languageCode),
           style: AppTextStyles.h3(
             languageCode: languageCode,
-          ).copyWith(color: AppColors.primaryText, fontWeight: FontWeight.bold),
+          ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_calendar_rounded, color: AppColors.doctorPrimary),
+            icon: const Icon(Icons.edit_calendar_rounded, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -113,18 +113,18 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                 ),
               ).then((_) => _loadAppointments());
             },
-            tooltip: 'Manage Availability',
+            tooltip: AppStrings.get('labelManageAvailability', languageCode),
           ),
           const SizedBox(width: AppSpacing.sm),
         ],
-        backgroundColor: AppColors.cardBackground,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: AppColors.primaryText),
+        backgroundColor: AppColors.doctorPrimary,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.doctorPrimary,
-          unselectedLabelColor: AppColors.secondaryText,
-          indicatorColor: AppColors.doctorPrimary,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
           tabs: [
             Tab(text: AppStrings.get('tabUpcoming', languageCode)),
             Tab(text: AppStrings.get('tabCompleted', languageCode)),
@@ -162,14 +162,14 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
             Icon(
               Icons.event_busy,
               size: 64,
-              color: AppColors.secondaryText.withValues(alpha: 0.5),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
               AppStrings.get('msgNoAppointments', languageCode),
               style: AppTextStyles.body(
                 languageCode: languageCode,
-              ).copyWith(color: AppColors.secondaryText),
+              ).copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
             ),
           ],
         ),
@@ -177,7 +177,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(
+      padding: const EdgeInsetsDirectional.fromSTEB(
         AppSpacing.md,
         AppSpacing.md,
         AppSpacing.md,
@@ -187,18 +187,17 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
       itemBuilder: (context, index) {
         final apt = filtered[index];
         return Container(
-          margin: const EdgeInsets.only(bottom: AppSpacing.md),
+          margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-            border: Border(
-              left: BorderSide(color: AppColors.doctorPrimary, width: 4),
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(12),
+            border: BorderDirectional(start: BorderSide(color: AppColors.doctorPrimary, width: 4),
             ),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: AppColors.cardShadow,
+                color: Colors.black.withOpacity(0.1),
                 blurRadius: 4,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -214,7 +213,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                       style: AppTextStyles.h3(languageCode: languageCode)
                           .copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primaryText,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                     ),
                     Container(
@@ -224,12 +223,10 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.doctorPrimary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusXS,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        apt['type'] ?? 'Visit',
+                        apt['type'] ?? AppStrings.get('labelVisit', languageCode),
                         style: AppTextStyles.caption(languageCode: languageCode)
                             .copyWith(
                               fontWeight: FontWeight.bold,
@@ -257,20 +254,20 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            apt['patientName'] ?? 'Unknown Patient',
+                            apt['patientName'] ?? AppStrings.get('labelUnknownPatient', languageCode),
                             style:
                                 AppTextStyles.body(
                                   languageCode: languageCode,
                                 ).copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryText,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                           ),
                           Text(
-                            '${apt['date']} at ${apt['time']}',
+                            '${apt['date']} ${AppStrings.get('labelAt', languageCode)} ${apt['time']}',
                             style: AppTextStyles.caption(
                               languageCode: languageCode,
-                            ).copyWith(color: AppColors.secondaryText),
+                            ).copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
                           ),
                         ],
                       ),
@@ -341,3 +338,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage>
     );
   }
 }
+
+
+
+

@@ -5,6 +5,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
 import '../../models/user_model.dart';
 import '../../services/language_service.dart';
+import '../../services/auth_service.dart';
 import '../../constants/app_strings.dart';
 
 class DoctorProfilePage extends StatefulWidget {
@@ -29,21 +30,24 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
   @override
   void initState() {
     super.initState();
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = widget.user ?? authService.currentUser;
+    
     final languageCode = Provider.of<LanguageService>(
       context,
       listen: false,
     ).currentLanguage;
     _nameController = TextEditingController(
-      text: widget.user?.name ?? 'Dr. Jaimin Panchal',
+      text: user?.name ?? '',
     );
     _phoneController = TextEditingController(
       text:
-          widget.user?.phoneNumber ??
+          user?.phoneNumber ??
           AppStrings.get('labelNotSet', languageCode),
     );
     _dobController = TextEditingController(
       text:
-          widget.user?.dateOfBirth ??
+          user?.dateOfBirth ??
           AppStrings.get('labelNotSet', languageCode),
     );
     _specController = TextEditingController(
@@ -69,17 +73,17 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
     return Scaffold(
-      backgroundColor: AppColors.secondaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.get('doctorProfileTitle', languageCode),
           style: AppTextStyles.h3(
             languageCode: languageCode,
-          ).copyWith(color: AppColors.primaryText, fontWeight: FontWeight.bold),
+          ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.cardBackground,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: AppColors.primaryText),
+        backgroundColor: AppColors.doctorPrimary,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           if (_isEditing)
             IconButton(
@@ -124,9 +128,9 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
                           )
                         : null,
                   ),
-                  Positioned(
+                  PositionedDirectional(
                     bottom: 0,
-                    right: 0,
+                    end: 0,
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -157,7 +161,7 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.h2(languageCode: languageCode).copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryText,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 decoration: const InputDecoration(border: InputBorder.none),
               )
@@ -166,14 +170,14 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
                 _nameController.text,
                 style: AppTextStyles.h2(languageCode: languageCode).copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryText,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             Text(
-              widget.user?.email ?? 'jaimin.panchal@gmail.com',
+              widget.user?.email ?? Provider.of<AuthService>(context, listen: false).currentUser?.email ?? '',
               style: AppTextStyles.body(
                 languageCode: languageCode,
-              ).copyWith(color: AppColors.secondaryText),
+              ).copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
             ),
             const SizedBox(height: AppSpacing.xl),
             _buildProfileItem(
@@ -213,11 +217,11 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
     String languageCode,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -232,7 +236,7 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               color: AppColors.doctorPrimary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: AppColors.doctorPrimary),
           ),
@@ -245,7 +249,7 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
                   label,
                   style: AppTextStyles.caption(
                     languageCode: languageCode,
-                  ).copyWith(color: AppColors.secondaryText),
+                  ).copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                 ),
                 const SizedBox(height: 4),
                 if (_isEditing)
@@ -268,7 +272,7 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
                     style: AppTextStyles.body(languageCode: languageCode)
                         .copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.primaryText,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   ),
               ],
@@ -279,3 +283,6 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
     );
   }
 }
+
+
+

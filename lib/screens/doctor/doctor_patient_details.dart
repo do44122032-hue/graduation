@@ -128,12 +128,15 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
     return Scaffold(
-      backgroundColor: AppColors.secondaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.patientName),
-        backgroundColor: AppColors.cardBackground,
-        foregroundColor: AppColors.primaryText,
+        title: Text(
+          widget.patientName,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: AppColors.doctorPrimary,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -150,6 +153,7 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
               'Upload Lab Result',
               style: AppTextStyles.h3(languageCode: languageCode).copyWith(
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -183,8 +187,8 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -208,11 +212,18 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
             children: [
               Text(
                 widget.patientName,
-                style: AppTextStyles.h3(languageCode: languageCode),
+                style: AppTextStyles.h3(
+                  languageCode: languageCode,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
+              const SizedBox(height: 4),
               Text(
                 '${widget.patientAge} Years • ${widget.condition}',
-                style: AppTextStyles.caption(languageCode: languageCode),
+                style: AppTextStyles.caption(
+                  languageCode: languageCode,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
               ),
             ],
           ),
@@ -228,8 +239,8 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
         height: 250,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.doctorPrimary.withOpacity(0.3)),
         ),
         child: _selectedFile != null
@@ -243,7 +254,10 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           _selectedFile!.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -257,7 +271,7 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
                     ],
                   )
                 : ClipRRect(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+                    borderRadius: BorderRadius.circular(12),
                     child: kIsWeb
                         ? Image.memory(_webImage!, fit: BoxFit.cover)
                         : Image.file(File(_selectedFile!.path), fit: BoxFit.cover),
@@ -269,7 +283,10 @@ class _DoctorPatientDetailsPageState extends State<DoctorPatientDetailsPage> {
                   const SizedBox(height: AppSpacing.md),
                   Text(
                     'Tap to take a photo or pick PDF',
-                    style: AppTextStyles.body(languageCode: languageCode).copyWith(color: AppColors.secondaryText),
+                    style: AppTextStyles.body(
+                      languageCode: languageCode,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    ),
                   ),
                 ],
               ),
@@ -319,3 +336,6 @@ class DashStyle {
   final List<double> dash;
   const DashStyle({this.dash = const [5, 5]});
 }
+
+
+

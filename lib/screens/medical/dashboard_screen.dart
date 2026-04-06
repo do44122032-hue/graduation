@@ -60,10 +60,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     }
 
     // 1. Instantly load from local memory/disk for the best UX while waiting for server
-    final localVital = await DashboardService.getLocalVital();
-    if (localVital != null && mounted) {
+    final localVitalsList = await DashboardService.getLocalVitalsList();
+    if (localVitalsList.isNotEmpty && mounted) {
       setState(() {
-        _recentVitals = [localVital];
+        _recentVitals = List.from(localVitalsList);
         _isLoading = false; // Show dashboard immediately with local data
       });
     }
@@ -85,11 +85,20 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
             };
           }).toList();
           
-          // Fallback to local cache if server is behind
-          final localVital = DashboardService.getLastLoggedVital();
-          if (_recentVitals.isEmpty || (localVital != null && _recentVitals.first['date'] != 'Just Now')) {
-            if (localVital != null) {
-              _recentVitals.insert(0, localVital);
+          // Fallback to local cache if server is behind or restarted
+          if (_recentVitals.isEmpty && localVitalsList.isNotEmpty) {
+            _recentVitals = List.from(localVitalsList);
+          } else if (localVitalsList.isNotEmpty && _recentVitals.isNotEmpty) {
+            // Keep local just-logged item if server is lagging
+            final localVital = localVitalsList.first;
+            if (_recentVitals.first['date'] != localVital['date']) {
+               // Check if we already have this vital by rough matching
+               bool exists = _recentVitals.any((v) => 
+                   v['bloodPressureSys'] == localVital['bloodPressureSys'] && 
+                   v['weight'] == localVital['weight']);
+               if (!exists) {
+                 _recentVitals.insert(0, localVital);
+               }
             }
           }
           
@@ -116,6 +125,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
 
   /// Helper to parse various date formats safely
   DateTime _parseDateString(String dateStr) {
+    if (dateStr == 'Just Now') return DateTime.now();
     if (dateStr.isEmpty) return DateTime.fromMillisecondsSinceEpoch(0);
     final formats = ['MMM d yyyy', 'MMM dd yyyy', 'yyyy-MM-ddTHH:mm:ss', 'yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd'];
     String cleanDate = dateStr.trim();
@@ -134,12 +144,27 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     super.dispose();
   }
 
+  String _formatKurdishDate(DateTime date) {
+    const months = [
+      'کانوونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
+      'تەممووز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانوونی یەکەم'
+    ];
+    const days = [
+      'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی', 'شەممە'
+    ];
+    
+    String dayName = days[date.weekday % 7];
+    String monthName = months[date.month - 1];
+    
+    return "$dayName، ${date.day} $monthName ${date.year}";
+  }
+
   @override
   Widget build(BuildContext context) {
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -147,9 +172,9 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
             Positioned.fill(child: _buildContent(languageCode)),
 
             // Floating Navigation Bar
-            Positioned(
-              left: 0,
-              right: 0,
+            PositionedDirectional(
+              start: 0,
+              end: 0,
               bottom: 20,
               child: Center(
                 child: ModernHorizontalNavBar(
@@ -236,7 +261,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 // Health Alerts from server
                 if (_healthAlerts.isNotEmpty) ...[
                   ..._healthAlerts.map((alert) => _buildAnnouncementBanner(
-                        alert['title'] ?? 'Health Alert',
+                        alert['title'] ?? AppStrings.get('healthAlert', languageCode),
                         alert['message'] ?? '',
                         Icons.warning_amber_rounded,
                         isDanger: alert['type'] == 'danger',
@@ -261,8 +286,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 // Specific Blood Pressure Check - Decoupled from generic alerts
                 if (_recentVitals.isNotEmpty && (_recentVitals.first['bloodPressureSys'] > 130 || _recentVitals.first['bloodPressureDia'] > 85)) ...[
                    _buildAnnouncementBanner(
-                        'High Blood Pressure Alert',
-                        'DANGER: Your last reading was ${_recentVitals.first['bloodPressureSys']}/${_recentVitals.first['bloodPressureDia']}. Please rest and consult your doctor.',
+                        AppStrings.get('highBPAlert', languageCode),
+                        AppStrings.get('highBPMessage', languageCode)
+                            .replaceAll('{sys}', _recentVitals.first['bloodPressureSys'].toString())
+                            .replaceAll('{dia}', _recentVitals.first['bloodPressureDia'].toString()),
                         Icons.warning_amber_rounded,
                         isDanger: true,
                         onTap: () {
@@ -275,7 +302,8 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                         }
                       ),
                   const SizedBox(height: 24),
-                ] else if (_healthAlerts.isEmpty) ... [
+                ]
+ else if (_healthAlerts.isEmpty) ... [
                   // Show lab result update only if no alerts exist to keep UI clean
                   _buildAnnouncementBanner(
                     AppStrings.get('healthUpdate', languageCode),
@@ -326,12 +354,12 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     int avgDia = count > 0 ? (totalDia ~/ count) : 0;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: const EdgeInsetsDirectional.only(bottom: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFCBD77E).withOpacity(0.5)),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFCBD77E).withOpacity(0.3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -348,7 +376,13 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               color: const Color(0xFFCBD77E).withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.analytics, color: Color(0xFF282828), size: 28),
+            child: Icon(
+              Icons.analytics,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFFCBD77E)
+                  : const Color(0xFF282828),
+              size: 28,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -357,17 +391,21 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               children: [
                 Text(
                   AppStrings.get('weeklySummary', languageCode),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Color(0xFF282828),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color(0xFF282828),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Avg BP: $avgSys/$avgDia mmHg\nEntries: $count recorded this week",
+                  "${AppStrings.get('avgBP', languageCode)}: $avgSys/$avgDia mmHg\n${AppStrings.get('entriesRecorded', languageCode)}: $count",
                   style: TextStyle(
-                    color: const Color(0xFF282828).withOpacity(0.7),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.9)
+                        : const Color(0xFF282828).withOpacity(0.7),
                     fontSize: 13,
                     height: 1.4,
                   ),
@@ -389,10 +427,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
       children: [
         Text(
           AppStrings.get('upcomingAppt', languageCode),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF282828),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -405,14 +443,14 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
 
   Widget _buildAppointmentCard(Map<String, dynamic> apt, String languageCode) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsetsDirectional.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -438,15 +476,16 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   children: [
                     Text(
                       apt['doctorName'],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     Text(
                       apt['specialty'],
                       style: TextStyle(
-                        color: const Color(0xFF282828).withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                         fontSize: 13,
                       ),
                     ),
@@ -460,12 +499,12 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFCBD77E).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   AppStrings.get('confirmed', languageCode),
-                  style: const TextStyle(
-                    color: Color(0xFFCBD77E),
+                  style: TextStyle(
+                    color: const Color(0xFFCBD77E),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                   ),
@@ -486,9 +525,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               const SizedBox(width: 8),
               Text(
                 apt['date'],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
               const SizedBox(width: 16),
@@ -496,9 +536,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               const SizedBox(width: 8),
               Text(
                 apt['time'],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
             ],
@@ -549,10 +590,13 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(AppStrings.get('actionCancel', languageCode)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Text(AppStrings.get('cancelAptTitle', languageCode)),
         content: Text(
-          "Are you sure you want to cancel your appointment with ${apt['doctorName']} on ${apt['date']} at ${apt['time']}?",
+          AppStrings.get('cancelAptConfirm', languageCode)
+              .replaceAll('{doctor}', apt['doctorName'] ?? '')
+              .replaceAll('{date}', apt['date'] ?? '')
+              .replaceAll('{time}', apt['time'] ?? ''),
         ),
         actions: [
           TextButton(
@@ -564,7 +608,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               Navigator.pop(context);
               _cancelAppointment(apt['id'].toString(), languageCode);
             },
-            child: const Text('Confirm', style: TextStyle(color: Colors.red)),
+            child: Text(
+              AppStrings.get('confirm', languageCode),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -595,7 +642,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
             content: Text(AppStrings.get('msgAppointmentCancelled', languageCode)),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.only(bottom: 100, left: 24, right: 24),
+            margin: const EdgeInsetsDirectional.only(bottom: 100, start: 24, end: 24),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
@@ -603,8 +650,8 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to cancel appointment. Please try again.'),
+          SnackBar(
+            content: Text(AppStrings.get('errorCancelApt', languageCode)),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -620,19 +667,21 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           clipper: HeaderClipper(),
           child: Container(
             height: 240,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: AlignmentDirectional.topStart,
                 end: AlignmentDirectional.bottomEnd,
-                colors: [Color(0xFFE8F1BD), Color(0xFFF9F3E5)],
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [const Color(0xFF1A1F1C), const Color(0xFF0F1210)]
+                    : [const Color(0xFFE8F1BD), const Color(0xFFF9F3E5)],
               ),
             ),
           ),
         ),
         Align(
-          alignment: Alignment.topRight,
+          alignment: AlignmentDirectional.topEnd,
           child: Padding(
-            padding: const EdgeInsets.only(top: 15, right: 15),
+            padding: const EdgeInsetsDirectional.only(top: 15, end: 15),
             child: _buildAnimatedLogo(),
           ),
         ),
@@ -683,8 +732,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                               ),
                             ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(40),
+                          child: ClipOval(
                             child: (user?.profilePicture != null && user!.profilePicture!.isNotEmpty)
                                 ? Image.network(
                                     user.profilePicture!,
@@ -712,10 +760,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                       const SizedBox(height: 12),
                       Text(
                         user?.name ?? '',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF282828),
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -723,7 +771,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                         user?.email ?? '',
                         style: TextStyle(
                           fontSize: 15,
-                          color: const Color(0xFF282828).withOpacity(0.6),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -748,10 +796,10 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           children: [
             Text(
               AppStrings.get('quickActions', languageCode),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF282828),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             if (!isDoctor)
@@ -759,15 +807,12 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: const Color(0xFFCBD77E),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  AppStrings.get(
-                    'activeCount',
-                    languageCode,
-                  ).replaceAll('{count}', _activeMedications.length.toString()),
-                  style: const TextStyle(
-                    color: Color(0xFF282828),
+                  _activeMedications.length.toString(),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF282828),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -783,7 +828,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
             children: [
               if (isDoctor)
                 _buildClinicCard(
-                  'Manage Schedule',
+                  AppStrings.get('manageSchedule', languageCode),
                   Icons.calendar_month,
                   true,
                   onTap: () {
@@ -837,7 +882,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   },
                 ),
                 _buildClinicCard(
-                  AppStrings.get('callMyDoctors', languageCode).isEmpty ? 'Call My Doctors' : AppStrings.get('callMyDoctors', languageCode),
+                  AppStrings.get('callMyDoctors', languageCode),
                   Icons.medical_services,
                   false,
                   onTap: () {
@@ -867,7 +912,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.only(right: 16.0),
+        padding: const EdgeInsetsDirectional.only(end: 16.0),
         child: Column(
           children: [
             Container(
@@ -875,11 +920,9 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               height: 100,
               decoration: BoxDecoration(
                 color: isActive
-                    ? const Color(0xFFCBD77E).withOpacity(
-                        0.2,
-                      ) // Slightly more visible
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                    ? const Color(0xFFCBD77E).withOpacity(0.2)
+                    : Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isActive
                       ? const Color(0xFFCBD77E)
@@ -900,7 +943,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
                   size: 40,
                   color: isActive
                       ? const Color(0xFFCBD77E)
-                      : const Color(0xFFE6CA9A),
+                      : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFCBD77E).withOpacity(0.4) : const Color(0xFFE6CA9A)),
                 ),
               ),
             ),
@@ -910,7 +953,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                color: const Color(0xFF282828),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
               ),
             ),
           ],
@@ -926,20 +969,21 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     VoidCallback? onTap,
     bool isDanger = false,
   }) {
-    final bgColor = isDanger ? const Color(0xFFC62828) : const Color(0xFFCBD77E); // Vibrant Red for Danger
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDanger ? const Color(0xFFC62828) : (isDark ? const Color(0xFFCBD77E).withOpacity(0.8) : const Color(0xFFCBD77E));
     final iconBgColor = isDanger ? Colors.white.withOpacity(0.2) : Colors.white;
     final iconColor = isDanger ? Colors.white : const Color(0xFFCBD77E);
-    final textColor = isDanger ? Colors.white : const Color(0xFF282828);
-    final subTextColor = isDanger ? Colors.white.withOpacity(0.9) : const Color(0xFF4A4A4A);
+    final textColor = isDanger ? Colors.white : const Color(0xFF1A3A2E);
+    final subTextColor = isDanger ? Colors.white.withOpacity(0.9) : const Color(0xFF1A3A2E).withOpacity(0.7);
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
@@ -991,22 +1035,26 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           child: Builder(
             builder: (context) {
               String formattedDate;
-              try {
-                formattedDate = DateFormat(
-                  'EEEE, d MMMM yyyy',
-                  languageCode,
-                ).format(DateTime.now());
-              } catch (e) {
-                // Fallback to English if locale is not supported by intl
-                formattedDate = DateFormat(
-                  'EEEE, d MMMM yyyy',
-                  'en',
-                ).format(DateTime.now());
+              if (languageCode == 'ku') {
+                formattedDate = _formatKurdishDate(DateTime.now());
+              } else {
+                try {
+                  formattedDate = DateFormat(
+                    'EEEE, d MMMM yyyy',
+                    languageCode,
+                  ).format(DateTime.now());
+                } catch (e) {
+                  // Fallback to English if locale is not supported by intl
+                  formattedDate = DateFormat(
+                    'EEEE, d MMMM yyyy',
+                    'en',
+                  ).format(DateTime.now());
+                }
               }
               return Text(
                 formattedDate,
-                style: const TextStyle(
-                  color: Color(0xFF4A4A4A),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1017,7 +1065,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
         const SizedBox(height: 24),
         _buildStatItem(
           AppStrings.get('demographics', languageCode),
-          '${user?.age ?? "28"} ${AppStrings.get('labelYears', languageCode)}, ${user?.weight ?? "65kg"}',
+          '${user?.age ?? "28"} ${AppStrings.get('labelYears', languageCode)}, ${user?.weight ?? "65"}${AppStrings.get('kgLabel', languageCode)}',
           Icons.person,
         ),
         _buildStatItem(
@@ -1044,7 +1092,7 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
 
   Widget _buildStatItem(String title, String value, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: const EdgeInsetsDirectional.only(bottom: 24.0),
       child: Row(
         children: [
           Icon(icon, color: const Color(0xFFCBD77E), size: 28),
@@ -1052,20 +1100,20 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                color: Color(0xFF4A4A4A),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFCBD77E),
-            ),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodySmall?.color,
+              ),
           ),
           const SizedBox(width: 12),
           const Icon(Icons.chevron_right, color: Color(0xFFCBD77E), size: 16),
@@ -1084,11 +1132,11 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).shadowColor.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1101,17 +1149,17 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Latest Vitals',
-                style: const TextStyle(
+                AppStrings.get('latestVitals', languageCode),
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: Color(0xFF282828),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               Text(
                 latest['date'] ?? '',
                 style: TextStyle(
-                  color: const Color(0xFF282828).withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                   fontSize: 12,
                 ),
               ),
@@ -1121,9 +1169,9 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildVitalSummaryItem(Icons.favorite, sys > 130 ? Colors.red : const Color(0xFFCBD77E), '$sys/$dia', 'BP'),
-              _buildVitalSummaryItem(Icons.bolt, const Color(0xFFCBD77E), '$hr', 'BPM'),
-              _buildVitalSummaryItem(Icons.monitor_weight, const Color(0xFFCBD77E), '$weight', 'KG'),
+              _buildVitalSummaryItem(Icons.favorite, sys > 130 ? Colors.red : const Color(0xFFCBD77E), '$sys/$dia', AppStrings.get('bpLabel', languageCode)),
+              _buildVitalSummaryItem(Icons.bolt, const Color(0xFFCBD77E), '$hr', AppStrings.get('bpmLabel', languageCode)),
+              _buildVitalSummaryItem(Icons.monitor_weight, const Color(0xFFCBD77E), '$weight', AppStrings.get('kgLabel', languageCode)),
             ],
           ),
         ],
@@ -1145,17 +1193,17 @@ class _ModernDashboardScreenState extends State<ModernDashboardScreen>
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Color(0xFF282828),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         Text(
           label,
           style: TextStyle(
             fontSize: 11,
-            color: const Color(0xFF282828).withOpacity(0.6),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         ),
       ],
@@ -1246,11 +1294,18 @@ class _PulseAnimatedLogoState extends State<PulseAnimatedLogo>
           child: Opacity(
             opacity: _opacityAnimation.value,
             child: SizedBox(
-              height: 150,
-              width: 150,
+              height: 180,
+              width: 180,
               child: Image.asset(
                 'assets/logo.png',
                 fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  Icons.health_and_safety_rounded,
+                  size: 60,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFFCBD77E).withOpacity(0.5)
+                      : Colors.white.withOpacity(0.5),
+                ),
               ),
             ),
           ),
@@ -1284,3 +1339,6 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
+
+

@@ -75,18 +75,24 @@ class AuthService extends ChangeNotifier {
     return _login(email, password, UserRole.patient);
   }
 
-  Future<AuthResult> _login(String email, String password, UserRole role) async {
+  Future<AuthResult> _login(
+    String email,
+    String password,
+    UserRole role,
+  ) async {
     _setLoading(true);
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-          'role': role.name,
-        }),
-      ).timeout(const Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'email': email,
+              'password': password,
+              'role': role.name,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -98,10 +104,7 @@ class AuthService extends ChangeNotifier {
         return AuthResult(success: true, user: _currentUser);
       } else {
         _setLoading(false);
-        return AuthResult(
-          success: false, 
-          message: _getErrorMessage(response),
-        );
+        return AuthResult(success: false, message: _getErrorMessage(response));
       }
     } catch (e) {
       _setLoading(false);
@@ -120,19 +123,21 @@ class AuthService extends ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/auth/signup'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-          'phone': phone,
-          'role': role.name,
-          if (department != null) 'department': department,
-          if (bio != null) 'bio': bio,
-        }),
-      ).timeout(const Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/signup'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'name': name,
+              'email': email,
+              'password': password,
+              'phone': phone,
+              'role': role.name,
+              if (department != null) 'department': department,
+              if (bio != null) 'bio': bio,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -140,7 +145,7 @@ class AuthService extends ChangeNotifier {
         if (_currentUser != null) {
           await _saveUser(_currentUser!);
         }
-        
+
         if (role == UserRole.doctor) {
           // Doctors need to login to become "active" on the backend
           return await _login(email, password, role);
@@ -150,10 +155,7 @@ class AuthService extends ChangeNotifier {
         return AuthResult(success: true, user: _currentUser);
       } else {
         _setLoading(false);
-        return AuthResult(
-          success: false,
-          message: _getErrorMessage(response),
-        );
+        return AuthResult(success: false, message: _getErrorMessage(response));
       }
     } catch (e) {
       _setLoading(false);
@@ -171,8 +173,9 @@ class AuthService extends ChangeNotifier {
     List<String>? chronicConditions,
     List<String>? medications,
   }) async {
-    if (_currentUser == null) return AuthResult(success: false, message: 'Not logged in');
-    
+    if (_currentUser == null)
+      return AuthResult(success: false, message: 'Not logged in');
+
     _setLoading(true);
     try {
       final response = await http.put(
@@ -193,7 +196,9 @@ class AuthService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         // Refresh local user data
-        final profileRes = await http.get(Uri.parse('$_baseUrl/users/profile/${_currentUser!.id}'));
+        final profileRes = await http.get(
+          Uri.parse('$_baseUrl/users/profile/${_currentUser!.id}'),
+        );
         if (profileRes.statusCode == 200) {
           _currentUser = UserModel.fromJson(jsonDecode(profileRes.body));
           if (_currentUser != null) {
@@ -216,18 +221,23 @@ class AuthService extends ChangeNotifier {
   Future<AuthResult> resetPassword(String email) async {
     _setLoading(true);
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/auth/reset-password'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email}),
-      ).timeout(const Duration(seconds: 30));
-      
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/reset-password'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email}),
+          )
+          .timeout(const Duration(seconds: 30));
+
       debugPrint('Reset Password Stats: ${response.statusCode}');
       debugPrint('Reset Password Body: ${response.body}');
-      
+
       _setLoading(false);
       if (response.statusCode == 200) {
-        return AuthResult(success: true, message: 'Reset code sent to your email');
+        return AuthResult(
+          success: true,
+          message: 'Reset code sent to your email',
+        );
       } else {
         return AuthResult(success: false, message: _getErrorMessage(response));
       }
@@ -268,7 +278,10 @@ class AuthService extends ChangeNotifier {
       );
       _setLoading(false);
       if (response.statusCode == 200) {
-        return AuthResult(success: true, message: 'Password updated successfully');
+        return AuthResult(
+          success: true,
+          message: 'Password updated successfully',
+        );
       } else {
         return AuthResult(success: false, message: _getErrorMessage(response));
       }
@@ -278,14 +291,25 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  Future<AuthResult> changePassword({
+    required String uid,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    // For this backend, we must use the reset session flow to ensure security
+    return resetPassword(_currentUser?.email ?? '');
+  }
+
   String _getErrorMessage(http.Response response) {
     try {
       final data = jsonDecode(response.body);
       if (data['detail'] is List) {
-        return (data['detail'] as List).map((e) {
-          if (e is Map) return e['msg'] ?? e.toString();
-          return e.toString();
-        }).join(', ');
+        return (data['detail'] as List)
+            .map((e) {
+              if (e is Map) return e['msg'] ?? e.toString();
+              return e.toString();
+            })
+            .join(', ');
       }
       return data['detail']?.toString() ?? 'Error: ${response.statusCode}';
     } catch (e) {

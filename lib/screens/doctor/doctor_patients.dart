@@ -62,15 +62,15 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: AppColors.cardBackground,
+          backgroundColor: Theme.of(context).cardColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+            borderRadius: BorderRadius.circular(12),
           ),
           title: Text(
             AppStrings.get('doctorAddPatientTitle', languageCode),
             style: AppTextStyles.h3(languageCode: languageCode).copyWith(
               fontWeight: FontWeight.bold,
-              color: AppColors.primaryText,
+              color: Theme.of(context).textTheme.titleLarge?.color,
             ),
           ),
           content: SingleChildScrollView(
@@ -147,24 +147,24 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.secondaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.get('doctorMyPatientsTitle', languageCode),
           style: AppTextStyles.h3(
             languageCode: languageCode,
-          ).copyWith(color: AppColors.primaryText, fontWeight: FontWeight.bold),
+          ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.cardBackground,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: AppColors.primaryText),
+        backgroundColor: AppColors.doctorPrimary,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
           IconButton(icon: const Icon(Icons.filter_list), onPressed: () {}),
         ],
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(
+        padding: const EdgeInsetsDirectional.fromSTEB(
           AppSpacing.md,
           AppSpacing.md,
           AppSpacing.md,
@@ -196,18 +196,18 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
               );
             },
             child: Container(
-              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.cardShadow,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
               ),
               child: Row(
                 children: [
@@ -239,7 +239,7 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
                               style: AppTextStyles.body(languageCode: languageCode)
                                   .copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.primaryText,
+                                    color: Theme.of(context).textTheme.bodyLarge?.color,
                                   ),
                             ),
                             const SizedBox(height: 4),
@@ -247,7 +247,7 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
                               '${patient.age ?? "--"} ${AppStrings.get('labelYears', languageCode)} • $condition',
                               style: AppTextStyles.caption(
                                 languageCode: languageCode,
-                              ).copyWith(color: AppColors.secondaryText),
+                              ).copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -255,7 +255,7 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
                               style: AppTextStyles.caption(
                                 languageCode: languageCode,
                               ).copyWith(
-                                color: AppColors.secondaryText,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -285,7 +285,7 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
                       const Icon(
                         Icons.arrow_forward_ios,
                         size: 16,
-                        color: AppColors.secondaryText,
+                        color: Colors.grey,
                       ),
                     ],
                   ),
@@ -296,7 +296,7 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
         },
       ),
       floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 80),
+        margin: const EdgeInsetsDirectional.only(bottom: 80),
         child: FloatingActionButton(
           onPressed: _showAddPatientDialog,
           backgroundColor: AppColors.doctorPrimary,
@@ -308,11 +308,11 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
 
   Widget _buildShimmerLoading() {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
@@ -336,3 +336,6 @@ class _DoctorPatientsPageState extends State<DoctorPatientsPage> {
     );
   }
 }
+
+
+

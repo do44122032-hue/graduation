@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import '../../constants/app_strings.dart';
 import '../../services/auth_service.dart';
 import '../../services/language_service.dart';
+import '../../services/theme_service.dart';
 import 'patient_data_entry.dart';
+import 'help_center.dart';
+import 'about_app.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -13,21 +16,19 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool _notificationsEnabled = true;
-  bool _biometricsEnabled = false;
-
   @override
   Widget build(BuildContext context) {
     final languageService = Provider.of<LanguageService>(context);
+    final themeService = Provider.of<ThemeService>(context);
     final languageCode = languageService.currentLanguage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: themeService.isDarkMode ? const Color(0xFF121212) : const Color(0xFFF7F7F7),
       appBar: AppBar(
         title: Text(
           AppStrings.get('settingsTitle', languageCode),
-          style: const TextStyle(
-            color: Color(0xFF282828),
+          style: TextStyle(
+            color: themeService.isDarkMode ? Colors.white : const Color(0xFF282828),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -37,7 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
             ),
@@ -47,10 +48,11 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSectionHeader(AppStrings.get('sectAccount', languageCode)),
+          // Section: Account (الحساب)
+          _buildSectionHeader(AppStrings.get('sectAccount', languageCode), themeService.isDarkMode),
           _buildSettingsTile(
             icon: Icons.person_outline,
-            title: AppStrings.get('optPersonalInfo', languageCode),
+            title: AppStrings.get('optEditInfo', languageCode),
             subtitle: AppStrings.get('subPersonalInfo', languageCode),
             onTap: () {
               Navigator.push(
@@ -60,122 +62,61 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               );
             },
+            isDark: themeService.isDarkMode,
           ),
-          _buildSettingsTile(
-            icon: Icons.lock_outline,
-            title: AppStrings.get('optChangePassword', languageCode),
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.payment_outlined,
-            title: AppStrings.get('labelPaymentMethods', languageCode),
-            onTap: () {},
-          ),
+
           const SizedBox(height: 24),
-          _buildSectionHeader(AppStrings.get('sectPreferences', languageCode)),
+          // Section: Appearance (المظهر)
+          _buildSectionHeader(AppStrings.get('sectAppearance', languageCode), themeService.isDarkMode),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: themeService.isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               children: [
+                // Dark Mode Toggle
                 SwitchListTile(
-                  value: _notificationsEnabled,
-                  onChanged: (val) =>
-                      setState(() => _notificationsEnabled = val),
+                  value: themeService.isDarkMode,
+                  onChanged: (val) => themeService.toggleTheme(),
                   title: Text(
-                    AppStrings.get('optPushNotifications', languageCode),
-                    style: const TextStyle(
+                    themeService.isDarkMode 
+                        ? AppStrings.get('optDarkMode', languageCode)
+                        : AppStrings.get('optLightMode', languageCode),
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF282828),
+                      color: themeService.isDarkMode ? Colors.white : const Color(0xFF282828),
                     ),
                   ),
                   secondary: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE6CA9A).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.notifications_none,
-                      color: Color(0xFFE6CA9A),
-                    ),
-                  ),
-                  activeColor: const Color(0xFFCBD77E),
-                ),
-                Divider(height: 1, color: Colors.grey.withOpacity(0.1)),
-                SwitchListTile(
-                  value: _biometricsEnabled,
-                  onChanged: (val) => setState(() => _biometricsEnabled = val),
-                  title: Text(
-                    AppStrings.get('optBiometrics', languageCode),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF282828),
-                    ),
-                  ),
-                  secondary: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE6CA9A).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.fingerprint,
-                      color: Color(0xFFE6CA9A),
+                    child: Icon(
+                      themeService.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                      color: const Color(0xFFE6CA9A),
                     ),
                   ),
                   activeColor: const Color(0xFFCBD77E),
                 ),
-                Divider(height: 1, color: Colors.grey.withOpacity(0.1)),
-                SwitchListTile(
-                  value: true,
-                  onChanged: (val) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          AppStrings.get('msgDoctorModeUpdated', languageCode),
-                        ),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
-                  },
-                  title: Text(
-                    AppStrings.get('labelDoctorMode', languageCode),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF282828),
-                    ),
-                  ),
-                  secondary: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE6CA9A).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.medical_services_outlined,
-                      color: Color(0xFFE6CA9A),
-                    ),
-                  ),
-                  activeColor: const Color(0xFFCBD77E),
-                ),
-                Divider(height: 1, color: Colors.grey.withOpacity(0.1)),
+                Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+                // Language
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE6CA9A).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.language, color: Color(0xFFE6CA9A)),
                   ),
                   title: Text(
                     AppStrings.get('optLanguage', languageCode),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF282828),
+                      color: themeService.isDarkMode ? Colors.white : const Color(0xFF282828),
                     ),
                   ),
                   trailing: Row(
@@ -196,19 +137,39 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ),
+
           const SizedBox(height: 24),
-          _buildSectionHeader(AppStrings.get('sectSupport', languageCode)),
+          // Section: Help (المساعدة)
+          _buildSectionHeader(AppStrings.get('sectHelp', languageCode), themeService.isDarkMode),
           _buildSettingsTile(
             icon: Icons.help_outline,
             title: AppStrings.get('optHelpCenter', languageCode),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HelpCenterPage(),
+                ),
+              );
+            },
+            isDark: themeService.isDarkMode,
           ),
           _buildSettingsTile(
             icon: Icons.info_outline,
             title: AppStrings.get('optAboutApp', languageCode),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AboutAppPage(),
+                ),
+              );
+            },
+            isDark: themeService.isDarkMode,
           ),
+
           const SizedBox(height: 32),
+          // Logout
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -225,7 +186,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: Text(
@@ -238,6 +199,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
           ),
+          const SizedBox(height: 120),
         ],
       ),
     );
@@ -246,11 +208,11 @@ class _SettingsPageState extends State<SettingsPage> {
   String _getLanguageName(String code) {
     switch (code) {
       case 'en':
-        return AppStrings.get('labelEnglish', code);
+        return 'English';
       case 'ar':
-        return AppStrings.get('labelArabic', code);
+        return 'العربية';
       case 'ku':
-        return AppStrings.get('labelKurdish', code);
+        return 'کوردی';
       default:
         return code;
     }
@@ -306,15 +268,15 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, bool isDark) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(start: 4, bottom: 12),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF282828),
+          color: isDark ? Colors.white70 : const Color(0xFF282828),
         ),
       ),
     );
@@ -325,12 +287,13 @@ class _SettingsPageState extends State<SettingsPage> {
     required String title,
     String? subtitle,
     required VoidCallback onTap,
+    required bool isDark,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         onTap: onTap,
@@ -345,9 +308,9 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF282828),
+            color: isDark ? Colors.white : const Color(0xFF282828),
           ),
         ),
         subtitle: subtitle != null
@@ -361,3 +324,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
+
+
+

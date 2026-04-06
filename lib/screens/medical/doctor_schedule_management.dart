@@ -95,6 +95,55 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
     }
   }
 
+  Future<void> _deleteSchedule(int scheduleId) async {
+    final user = Provider.of<AuthService>(context, listen: false).currentUser;
+    if (user == null) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Slot'),
+        content: const Text('Are you sure you want to delete this available slot?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() => _isLoading = true);
+
+    final success = await DashboardService.deleteDoctorSchedule(
+      doctorId: user.id,
+      scheduleId: scheduleId,
+    );
+
+    if (success) {
+      await _loadSchedule(); // reload
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Slot deleted successfully')),
+        );
+      }
+    } else {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete slot')),
+        );
+      }
+    }
+  }
+
   Future<void> _seedDefaultSchedule() async {
     final user = Provider.of<AuthService>(context, listen: false).currentUser;
     if (user == null) return;
@@ -144,9 +193,9 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Padding(
-              padding: EdgeInsets.only(
+              padding: EdgeInsetsDirectional.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 24, right: 24, top: 24,
+                start: 24, end: 24, top: 24,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -297,7 +346,7 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsetsDirectional.only(bottom: 16.0),
                         child: Row(
                           children: [
                             Expanded(
@@ -339,7 +388,7 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                     final isBooked = slot['isBooked'] ?? false;
                     
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsetsDirectional.only(bottom: 12),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -366,7 +415,7 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                         ),
                         title: Text(slot['day'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsetsDirectional.only(top: 8.0),
                           child: Row(
                             children: [
                               const Icon(Icons.access_time, size: 14, color: Colors.grey),
@@ -375,20 +424,33 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
                             ],
                           ),
                         ),
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isBooked ? Colors.orange.withOpacity(0.1) : Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            isBooked ? 'Booked' : 'Available',
-                            style: TextStyle(
-                              color: isBooked ? Colors.orange[800] : Colors.green[700],
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isBooked ? Colors.orange.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                isBooked ? 'Booked' : 'Available',
+                                style: TextStyle(
+                                  color: isBooked ? Colors.orange[800] : Colors.green[700],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
+                            if (!isBooked) ...[
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                tooltip: 'Delete Slot',
+                                onPressed: () => _deleteSchedule(slot['id']),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     );
@@ -397,3 +459,6 @@ class _DoctorScheduleManagementScreenState extends State<DoctorScheduleManagemen
     );
   }
 }
+
+
+

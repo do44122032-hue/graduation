@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project/services/ai_service.dart';
+import 'package:provider/provider.dart';
+import '../../services/language_service.dart';
+import '../../constants/app_strings.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({Key? key}) : super(key: key);
@@ -10,13 +13,27 @@ class ChatbotScreen extends StatefulWidget {
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final List<BotMessage> _messages = [
-    BotMessage(
-      text: "Hello! I am your AI Health Assistant. How can I help you today?",
-      isUser: false,
-    ),
-  ];
+  late List<BotMessage> _messages;
   bool _isTyping = false;
+  late String _languageCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _messages = [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _languageCode = Provider.of<LanguageService>(context).currentLanguage;
+    if (_messages.isEmpty) {
+      _messages.add(BotMessage(
+        text: AppStrings.get('chatbotWelcome', _languageCode),
+        isUser: false,
+      ));
+    }
+  }
 
   void _sendMessage(String text) async {
     if (text.trim().isEmpty) return;
@@ -41,7 +58,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           children: [
@@ -54,20 +71,20 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               child: const Icon(Icons.smart_toy, color: Color(0xFFCBD77E)),
             ),
             const SizedBox(width: 12),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AI Health Assistant',
+                  AppStrings.get('chatbotTitle', _languageCode),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF282828),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Text(
-                  'Always available',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
+                  AppStrings.get('chatbotAlwaysAvailable', _languageCode),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                 ),
               ],
             ),
@@ -76,12 +93,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
-            ),
+          decoration: BoxDecoration(
+            gradient: Theme.of(context).brightness == Brightness.dark
+                ? LinearGradient(
+                    begin: AlignmentDirectional.topStart,
+                    end: Alignment.bottomRight,
+                    colors: [const Color(0xFF1A1F1C), const Color(0xFF0F1210)],
+                  )
+                : const LinearGradient(
+                    begin: AlignmentDirectional.topStart,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFCBD77E), Color(0xFFE6CA9A)],
+                  ),
           ),
         ),
       ),
@@ -100,24 +123,24 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               },
             ),
           ),
-          _buildQuickSuggestions(),
-          _buildMessageInput(),
+          _buildQuickSuggestions(_languageCode),
+          _buildMessageInput(_languageCode),
         ],
       ),
     );
   }
 
-  Widget _buildQuickSuggestions() {
+  Widget _buildQuickSuggestions(String languageCode) {
     return Container(
       height: 50,
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsetsDirectional.only(bottom: 8),
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          _buildSuggestionChip("I have a headache"),
-          _buildSuggestionChip("Book appointment"),
-          _buildSuggestionChip("Check lab results"),
+          _buildSuggestionChip(AppStrings.get('suggestHeadache', languageCode)),
+          _buildSuggestionChip(AppStrings.get('suggestBookAppt', languageCode)),
+          _buildSuggestionChip(AppStrings.get('suggestLabResults', languageCode)),
         ],
       ),
     );
@@ -125,15 +148,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   Widget _buildSuggestionChip(String text) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: ActionChip(
         label: Text(
           text,
-          style: const TextStyle(color: Color(0xFF282828), fontSize: 12),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           side: BorderSide(color: const Color(0xFFCBD77E).withOpacity(0.5)),
         ),
         onPressed: () => _sendMessage(text),
@@ -143,12 +166,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   Widget _buildTypingIndicator() {
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: AlignmentDirectional.centerStart,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsetsDirectional.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(16),
             topRight: Radius.circular(16),
@@ -163,8 +186,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
           ],
         ),
-        child: const Text(
-          "Assistant is typing...",
+        child: Text(
+          AppStrings.get('chatbotTyping', _languageCode),
           style: TextStyle(
             color: Color(0xFF9E9E9E),
             fontSize: 12,
@@ -177,16 +200,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   Widget _buildMessageBubble(BotMessage message) {
     return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: message.isUser ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsetsDirectional.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: message.isUser ? const Color(0xFF282828) : Colors.white,
-          borderRadius: BorderRadius.circular(16).copyWith(
+          color: message.isUser 
+              ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFCBD77E) : const Color(0xFF282828))
+              : Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12).copyWith(
             bottomRight: message.isUser ? Radius.zero : null,
             bottomLeft: !message.isUser ? Radius.zero : null,
           ),
@@ -201,7 +226,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         child: Text(
           message.text,
           style: TextStyle(
-            color: message.isUser ? Colors.white : const Color(0xFF282828),
+            color: message.isUser 
+                ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white)
+                : Theme.of(context).colorScheme.onSurface,
             fontSize: 15,
           ),
         ),
@@ -209,19 +236,19 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     );
   }
 
-  Widget _buildMessageInput() {
+  Widget _buildMessageInput(String languageCode) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
+      padding: const EdgeInsetsDirectional.fromSTEB(
         16,
         16,
         16,
         100,
       ), // Added bottom padding to clear nav bar
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -233,14 +260,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F7F7),
-                borderRadius: BorderRadius.circular(24),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
                 controller: _messageController,
                 onSubmitted: _sendMessage,
-                decoration: const InputDecoration(
-                  hintText: 'Ask about your health...',
+                decoration: InputDecoration(
+                  hintText: AppStrings.get('chatbotInputHint', languageCode),
                   border: InputBorder.none,
                   hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
                 ),
@@ -270,3 +297,6 @@ class BotMessage {
 
   BotMessage({required this.text, required this.isUser});
 }
+
+
+

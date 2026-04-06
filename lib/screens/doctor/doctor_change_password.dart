@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
 import '../../constants/app_strings.dart';
+import '../../constants/app_colors.dart';
 
 class DoctorChangePasswordScreen extends StatefulWidget {
   const DoctorChangePasswordScreen({Key? key}) : super(key: key);
@@ -49,8 +50,8 @@ class _DoctorChangePasswordScreenState
 
   @override
   Widget build(BuildContext context) {
-    const primaryBlue = Color(0xFF1565C0);
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
+    final isRTL = languageCode == 'ar' || languageCode == 'ku';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
@@ -58,24 +59,15 @@ class _DoctorChangePasswordScreenState
         title: Text(
           AppStrings.get('optChangePassword', languageCode),
           style: const TextStyle(
-            color: Color(0xFF282828),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.doctorPrimary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF282828)),
+          icon: Icon(isRTL ? Icons.arrow_forward : Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [primaryBlue, Color(0xFF64B5F6)],
-            ),
-          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -149,12 +141,12 @@ class _DoctorChangePasswordScreenState
                 child: ElevatedButton(
                   onPressed: _handleChangePassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue,
+                    backgroundColor: AppColors.doctorPrimary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 4,
-                    shadowColor: primaryBlue.withOpacity(0.4),
+                    shadowColor: AppColors.doctorPrimary.withOpacity(0.4),
                   ),
                   child: Text(
                     AppStrings.get('actionUpdatePassword', languageCode),
@@ -206,7 +198,7 @@ class _DoctorChangePasswordScreenState
             fillColor: Colors.white,
             prefixIcon: const Icon(
               Icons.lock_outline,
-              color: Color(0xFF1565C0),
+              color: AppColors.doctorPrimary,
             ),
             suffixIcon: IconButton(
               icon: Icon(
@@ -218,13 +210,13 @@ class _DoctorChangePasswordScreenState
               onPressed: onToggle,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
-                color: Color(0xFF1565C0),
+                color: AppColors.doctorPrimary,
                 width: 1.5,
               ),
             ),
@@ -238,3 +230,6 @@ class _DoctorChangePasswordScreenState
     );
   }
 }
+
+
+

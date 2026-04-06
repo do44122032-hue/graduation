@@ -43,22 +43,24 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     }
 
     // 1. Load from local cache for instant display
-    final localVital = await DashboardService.getLocalVital();
-    if (localVital != null && mounted) {
-      final localRecord = VitalSignRecord(
-        date: localVital['date'] ?? 'Just Now',
-        bloodPressureSys: localVital['bloodPressureSys'] ?? 0,
-        bloodPressureDia: localVital['bloodPressureDia'] ?? 0,
-        heartRate: localVital['heartRate'] ?? 0,
-        temperature: (localVital['temperature'] as num?)?.toDouble() ?? 37.0,
-        respiratoryRate: 16,
-        oxygenSaturation: 98,
-        weight: localVital['weight'] ?? 0,
-        bmi: 22.0,
-        bloodGlucose: 100,
-      );
+    final localVitalsList = await DashboardService.getLocalVitalsList();
+    List<VitalSignRecord> cachedRecords = [];
+    if (localVitalsList.isNotEmpty && mounted) {
+      cachedRecords = localVitalsList.map((vital) => VitalSignRecord(
+        date: vital['date'] ?? 'Just Now',
+        bloodPressureSys: (vital['bloodPressureSys'] as num?)?.toInt() ?? 0,
+        bloodPressureDia: (vital['bloodPressureDia'] as num?)?.toInt() ?? 0,
+        heartRate: (vital['heartRate'] as num?)?.toInt() ?? 0,
+        temperature: (vital['temperature'] as num?)?.toDouble() ?? 37.0,
+        respiratoryRate: (vital['respiratoryRate'] as num?)?.toInt() ?? 16,
+        oxygenSaturation: (vital['oxygenSaturation'] as num?)?.toInt() ?? 98,
+        weight: (vital['weight'] as num?)?.toInt() ?? 0,
+        bmi: (vital['bmi'] as num?)?.toDouble() ?? 22.0,
+        bloodGlucose: (vital['bloodGlucose'] as num?)?.toInt() ?? 100,
+      )).toList();
+      
       setState(() {
-        if (_apiVitals.isEmpty) _apiVitals = [localRecord];
+        if (_apiVitals.isEmpty) _apiVitals = List.from(cachedRecords);
         _isLoading = false; 
       });
     }
@@ -72,7 +74,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         setState(() {
           // Map Vitals
           if (data['recentVitals'] != null) {
-            _apiVitals = (data['recentVitals'] as List).map((v) {
+            final fetchedVitals = (data['recentVitals'] as List).map((v) {
               return VitalSignRecord(
                 date: v['date']?.toString() ?? '',
                 bloodPressureSys: (v['bloodPressureSys'] as num?)?.toInt() ?? 0,
@@ -87,6 +89,15 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               );
             }).toList();
             
+            final allVitals = [...cachedRecords, ...fetchedVitals];
+            final uniqueVitals = <String, VitalSignRecord>{};
+            for (var v in allVitals) {
+               final key = '${v.date}_${v.bloodPressureSys}_${v.weight}';
+               if (!uniqueVitals.containsKey(key)) {
+                 uniqueVitals[key] = v;
+               }
+            }
+            _apiVitals = uniqueVitals.values.toList();
             // Sort by date newest first to ensure the latest is at index 0
             _apiVitals.sort((a, b) {
               try {
@@ -129,6 +140,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
 
   /// Helper to parse various date formats safely
   DateTime _parseDateString(String dateStr) {
+    if (dateStr == 'Just Now') return DateTime.now();
     if (dateStr.isEmpty) return DateTime.fromMillisecondsSinceEpoch(0);
     
     // List of formats to try
@@ -306,7 +318,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     final languageCode = Provider.of<LanguageService>(context).currentLanguage;
 
     return Scaffold(
-      backgroundColor: colorSecondaryBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -319,9 +331,9 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             // Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 24,
+                padding: const EdgeInsetsDirectional.only(
+                  start: 24,
+                  end: 24,
                   top: 16,
                   bottom: 88,
                 ),
@@ -338,7 +350,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
+          begin: AlignmentDirectional.topStart,
           end: Alignment.bottomRight,
           colors: [colorAccentOlive, colorAccentBeige],
         ),
@@ -359,7 +371,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             height: 40,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
               icon: Icon(Icons.arrow_back, size: 20, color: colorCharcoal),
@@ -380,7 +392,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             height: 40,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
               icon: const Icon(Icons.refresh, size: 22, color: colorCharcoal),
@@ -393,7 +405,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             height: 40,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
               icon: const Icon(Icons.edit_note, size: 22, color: colorCharcoal),
@@ -422,10 +434,10 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     ];
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 12, 0, 12),
-      decoration: const BoxDecoration(
-        color: colorWhite,
-        border: Border(bottom: BorderSide(color: colorSecondaryBg)),
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 12, 0, 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -433,7 +445,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           children: tabs.map((tab) {
             final isActive = _activeTab == tab['id'];
             return Padding(
-              padding: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsetsDirectional.only(end: 6),
               child: GestureDetector(
                 onTap: () => setState(() => _activeTab = tab['id']!),
                 child: Container(
@@ -444,8 +456,8 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                   decoration: BoxDecoration(
                     color: isActive
                         ? colorAccentOlive.withOpacity(0.2)
-                        : colorWhite,
-                    borderRadius: BorderRadius.circular(10),
+                        : Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isActive
                           ? colorAccentOlive
@@ -503,10 +515,10 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           children: [
             Text(
               AppStrings.get('tabVitals', languageCode),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: colorCharcoal,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             TextButton(
@@ -573,7 +585,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 value: activeConditions.toString(),
                 label: AppStrings.get('sectChronicConditions', languageCode),
                 gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
+                  begin: AlignmentDirectional.topStart,
                   end: Alignment.bottomRight,
                   colors: [Color(0xFFCBD77E), Color(0xFFB8C96E)],
                 ),
@@ -603,9 +615,9 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-          color: colorWhite,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colorSecondaryBg),
+          border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.06),
@@ -635,10 +647,10 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
             RichText(
               text: TextSpan(
                 text: value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: colorCharcoal,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 children: [
                   TextSpan(
@@ -667,7 +679,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     return Container(
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -710,12 +722,12 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
         final severityColors = _getSeverityColor(condition.severityLevel);
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsetsDirectional.only(bottom: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: colorWhite,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colorSecondaryBg),
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.06),
@@ -796,27 +808,27 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 ),
                 if (isExpanded)
                   Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    margin: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: colorSecondaryBg,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildInfoRow(
-                          AppStrings.get('treatingPhysician', languageCode),
+                          AppStrings.get('labelTreatingPhysician', languageCode),
                           condition.treatingPhysician,
                         ),
                         const SizedBox(height: 12),
                         _buildInfoRow(
-                          AppStrings.get('managementPlan', languageCode),
+                          AppStrings.get('labelManagementPlan', languageCode),
                           condition.managementPlan,
                         ),
                         const SizedBox(height: 12),
                         _buildInfoRow(
-                          AppStrings.get('lastUpdated', languageCode),
+                          AppStrings.get('labelLastUpdated', languageCode),
                           condition.lastUpdated,
                         ),
                       ],
@@ -836,7 +848,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsetsDirectional.only(bottom: 16),
           child: ElevatedButton.icon(
             onPressed: () => _showQuickAddVitalsSheet(context, languageCode),
             style: ElevatedButton.styleFrom(
@@ -889,7 +901,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Recent History', // Fixed string for now, can be localized later
+              AppStrings.get('labelRecentHistory', languageCode),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -915,7 +927,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
               color: colorWhite,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(child: Text('No vitals recorded yet.')),
+            child: Center(child: Text(AppStrings.get('labelNone', languageCode))),
           ),
       ],
     );
@@ -923,7 +935,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
 
   Widget _buildVitalHistoryItem(VitalSignRecord v, String languageCode, {bool isMock = false}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isMock ? Colors.grey.shade50 : colorWhite,
@@ -1001,7 +1013,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: EdgeInsets.only(
+        padding: EdgeInsetsDirectional.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         decoration: const BoxDecoration(
@@ -1154,7 +1166,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                   foregroundColor: colorWhite,
                   minimumSize: const Size(double.infinity, 56),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: Text(
@@ -1219,7 +1231,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     return Container(
       decoration: BoxDecoration(
         color: colorWhite,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colorSecondaryBg),
         boxShadow: [
           BoxShadow(
@@ -1567,7 +1579,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
       decoration: BoxDecoration(
         color: bg,
         border: Border.all(color: border),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         text.toUpperCase(),
@@ -1587,11 +1599,11 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
     final latest = _apiVitals.first;
     if (latest.bloodPressureSys > 130 || latest.bloodPressureDia > 85) {
       return Container(
-        margin: const EdgeInsets.only(bottom: 24),
+        margin: const EdgeInsetsDirectional.only(bottom: 24),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.red.shade50,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.red.shade200),
         ),
         child: Row(
@@ -1603,7 +1615,7 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    Text(
-                    'High Blood Pressure Alert',
+                    AppStrings.get('highBPAlert', languageCode),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.red.shade900,
@@ -1612,8 +1624,44 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Your last reading was ${latest.bloodPressureSys}/${latest.bloodPressureDia}. Please monitor closely.',
+                    AppStrings.get('highBPMessage', languageCode).replaceAll('{sys}', latest.bloodPressureSys.toString()).replaceAll('{dia}', latest.bloodPressureDia.toString()),
                     style: TextStyle(color: Colors.red.shade800, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (latest.bloodPressureSys < 120) {
+      return Container(
+        margin: const EdgeInsetsDirectional.only(bottom: 24),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.orange.shade200),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.orange.shade700, size: 28),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   Text(
+                    'Low Blood Pressure Notice',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange.shade900,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Your reading is ${latest.bloodPressureSys}/${latest.bloodPressureDia}. Please monitor your vitals.',
+                    style: TextStyle(color: Colors.orange.shade800, fontSize: 13),
                   ),
                 ],
               ),
@@ -1647,3 +1695,6 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   }
 
 }
+
+
+

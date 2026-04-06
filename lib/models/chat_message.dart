@@ -23,7 +23,11 @@ class ChatMessage {
       senderId: json['senderId'].toString(),
       receiverId: json['receiverId'].toString(),
       content: json['content'] ?? '',
-      timestamp: DateTime.parse(json['timestamp']),
+      timestamp: DateTime.parse(
+        json['timestamp'].toString().endsWith('Z') || json['timestamp'].toString().contains('+')
+            ? json['timestamp'].toString()
+            : '${json['timestamp']}Z',
+      ),
       type: json['type'] ?? 'text',
       data: json['data'] ?? {},
     );

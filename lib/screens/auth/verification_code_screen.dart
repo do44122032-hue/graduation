@@ -81,7 +81,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen>
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
+              begin: AlignmentDirectional.topStart,
               end: Alignment.bottomRight,
               colors: [
                 const Color(0xFF1A3A2E),
@@ -138,7 +138,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen>
                       padding: const EdgeInsets.all(28),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
@@ -236,11 +236,11 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen>
         filled: true,
         fillColor: const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: roleColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -262,7 +262,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen>
       height: 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.4),
@@ -275,7 +275,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen>
         color: Colors.transparent,
         child: InkWell(
           onTap: isLoading ? null : onPressed,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: Center(
             child: isLoading
                 ? const SizedBox(
@@ -331,3 +331,6 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen>
     }
   }
 }
+
+
+
